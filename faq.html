@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE>FAQ</TITLE>
+    <LINK type="text/css" rel="stylesheet" href="css/common.css" media="screen,projection" />
+	<LINK type="text/css" rel="stylesheet" href="css/welcome.css" media="screen,projection" />
+    <LINK rel="SHORTCUT ICON" HREF="/favicon.png" />
+    <META charset="UTF-8" />
+</HEAD>
+
+<BODY>
+
+    <DIV id="banner">
+        <SPAN id="main-logo" class="logoblue-text">FAQ</SPAN>
+    </DIV>
+    
+    <P><B>What is this?</B><BR/>
+    This is an internal PDF review tool, designed to make it easy to create a collaborative PDF review and collect review comments. You can share the review the review URL to anyone you wish to participate in the review, and their comments will be collated alongside the PDF, all in one convenient browser location.
+    </P>
+    
+    <P><B>Is this IT supported?</B><BR/>
+    Nope, sorry. In fact this is a personal side-project, writtten in a hurry mostly while waiting around at airports. So please do not rely on it being bug-free just yet.
+    </P>
+    
+    <P><B>What browsers will this work in?</B><BR/>
+    This should work in most major, standards-compliant browsers as it does nothing more than your average Gmail. It is known to work well in Chrome and Firefox, so please use these if possible. Internet Explorer and Edge, as always, have small issues particularly relating to the selection of text but should be mostly usable. Safari is untested as I don't have a MAC. Please report back any issues you encounter, maybe I'll get around to addressing these.
+    </P>
+    
+    <P><B>Are reviews private?</B><BR/>
+    No, all reviews are public. Anybody with the review URL (which admittedly is rather easy to guess) can participate. That's the spirit of openness we want to cultivate. If you do need to keep some information private, you can password-protect the PDF before uploading, and the system will require a password before displaying the PDF (although comments are still public). This is, however, fairly low-strength encryption that just makes it more difficult to view. 
+    </P>
+    
+    <P><B>I am experiencing issues, what do I do?</B><BR/>
+    Sorry to hear that! The tool provides an error reporting feature (click on the logo), please use that to report any issues. I may or may not get around to addressing these.
+    </P>
+    
+    <P><B>How does it work?</B><BR/>
+    Most of the magic comes from the awesome <A HREF="https://mozilla.github.io/pdf.js/">pdf.js</A> library. The rest is a consequence of lost waits at airports...
+    </P>
+    
+    <P><B>Can I save the comments back to the PDF?</B><BR/>
+    Yes! Use the "archive PDF" feature, accessible from the logo menu. This is a rather complicated process and may break if the original PDF is too complex. It also takes a while, especially for longer PDFs. Think a few seconds per page. The resulting PDF can be viewed using Acrobat Reader, open the comments tool to view the full text of any comment.
+    </P>
+    
+    <P><B>Overall this is a fairly basic tool...</B><BR/>
+    Yep, it does not pretend to be anything more.
+    </P>
+    
+    <P><B>Can I export comments?</B><BR/>
+    Yes! The comments can be exported to JSON, see the link in the logo menu. Other formats may be available on request, but JSON is used internally by the tool. There is also an <A HREF="api.html">API</A> that allows you to hook this into custom scripts. This will, however, handling the server's authentication systems. That should be fairly simple to carry out...
+    </P>
+    
+    <P><B>Can I be notified of changes?</B><BR/>
+    EIS makes sending emails really hard. And do we really need that much more spam? Instead, the tool offers an RSS feed of the major changes (see link in logo menu). You can subscribe to this in outlook, and you will be notified of any such changes.
+    </P>
+    
+    <P><B>When should I close the review?</B><BR/>
+    You should close the review when you no longer wish people to comment on the PDF. Typically, this is when you're working on fixing all reported issues, or the deadline has passed.
+    </P>
+    
+    <P><B>When should I delete the review?</B><BR/>
+    Once the review is closed you can delete it. I recommend deleting it about a month after closing it, which will delete the review, free up some space, and remove all comments. Please delete these occasionally, as the system is not set up to handle too much storage requirements.
+    </P>
+    
+    <P><B>Anything else?</B><BR/>
+    Probably, but my flight is here.
+    </P>
+
+</BODY>
+</HTML>

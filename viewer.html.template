@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<HTML manifest="%SCRIPT_URL%?manifest=appcache">
+<HEAD>
+    <TITLE>Review: %REVIEW_PDF_TITLE%</TITLE>
+    <LINK type="text/css" rel="stylesheet" href="css/common.css" media="screen,projection" />
+	<LINK type="text/css" rel="stylesheet" href="css/viewer.css" media="screen,projection" />
+    <!-- <link rel="alternate" type="application/rss+xml" title="RSS updates for this review" href="/?rss=%REVIEW_PDF_ID%" /> -->
+    <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
+    <LINK rel="manifest" href="manifest.json" />
+    <NOSCRIPT>
+        <STYLE>html{display:none;}</STYLE>
+        <META http-equiv="refresh" content="0.0;url=unsupported.html">
+    </NOSCRIPT>
+    <SCRIPT>
+        if(!('Promise' in window) || (!window.indexedDB)) {
+            window.location = 'unsupported.html';
+        }
+    </SCRIPT>
+    <SCRIPT language="javascript" src="js/jquery-3.2.0.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/dexie.min.js"></SCRIPT>
+	<SCRIPT language="javascript" src="js/pdf.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/app_common.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/app_viewer.min.js"></SCRIPT>
+    <SCRIPT language="javascript">pdfURL = '%REVIEW_PDF_URL%';reviewId = '%REVIEW_PDF_ID%';scriptURL = '%SCRIPT_URL%';</SCRIPT>
+    <META charset="UTF-8" />
+</HEAD>
+
+<BODY>
+
+    <DIV id="offline-notification" class="notification bottom offline-only">
+        Offline -- your changes will be uploaded when you next connect.
+    </DIV>
+    <DIV id="offline-status-text" class="notification bottom online-only" style="display: none;"></DIV>
+
+    <DIV id="content-container" class="columns">
+        <DIV id="sidebar-left"  style="width: 10%;padding: 0px;" class="sidebar">
+            <!-- Sidebar-left toolbar -->
+            <DIV id="toolbar" class="toolbar columns white-text">
+                <CENTER>
+                          <DIV id="button-search-prev" class="button left"  data-icon="img/toolbarButton-search-prev.png" style="display: none;" title="Previous search result (SHIFT+F3)">
+                    </DIV><DIV id="button-search-next" class="button right" data-icon="img/toolbarButton-search-next.png" style="display: none;" title="Next search result (F3)"></DIV>
+                </CENTER>
+            </DIV>
+            <DIV>
+                <DIV id="sidebar-left-bookmarks"></DIV>
+                <DIV id="sidebar-left-search-results" style="display: none;"></DIV>
+            </DIV>
+        </DIV>
+
+        <DIV id="main-content"  style="width: 70%;padding: 0px;" class="mainbar">
+            <!-- Main application toolbar -->
+            <DIV id="toolbar" class="toolbar white-text">
+                <!-- Toolbar centre left -->
+                <DIV id="button-left-sidebar-toggle" style="float: left;" class="button" data-icon="img/toolbarButton-sidebarToggle-left.png" title="Toggle left sidebar"></DIV>
+                <DIV style="padding: 7px;float: left;cursor: pointer;" id="button-link-options" title="Potential actions you can take!">
+                    <SPAN id="main-logo" class="white-text">&#x25bc; %BRANDING%</SPAN> <SPAN class="lightwhite-text">PDF Review</SPAN>
+                </DIV>
+                <DIV id="button-search-toggle" style="float: left;" class="button" data-icon="img/toolbarButton-search.png" title="Search the document (CTRL+F)"></DIV>
+
+                <!-- Toolbar centre right -->
+                <DIV id="button-right-sidebar-toggle" class="button active" data-icon="img/toolbarButton-sidebarToggle-right.png" title="Toggle right sidebar" style="float: right;"></DIV>
+                <SELECT id="button-zoom-select" class="button white-text" style="float: right;">
+                    <OPTION value="page-fit">Page Fit</OPTION>
+                    <OPTION value="page-width">Page Width</OPTION>
+                    <OPTION value="0.5">50%</OPTION>
+                    <OPTION value="0.75">75%</OPTION>
+                    <OPTION value="1">100%</OPTION>
+                    <OPTION value="1.25">125%</OPTION>
+                    <OPTION value="1.5">150%</OPTION>
+                    <OPTION value="2">200%</OPTION>
+                    <OPTION value="3">300%</OPTION>
+                    <OPTION value="4">400%</OPTION>
+                    <OPTION value="0" id="button-zoom-select-custom">Custom</OPTION>
+                </SELECT>
+                <DIV id="button-zoom-minus" class="button right" style="float: right;">-</DIV>
+                <DIV id="button-zoom-plus"  class="button left" style="float: right;">+</DIV>
+                <DIV id="pageBrowser" style="float:right;">Page <INPUT id="page-number" name="pageselection" autocomplete=off /> of <SPAN id="num-pages"></SPAN></DIV>
+
+                <!-- Toolbar centre middle -->
+                <CENTER>
+                        <DIV id="button-mode-pointer"   class="button"        data-icon="img/toolbarButton-mouse.png"     title="Cancel annotation tools (CTRL+1)"></DIV>
+                        <DIV id="button-mode-highlight" class="button left"   data-icon="img/toolbarButton-highlight.png" title="Highlight text as review comment (CTRL+2)">
+                  </DIV><DIV id="button-mode-rectangle" class="button middle" data-icon="img/toolbarButton-rectangle.png" title="Highlight a region as a review comment (CTRL+3)">
+                  </DIV><DIV id="button-mode-comment"   class="button middle" data-icon="img/toolbarButton-comment.png"   title="Add a review comment (CTRL+4)">
+                  </DIV><DIV id="button-mode-strike"    class="button right"  data-icon="img/toolbarButton-strike.png"    title="Strikethrough some text as a review comment (CTRL+5)"></DIV>
+                        <DIV id="button-mode-grab"      class="button"        data-icon="img/toolbarButton-grab.png"      title="Grab and move pdf (CTRL+6)"></DIV>
+                </CENTER>
+            </DIV>
+
+            <!-- PDF view -->
+            <DIV id="pdfview"></DIV>
+
+        </DIV>
+
+        <DIV id="sidebar-right" style="width: 20%;padding: 0px;" class="sidebar" oncontextmenu="return false;">
+            <!-- Sidebar-right toolbar -->
+            <DIV id="toolbar" class="toolbar columns white-text">
+                <DIV id="button-comment-filter" class="button" style="padding: 3px 10px;" title="Filter comments based on configurable criteria (CTRL+H)">Filter</DIV>
+                      <DIV id="button-comment-text-smaller" class="button left"  data-icon="img/toolbarButton-text-smaller.png" title="Make comment text smaller">
+                </DIV><DIV id="button-comment-text-larger"  class="button right" data-icon="img/toolbarButton-text-larger.png"  title="Make comment text larger"></DIV>
+            </DIV>
+            <DIV id="sidebar-right-container">
+                <DIV id="comment-status-msg" class="lightwhite-text"></DIV>
+                <DIV id="comment-status-loading" class="lightwhite-text">Loading comments...</DIV>
+                <DIV id="comment-container"></DIV>
+            </DIV>
+        </DIV>
+    </DIV>
+
+    <!-- Container for modal dialog boxes -->
+    <DIV id="modal-container" class="modal" style="display: none;">
+        <DIV>
+            <DIV id="dialog-ui-link" class="dialog" style="display: none;">
+                <DIV id="ui-link-text" style="text-align: left;">
+                    The PDF is now ready to be reviewed.<BR/><BR/>
+                    Please share the following link to potential reviewers:
+                </DIV><BR/><BR/><BR/>
+                <PRE></PRE>
+                <DIV id="button-copy-to-clip-link" class="button" data-icon="img/copyClipboard.png" title="Copy URL to clipboard" style="display:block;"></DIV>
+                <BR/><BR/>
+                <DIV class="button modal-close">Close</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-closed-review" class="dialog" style="display: none;">
+                <DIV style="text-align: left;">
+                    This PDF review is now closed.<BR/><BR/>
+                    Feel free to have a look around, change comment statuses etc, but no new comments will be accepted.
+                </DIV>
+                <BR/><BR/>
+                <DIV class="button modal-close">Understood</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-password" class="dialog" style="display: none;">
+                <DIV style="text-align: left;">
+                    The review PDF is password-protected.<BR/><BR/>
+                    Please enter a password to join this review.<BR/>
+                    <SPAN id="password-reason"></SPAN><BR/>
+                </DIV>
+                <INPUT id="password-prompt" type="password" class="autofocus modal-enter-close clear" data-button="submit" /><BR/><BR/>
+                <DIV class="button modal-close">Cancel</DIV> <DIV class="button modal-close" data-button="submit">Submit</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-error" class="dialog" style="display: none;">
+                <DIV style="text-align: left;">
+                    There was an error while processing this page.<BR/><BR/>
+                    <SPAN id="error-reason"></SPAN><BR/>
+                </DIV>
+                <DIV class="button modal-close">Ignore</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-confirm" class="dialog" style="display: none;">
+                <DIV style="text-align: left;" id="confirm-msg">
+                </DIV>
+                <BR/><BR/>
+                <DIV class="button modal-close">No</DIV> <DIV class="button modal-close" data-button="submit">Yes</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-download" class="dialog" style="display: none;">
+                <DIV style="text-align: left;">
+                    Exporting archived PDF...<BR/><BR/>
+                    This may take a few minutes, especially for larger documents.<BR/><BR/>
+                    Please be patient, this is a surprisingly complex process. I'm doing my best!
+                </DIV><BR/><BR/>
+                <DIV id="archive-pdf-download">
+                </DIV>
+                <BR/><BR/>
+                <DIV class="button modal-close">Close</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-query" class="dialog" style="display: none;">
+                <DIV style="text-align: left;" id="query-msg">
+                </DIV>
+                <BR/>
+                <INPUT id="query-value" class="autofocus modal-enter-close" data-button="submit" />
+                <BR/><BR/>
+                <DIV class="button modal-close">Cancel</DIV> <DIV class="button modal-close" data-button="submit">Submit</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-comment" class="dialog" style="display: none;">
+                <DIV style="text-align: left;">
+                    <SPAN id="comment-guidelines"></SPAN><BR/><BR/>
+                    <TEXTAREA id="comment-msg" class="autofocus modal-enter-close clear" data-button="submit" style="width: 400px; height: 150px;"></TEXTAREA>
+                </DIV>
+                <DIV class="button modal-close">Cancel</DIV> <DIV class="button modal-close" data-button="submit">Submit</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-comment-filters" class="dialog" style="display: none;">
+                Filter the review comments based on the following filters:<BR/>
+                <TABLE style="text-align: left;">
+                    <TR><TD>Search:</TD>    <TD>
+                                                <INPUT id="comment-filter-text" class="autofocus modal-enter-close" data-button="submit" />
+                                                <A onclick="$('#comment-filter-text').val('').select();">Clear</A>
+                                            </TD></TR>
+                    <TR><TD>Unread:</TD>    <TD><INPUT id="comment-filter-unread" type="checkbox"/> <LABEL for="comment-filter-unread">Unread comments only</LABEL></TD></TR>
+                    <TR><TD>Status:<BR/>
+                        <A onclick="$('#comment-placeholder-status input[type=checkbox]').prop('checked', true);">All</A> &nbsp; 
+                        <A onclick="$('#comment-placeholder-status input[type=checkbox]').prop('checked', false);">None</A>
+                        </TD>               <TD><DIV id="comment-placeholder-status"></DIV></TD></TR>
+                    <TR><TD>Reviewers:<BR/>
+                        <A onclick="$('#comment-placeholder-reviewers input[type=checkbox]').prop('checked', true);">All</A> &nbsp; 
+                        <A onclick="$('#comment-placeholder-reviewers input[type=checkbox]').prop('checked', false);">None</A>
+                        </TD>               <TD><DIV id="comment-placeholder-reviewers"></DIV></TD></TR>
+                </TABLE>
+                <DIV class="button modal-close">Cancel</DIV>
+                <DIV class="button modal-close" data-button="clear">Show all comments</DIV>
+                <DIV class="button modal-close" data-button="submit">Filter comments</DIV>
+            </DIV>
+        </DIV>
+        <DIV>
+            <DIV id="dialog-report-error" class="dialog" style="display: none;">
+                <DIV style="text-align: left;">
+                    We're sorry you encountered problems when using this application :(<BR/><BR/>
+                    As a reminder, this is a work in progress so errors were bound to happen.<BR/><BR/>
+                    Please help us by describing what you were doing when you encountered<BR/>this problem:<BR/><BR/>
+                    <TEXTAREA id="error-report-details" style="display: none;"></TEXTAREA>
+                    <TEXTAREA id="error-report-msg" class="autofocus modal-enter-close clear" data-button="submit" style="width: 400px; height: 150px;"></TEXTAREA>
+                </DIV>
+                <DIV class="button modal-close" data-button="submit">Submit error report</DIV>
+            </DIV>
+        </DIV>
+    </DIV>
+
+    <!-- Container for tools -->
+    <DIV>
+        <DIV id="search-tool" class="tool" style="display: none;">
+            Find:
+            <INPUT id="search-tool-query" class="tool-enter-action autofocus" />
+            <INPUT type="checkbox" id="search-tool-config-case" class="tool-change-action"/>
+            <LABEL for="search-tool-config-case">Match case</LABEL>
+            <INPUT type="checkbox" id="search-tool-config-regex" class="tool-change-action"/>
+            <LABEL for="search-tool-config-regex">Regex</LABEL>
+            <I id="search-tool-wrap" class="lightwhite-text"></I>
+        </DIV>
+    </DIV>
+    <DIV>
+        <DIV id="ui-logo-tool" class="tool" style="display: none;">
+            <DIV class="link tool-close-action" onclick="window.location=scriptURL;">Go to list of reviews</DIV>
+            <DIV>Background:
+                <DIV class="colour-option tool-close-action" style="background: #ffffff;" onclick="$('.page').css('background-color', '#ffffff');$('body').css('background-color', '#f5f5f5');" title="White"></DIV>
+                <DIV class="colour-option tool-close-action" style="background: #f5f5f5;" onclick="$('.page').css('background-color', '#f5f5f5');$('body').css('background-color', '#e5e5e5');" title="Light"></DIV>
+                <DIV class="colour-option tool-close-action" style="background: #f5f5f5;" onclick="$('.page').css('background-color', '#d5d5d5');$('body').css('background-color', '#c5c5c5');" title="Balanced"></DIV>
+                <DIV class="colour-option tool-close-action" style="background: #b8bba4;" onclick="$('.page').css('background-color', '#b8bba4');$('body').css('background-color', '#606060');" title="Dark"></DIV>
+                <DIV class="colour-option tool-close-action" style="background: #696b5c;" onclick="$('.page').css('background-color', '#696b5c');$('body').css('background-color', '#505050');" title="Obscurity"></DIV>
+            </DIV>
+            <DIV class="link tool-close-action online-only" onclick="reportError();">Report an error with this application</DIV>
+            <DIV id="ui-logo-download" class="link tool-close-action online-only">Export archived PDF</DIV>
+            <DIV class="link tool-close-action online-only" onclick="window.open(scriptURL + '?api=export-comments&as=json&review=' + window.reviewId);">Export comments as JSON</DIV>
+            <DIV class="link tool-close-action online-only" onclick="showUILink(scriptURL + '?rss=' + reviewId, 'The XML activity for this review can be found at:');">RSS feed of updates for this review</DIV>
+            <DIV class="link tool-close-action" onclick="showUILink(scriptURL + '?review=' + reviewId, 'Please share the following link with potential reviewers:');">Invite reviewers to join this review</DIV>
+        </DIV>
+    </DIV>
+    <DIV id="tool-palette" class="palette">
+        <DIV class="tl" data-tool="highlight" style="background-image: url(img/toolbarButton-highlight.png);" title="Highlighter tool"></DIV>
+        <DIV class="tr" data-tool="strike"    style="background-image: url(img/toolbarButton-strike.png);"    title="Strikethrough tool"></DIV>
+        <DIV class="bl" data-tool="comment"   style="background-image: url(img/toolbarButton-comment.png);"   title="Comment tool"></DIV>
+        <DIV class="br" data-tool="rectangle" style="background-image: url(img/toolbarButton-rectangle.png);" title="Rectangle highlight tool"></DIV>
+        <DIV class="centre" data-tool="grab"  style="background-image: url(img/toolbarButton-grab.png);"      title="Grab window tool"></DIV>
+    </DIV>
+    <DIV id="status-palette" class="palette">
+        <DIV class="tl" data-status="Rejected"    title="Set status to Rejected"><DIV data-status="Rejected">Rejected</DIV></DIV>
+        <DIV class="tr" data-status="Accepted"    title="Set status to Accepted"><DIV data-status="Accepted">Accepted</DIV></DIV>
+        <DIV class="bl" data-status="In Progress" title="Set status to In Progress"><DIV data-status="In Progress">In Progress</DIV></DIV>
+        <DIV class="br" data-status="Completed"   title="Set status to Completed"><DIV data-status="Completed">Completed</DIV></DIV>
+        <DIV class="centre" title="Cancel"></DIV>
+    </DIV>
+    <DIV id="palette-status"></DIV>
+
+</BODY>
+</HTML>

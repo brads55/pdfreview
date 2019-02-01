@@ -1,0 +1,175 @@
+/*
+ * Style file for the PDF Review tool
+ * This file contains style elements common to all UI panels of
+ * the tool.
+ * Francois Botman, 2017.
+ */
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* FONTS */
+@font-face {
+	font-family: 			"Material-Design-Icons";
+	src:					url("../font/Material-Design-Icons.eot?#iefix") format("embedded-opentype"), url("../font/Material-Design-Icons.woff2") format("woff2"), url("../font/Material-Design-Icons.woff") format("woff"), url("../font/Material-Design-Icons.ttf") format("truetype"), url("../font/Material-Design-Icons.svg#Material-Design-Icons") format("svg");
+	font-weight:			normal;
+	font-style:				normal;
+}
+@font-face {
+	font-family: 			"Roboto";
+	src: 					url("../font/Roboto-Thin.woff2") format("woff2"), url("../font/Roboto-Thin.woff") format("woff"), url("../font/Roboto-Thin.ttf") format("truetype");
+	font-weight: 			200;
+}
+
+@font-face {
+	font-family: 			"Roboto";
+	src: 					url("../font/Roboto-Light.woff2") format("woff2"), url("../font/Roboto-Light.woff") format("woff"), url("../font/Roboto-Light.ttf") format("truetype");
+	font-weight: 			300;
+}
+
+@font-face {
+	font-family: 			"Roboto";
+	src: 					url("../font/Roboto-Regular.woff2") format("woff2"), url("../font/Roboto-Regular.woff") format("woff"), url("../font/Roboto-Regular.ttf") format("truetype");
+	font-weight: 			400;
+}
+
+@font-face {
+	font-family: 			"Roboto";
+	src: 					url("../font/Roboto-Medium.woff2") format("woff2"), url("../font/Roboto-Medium.woff") format("woff"), url("../font/Roboto-Medium.ttf") format("truetype");
+	font-weight: 			500;
+}
+
+@font-face {
+	font-family:			"Roboto";
+	src:					url("../font/Roboto-Bold.woff2") format("woff2"), url("../font/Roboto-Bold.woff") format("woff"), url("../font/Roboto-Bold.ttf") format("truetype");
+	font-weight:			700;
+}
+
+
+/* UI elements */
+.footer {
+	margin-top:				50px;
+	text-align:				center;
+	font-size:				0.6em;
+	padding:				10px;
+}
+
+#main-logo {
+	font-weight:			900;
+}
+
+
+/* Colours and styles */
+a {
+	text-decoration:		none;
+	color:					#009fc1;
+}
+
+.logoblue-text {
+	color:					#009fc1;
+}
+.grey-text {
+	color:					grey;
+}
+.white-text {
+    color:                  white;
+}
+.lightwhite-text {
+    color:                  #C0C0C0;
+}
+
+
+/* Animations */
+@keyframes move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+
+.loading-animation {
+	background-image: linear-gradient(
+		-45deg, 
+		rgba(0, 0, 0, .1) 25%, 
+		transparent 25%, 
+		transparent 50%, 
+		rgba(0, 0, 0, .1) 50%, 
+		rgba(0, 0, 0, .1) 75%, 
+		transparent 75%, 
+		transparent
+	);
+	z-index: 10;
+	background-size: 50px 50px;
+	animation: move 2s linear infinite;
+}
+
+/* Page structure */
+.columns {
+    white-space:            nowrap;
+}
+.columns > div {
+	float: 					left;
+    display:                inline-block;
+}
+/*.columns > div:not(:last-child) {
+	border-right:			1px solid lightgrey;
+}*/
+.columns::after {
+    clear:					both;
+	content:				"";
+    display:				table;
+}
+
+
+span.code {
+    font-family:            monospace;
+    white-space:            pre-wrap;
+}
+
+/* Online / Offline styles */
+.offline-only {
+    display:                none;
+}
+body.online .offline-only {
+    display:                none !important;
+}
+div.online-only, boldy.online div.online-only {
+    display:                block;
+}
+table .online-only, boldy.online table .online-only {
+    display:                table-cell;
+}
+body.offline div.offline-only {
+    display:                block;
+}
+body.offline table .offline-only {
+    display:                table-cell;
+}
+body.offline .online-only {
+    display:                none !important;
+}
+.notification {
+    background:             #fff2a8;
+    border:                 2px solid #f0e0a0;
+    border-radius:          5px;
+    padding:                10px;
+    color:                  black;
+    white-space:            normal;
+    position:               fixed;
+    text-align:             center;
+    z-index:                2000;
+}
+.notification.top {
+    top:                    10px;
+    left:                   40%;
+    right:                  40%;
+}
+.notification.bottom {
+    bottom:                 10px;
+    left:                   40%;
+    right:                  40%;
+}

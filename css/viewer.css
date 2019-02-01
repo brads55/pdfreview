@@ -1,0 +1,806 @@
+/*
+ * Style file for the Review tool
+ * This file contains styles specific to the review screen.
+ * Francois Botman, 2017.
+ */
+
+* {
+    padding:                0;
+    margin:                 0;
+}
+
+html, #content-container {
+    height:                 100%;
+    width:                  100%;
+}
+
+body {
+    font-family:            "Roboto";
+    padding:                0px;
+    margin:                 0px;
+    height:                 100%;
+    width:                  100%;
+    background-color:       #f5f5f5;
+    background-image:       url(../img/texture.png);
+    overflow:               hidden;
+}
+
+input, textarea {
+    padding:                3px 6px;
+    margin:                 4px 0 4px 0;
+    border-radius:          2px;
+    background-color:       hsla(0,0%,100%,.09);
+    background-image:       linear-gradient(hsla(0,0%,100%,.05), hsla(0,0%,100%,0));
+    background-clip:        padding-box;
+    border:                 1px solid hsla(0,0%,0%,.35);
+    border-color:           hsla(0,0%,0%,.32) hsla(0,0%,0%,.38) hsla(0,0%,0%,.42);
+    box-shadow:             0 1px 0 hsla(0,0%,0%,.05) inset,
+                            0 1px 0 hsla(0,0%,100%,.05);
+    color:                  hsl(0,0%,95%);
+    outline-style:          none;
+}
+input[type="checkbox"] {
+    position:               relative;
+    top:                    2px;
+}
+input:focus, textarea:focus {
+    background-color:       hsla(0,0%,100%,.15);
+    border-color:           hsla(204,100%,65%,.8) hsla(204,100%,65%,.85) hsla(204,100%,65%,.9);
+}
+textarea {
+    width:                  100%;
+    min-height:             50px;
+}
+
+.toolbar {
+    display:                block;
+    width:                  100%;
+    height:                 32px;
+    background-color:       #009fc1;
+    box-shadow:             0 1px 0 hsla(0,0%,0%,.15),
+                            0 1px 1px hsla(0,0%,0%,.1);
+    overflow:               hidden;
+}
+
+.button {
+    display:                inline-block;
+    height:                 25px;
+    min-width:              25px;
+    margin:                 3px;
+    padding:                3px;
+    text-align:             center;
+    background-color:       rgba(255, 255, 255, 0);
+    border:                 1px solid #0080A0;
+    box-shadow:             0 1px 0 hsla(0,0%,100%,.05) inset,
+                            0 0 1px hsla(0,0%,100%,.15) inset,
+                            0 1px 0 hsla(0,0%,100%,.05);
+    border-radius:          2px;
+    cursor:                 default;
+    background-position:    center;
+    background-repeat:      no-repeat;
+}
+.button.left {
+    margin-right:               0px;
+    border-top-right-radius:    0px;
+    border-bottom-right-radius: 0px;
+    border-right:               none;
+}
+.button.middle {
+    margin:                     3px 0px;
+    border-radius:              0px;
+    border-right:               none;
+}
+.button.right {
+    margin-left:                0px;
+    border-top-left-radius:     0px;
+    border-bottom-left-radius:  0px;
+}
+.button.active {
+    background-color:       rgba(0, 0, 0, 0.5);
+}
+.button:hover {
+    background-color:       rgba(255, 255, 255, 0.1);
+}
+.button.active:hover {
+    background-color:       rgba(255, 255, 255, 0.5);
+}
+select.button {
+    font-size:              12px;
+    border:                 0;
+    outline:                0;
+}
+select.button * {
+    color:                  black;
+}
+
+
+.sidebar, .mainbar {
+    display:                block;
+    height:                 100%;
+}
+.sidebar > div {
+    box-shadow:             inset 1px  0 0 hsla(0,0%,100%,.05),
+                            inset -1px 0 0 hsla(0,0%,0%,.25);
+}
+.sidebar > div:last-child {
+    height:                 100%;
+    height:                 calc(100% - 32px);
+    padding:                3px;
+}
+
+.resizer {
+    display:                block;
+    height:                 100%;
+    width:                  5px;
+    top:                    0px;
+    position:               absolute;
+    cursor:                 col-resize;
+    background:             transparent;
+}
+.resizer.active {
+    background:             #808080;
+}
+
+.modal {
+    display:                table;
+    position:               absolute;
+    top:                    0px;
+    left:                   0px;
+    width:                  100%;
+    height:                 100%;
+    background-color:       hsla(0,0%,0%,.2);
+    z-index:                40000;
+}
+.modal > div {
+    display:                table-cell;
+    vertical-align:         middle;
+    text-align:             center;
+}
+.modal .dialog {
+    display:                inline-block;
+    padding:                20px 10px;
+    background-color:       #009fc1;
+    background-image:       url(../img/texture.png);
+    border-radius:          4px;
+    color:                  #f0f0f0;
+    font-size:              12px;
+    line-height:            14px;
+    max-width:              50%;
+}
+.dialog hr {
+    display:                block;
+    margin:                 4px 0 4px 0;
+    height:                 1px;
+    width:                  100%;
+    background-color:       hsla(0,0%,0%,.5);
+    box-shadow:             0 0 0 1px hsla(0,0%,100%,.08);
+    border:                 0;
+}
+.dialog .button {
+    padding:                2px 10px;
+    line-height:            16pt !important;
+}
+.dialog a, .tool a {
+    cursor:                 pointer;
+    color:                  lightskyblue;
+}
+
+.tool {
+    position:               absolute;
+    z-index:                10000;
+    min-height:             32px;
+    min-width:              16px;
+    padding:                8px;
+    color:                  #f0f0f0;
+    font-size:              12px;
+    line-height:            14px;
+    text-align:             left;
+    cursor:                 default;
+    border-radius:          2px;
+    box-shadow:             0 1px 4px rgba(0, 0, 0, 0.3);
+    background-color:       #009fc1;
+    background-image:       url(../img/texture.png);
+}
+.tool:before, .tool:after {
+    width:                  0;
+    height:                 0;
+    left:                   5px;
+    content:                " ";
+    position:               absolute;
+	border-style:           solid;
+    border-width:           0 7.5px 10px 7.5px;
+}
+.tool:before {
+    top:                    -10px;
+	border-color:           transparent transparent #0395b5 transparent;
+}
+.tool:after {
+    top:                    -8px;
+    border-color:           transparent transparent #0399b9 transparent;
+}
+
+.page {
+    background-color:       white;
+    width:                  500px;
+    height:                 500px;
+    margin:                 5px auto;
+    box-shadow:             0px 0px 14px rgba(0,0,0,0.2);
+    position:               relative;
+}
+.textLayer ::selection { background: rgba(0,0,255, 0.3); }
+.textLayer ::-moz-selection { background: rgba(0,0,255, 0.3); }
+.page.highlight-tool .textLayer ::selection { background: #06cc43; }
+.page.highlight-tool .textLayer ::-moz-selection { background: #06cc43; }
+.reviewLayer div.highlight, .page div.highlight-rectangle, .annotationLayer .highlightAnnotation {
+    opacity:                0.7;
+    background:             #06cc43;
+}
+.page div.highlight-rectangle {
+    border:                 2px solid #f0e0a0;
+}
+.page.strike-tool .textLayer ::selection { background: #ffb7b7; }
+.page.strike-tool .textLayer ::-moz-selection { background: #ffb7b7; }
+.reviewLayer div.strike, .annotationLayer .strikeoutAnnotation {
+    opacity:                0.7;
+    background:             #ffb7b7;
+}
+.reviewLayer div.comment, .annotationLayer .textAnnotation {
+    background-image:       url(../img/comment-annotation.png);
+    background-size:        contain;
+    background-repeat:      no-repeat;
+    width:                  32px;
+    height:                 32px;
+    margin-left:            -16px;
+    margin-top:             -16px;
+}
+
+.textLayer, .page div.highlight-rectangle {
+    position:               absolute;
+    left:                   0;
+    top:                    0;
+    right:                  0;
+    bottom:                 0;
+    overflow:               hidden;
+    line-height:            1.0;
+}
+.textLayer > div {
+    color:                  transparent;
+    position:               absolute;
+    white-space:            pre;
+    -webkit-transform-origin:   0% 0%;
+    -moz-transform-origin:      0% 0%;
+    -o-transform-origin:        0% 0%;
+    -ms-transform-origin:       0% 0%;
+    transform-origin:           0% 0%;
+}
+.page.default-tool > div {
+    cursor:                 text;
+}
+.page.highlight-tool > div {
+    cursor:                 copy;
+}
+.page.rectangle-tool > div {
+    cursor:                 cell;
+}
+.page.strike-tool > div {
+    cursor:                 copy;
+}
+.page.comment-tool > div {
+    cursor:                 crosshair;
+}
+.page.grab-tool > div {
+    cursor:                 -moz-grab;
+    cursor:                 -webkit-grab;
+    cursor:                 grab;
+}
+.page.grab-tool.grabbing > div {
+    cursor:                 -moz-grabbing;
+    cursor:                 -webkit-grabbing;
+    cursor:                 grabbing;
+}
+
+.textLayer .endOfContent {
+    display:                block;
+    position:               absolute;
+    left:                   0px;
+    top:                    100%;
+    right:                  0px;
+    bottom:                 0px;
+    z-index:                -1;
+    cursor:                 default;
+    -webkit-user-select:    none;
+    -ms-user-select:        none;
+    -moz-user-select:       none;
+}
+
+.textLayer .endOfContent.active {
+    top:                    0px;
+}
+
+.textLayer .searchResult > b {
+    background-color:       green;
+    border:                 5px solid green;
+    margin:                 -5px;
+    border-radius:          10px;
+    opacity:                0.7;
+}
+.textLayer .searchResult.selected > b {
+    background-color:       lightgreen;
+    border:                 5px solid lightgreen;
+}
+
+
+.annotationLayer section {
+  position: absolute;
+}
+
+.annotationLayer .linkAnnotation > a {
+  position: absolute;
+  font-size: 1em;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.annotationLayer .linkAnnotation > a /* -ms-a */  {
+  background: url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7") 0 0 repeat;
+}
+
+.annotationLayer .linkAnnotation > a:hover {
+  opacity: 0.2;
+  background: #ff0;
+  box-shadow: 0px 2px 10px #ff0;
+}
+
+.annotationLayer .textAnnotation img {
+  position: absolute;
+}
+
+.annotationLayer .textWidgetAnnotation input,
+.annotationLayer .textWidgetAnnotation textarea,
+.annotationLayer .choiceWidgetAnnotation select,
+.annotationLayer .buttonWidgetAnnotation.checkBox input,
+.annotationLayer .buttonWidgetAnnotation.radioButton input {
+  background-color: rgba(0, 54, 255, 0.13);
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  font-size: 9px;
+  height: 100%;
+  padding: 0 3px;
+  vertical-align: top;
+  width: 100%;
+}
+
+.annotationLayer .textWidgetAnnotation textarea {
+  font: message-box;
+  font-size: 9px;
+  resize: none;
+}
+
+.annotationLayer .textWidgetAnnotation input[disabled],
+.annotationLayer .textWidgetAnnotation textarea[disabled],
+.annotationLayer .choiceWidgetAnnotation select[disabled],
+.annotationLayer .buttonWidgetAnnotation.checkBox input[disabled],
+.annotationLayer .buttonWidgetAnnotation.radioButton input[disabled] {
+  background: none;
+  border: 1px solid transparent;
+  cursor: not-allowed;
+}
+
+.annotationLayer .textWidgetAnnotation input:hover,
+.annotationLayer .textWidgetAnnotation textarea:hover,
+.annotationLayer .choiceWidgetAnnotation select:hover,
+.annotationLayer .buttonWidgetAnnotation.checkBox input:hover,
+.annotationLayer .buttonWidgetAnnotation.radioButton input:hover {
+  border: 1px solid #000;
+}
+
+.annotationLayer .textWidgetAnnotation input:focus,
+.annotationLayer .textWidgetAnnotation textarea:focus,
+.annotationLayer .choiceWidgetAnnotation select:focus {
+  background: none;
+  border: 1px solid transparent;
+}
+
+.annotationLayer .textWidgetAnnotation input.comb {
+  font-family: monospace;
+  padding-left: 2px;
+  padding-right: 0;
+}
+
+.annotationLayer .textWidgetAnnotation input.comb:focus {
+  /*
+   * Letter spacing is placed on the right side of each character. Hence, the
+   * letter spacing of the last character may be placed outside the visible
+   * area, causing horizontal scrolling. We avoid this by extending the width
+   * when the element has focus and revert this when it loses focus.
+   */
+  width: 115%;
+}
+
+.annotationLayer .buttonWidgetAnnotation.checkBox input,
+.annotationLayer .buttonWidgetAnnotation.radioButton input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+}
+
+.annotationLayer .popupWrapper {
+  position: absolute;
+  width: 20em;
+}
+
+.annotationLayer .popup {
+  position: absolute;
+  z-index: 200;
+  max-width: 20em;
+  background-color: #FFFF99;
+  box-shadow: 0px 2px 5px #333;
+  border-radius: 2px;
+  padding: 0.6em;
+  margin-left: 5px;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: auto;
+}
+
+.annotationLayer .popup h1 {
+  font-size: 1em;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 0.2em;
+}
+
+.annotationLayer .popup p {
+  padding-top: 0.2em;
+}
+
+.page.default-tool .annotationLayer .underlineAnnotation,
+.page.default-tool .annotationLayer .squigglyAnnotation,
+.page.default-tool .annotationLayer .fileAttachmentAnnotation {
+  cursor: pointer;
+}
+.annotationLayer .underlineAnnotation,
+.annotationLayer .squigglyAnnotation {
+    border-bottom:          1px solid blue;
+}
+
+.reviewLayer div {
+    position:               absolute;
+    display:                block;
+}
+.page.default-tool .reviewLayer div {
+    cursor:                 pointer;
+}
+.reviewLayer div.finder {
+    display:                none;
+    border-radius:          20px;
+    border:                 5px solid #009fc1;
+}
+
+.review-comment {
+    padding:                2px;
+    white-space:            pre-wrap;
+    cursor:                 pointer;
+    color:                  #0c0c0c;
+    border-radius:          2px;
+    transition:             background-color 0.2s;
+}
+.review-comment.topLevel {
+    border-top:             1px solid gray;
+}
+.review-comment:not(.topLevel) {
+    border-left:            2px solid gray;
+    padding-left:           5px;
+    margin-top:             10px;
+    margin-bottom:          10px;
+}
+.review-comment:first-child {
+    margin-top:             10px;
+    border-top:             5px solid lightgrey !important;
+    border-top-left-radius: 0;
+    border-top-right-radius:0;
+}
+.review-comment > span.status {
+    padding-left:           5px;
+    font-size:              12px;
+    color:                  gray;
+}
+.review-comment > span.actions {
+    font-size:              12px;
+    line-height:            12px;
+    display:                none;
+}
+.review-comment.selected > span.actions {
+    display:                inline;
+}
+.review-comment > b {
+    font-size:              12px;
+    line-height:            12px;
+    color:                  #009fc1;
+}
+.review-comment.selected {
+    background-color:       #ffffe0;
+    border:                 1px solid #dfd8c2;
+    color:                  black;
+}
+.review-comment.new {
+    border-left:            10px solid yellowgreen;
+}
+.review-comment.unsynchronised {
+    border-right:           10px solid rgba(0,100,255,0.2);
+}
+.review-comment > div.review-comment {
+    margin-left:            20px;
+}
+.review-comment.has-child::before, #sidebar-left-bookmarks .bookmark-link.has-child::before {
+    content:                "\25BC ";
+    font-size:              12px;
+    line-height:            12px;
+}
+.review-comment.collapsed.has-child::before, #sidebar-left-bookmarks .bookmark-link.collapsed.has-child::before {
+    content:                "\25BA ";
+    font-size:              12px;
+    line-height:            12px;
+}
+.review-comment.collapsed > div.review-comment, #sidebar-left-bookmarks .bookmark-link.collapsed > div {
+    display:                none;
+}
+
+#sidebar-left-bookmarks .bookmark-link, #sidebar-left-search-results > div {
+    padding:                2px;
+    cursor:                 pointer;
+    color:                  #2f2f2f;
+    font-size:              12px;
+}
+
+#sidebar-left-bookmarks .bookmark-link > div{
+    margin-left:            20px;
+}
+
+.progress {
+    position:               absolute;
+    left:                   0px;
+    top:                    32px;
+    height:                 5px;
+    background-color:       #0084aa;
+    border-bottom:          2px solid #00A0C0;
+}
+
+#pdfview {
+    height:                 100%;
+    height:                 calc(100% - 32px);
+    padding:                5px;
+    overflow:               auto;
+}
+
+.page div.sticker {
+    position:               absolute;
+    top:                    -40px;
+    height:                 128px;
+    left:                   -40px;
+    width:                  128px;
+    -webkit-transform:      rotate(-45deg);
+    -moz-transform:         rotate(-45deg);
+    -o-transform:           rotate(-45deg);
+    -ms-transform:          rotate(-45deg);
+    transform:              rotate(-45deg);
+    background-image:       url(../img/closed-icon.png);
+    background-size:        contain;
+    background-repeat:      no-repeat;
+    background-position:    center center;
+}
+
+#pageBrowser {
+    color:                  hsl(0,0%,85%);
+    font-size:              10px;
+    padding:                3px 8px;
+}
+#pageBrowser > input {
+    width:                  35px;
+    text-align:             right;
+    font-size:              10px;
+}
+
+#sidebar-right-container, #sidebar-left {
+    overflow-x:             hidden;
+    overflow-y:             auto;
+    font-size:              14px;
+}
+
+#sidebar-left-search-results > div {
+    margin:                 2px;
+    text-overflow:          ellipsis;
+    width:                  100%;
+    overflow:               hidden;
+}
+#sidebar-left-search-results > div > B {
+    color:                  #009fc1;
+}
+
+.search-placeholder {
+    padding-top:            50px;
+    text-align:             center;
+    font-style:             italic;
+}
+.search-placeholder:not(:only-child) {
+    display:                none;
+}
+
+#comment-placeholder-status label, #comment-placeholder-reviewers label {
+    padding-right:          15px;
+    padding-left:           3px;
+}
+#dialog-comment-filters table {
+    border-spacing:         20px;
+}
+#dialog-comment-filters td:first-child {
+    font-size:              1.2em;
+}
+#comment-status-msg {
+    font-size:              12px;
+    text-align:             center;
+    font-style:             italic;
+}
+#comment-status-loading {
+    font-size:              16px;
+    text-align:             center;
+}
+
+#ui-logo-tool > div {
+    padding:                5px;
+    border-bottom:          1px solid rgba(255, 255, 255, 0.2);
+}
+#ui-logo-tool > div.link {
+    cursor:                 pointer;
+}
+#ui-logo-tool > div.link:hover {
+    background:             rgba(0, 0, 0, 0.2);
+}
+#ui-logo-tool > div:last-child {
+    border-bottom:          none;
+}
+#ui-logo-tool div.colour-option {
+    display:                inline-block;
+    width:                  10px;
+    height:                 10px;
+    border-radius:          2px;
+    cursor:                 pointer;
+}
+
+#archive-pdf-download {
+    width:                  100%;
+    padding:                50px;    
+    border-radius:          20px;
+}
+#archive-pdf-download.ready {
+    cursor:                 pointer;
+    background-color:       rgba(0, 0, 0, 0.2);
+    background-image:       url(../img/pdf.png);
+    background-repeat:      no-repeat;
+    background-size:        contain;
+    background-position:    0px center;
+}
+#archive-pdf-download.failed {
+    background:             rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar {
+    width:                  9px;
+    height:                 9px;
+}
+::-webkit-scrollbar-button {
+    width:                  0px;
+    height:                 0px;
+}
+::-webkit-scrollbar-thumb {
+    background:             #f0f0f0;
+    border:                 0px none #ffffff;
+    border-radius:          50px;
+}
+::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:active {
+    background:             #ffffff;
+}
+::-webkit-scrollbar-track {
+    background:             #c0c0c0;
+    border:                 0px none #ffffff;
+}
+::-webkit-scrollbar-track:hover, ::-webkit-scrollbar-track:active {
+    background:             #666666;
+}
+::-webkit-scrollbar-corner {
+    background:             transparent;
+}
+
+/* The palette tool selector */
+.palette {
+    width:                      200px;
+    height:                     200px;
+    border-radius:              100px;
+    position:                   absolute;
+    left:                       200px;
+    top:                        200px;
+    z-index:                    10000;
+    display:                    none;
+    cursor:                     pointer !important;
+}
+.palette > div {
+    background-color:           #333;
+    background-position:        center;
+    background-repeat:          no-repeat;
+    display:                    block;
+    width:                      100px;
+    height:                     100px;
+    position:                   absolute;
+    border:                     1px solid white;
+    cursor:                     pointer !important;
+}
+.palette > div:hover {
+    background-color:           #999;
+}
+.palette .tl {
+    top:                        0px;
+    left:                       0px;
+    border-top-left-radius:     100px;
+}
+.palette .tr {
+    top:                        0px;
+    left:                       100px;
+    border-top-right-radius:    100px;
+}
+.palette .br {
+    top:                        100px;
+    left:                       100px;
+    border-bottom-right-radius: 100px;
+}
+.palette .bl {
+    top:                        100px;
+    left:                       0px;
+    border-bottom-left-radius:  100px;
+}
+.palette .centre {
+    width:                      50px;
+    height:                     50px;
+    top:                        75px;
+    left:                       75px;
+    border-radius:              25px;
+    border:                     2px solid white;
+}
+.palette .tl > div, .palette .br > div, .palette .bl > div, .palette .tr > div {
+    position:                   relative;
+    color:                      white;
+    text-align:                 center;
+    overflow:                   hidden;
+}
+.palette .tl > div, .palette .br > div {
+    transform:                  rotate(-45deg);
+}
+.palette .bl > div, .palette .tr > div {
+    transform:                  rotate(45deg);
+}
+.palette .tl > div {
+    left:                       10px;
+    top:                        50px;
+}
+.palette .br > div {
+    left:                       -10px;
+    top:                        30px;
+}
+.palette .bl > div {
+    left:                       10px;
+    top:                        30px;
+}
+.palette .tr > div {
+    left:                       -10px;
+    top:                        50px;
+}
+#palette-status {
+    position:                   absolute;
+    width:                      200px;
+    z-index:                    10000;
+    display:                    none;
+    text-align:                 center;
+    text-shadow:                0px 0px 2px #fff;
+    font-weight:                500;
+}

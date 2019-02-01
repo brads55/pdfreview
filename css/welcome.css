@@ -1,0 +1,59 @@
+/*
+ * Style file for the PDF Review tool
+ * This file contains styles specific to the welcome screen.
+ * Francois Botman, 2017.
+ */
+
+body {
+	font-family:			"Roboto";
+	padding:				100px;
+}
+
+#banner {
+	font-size:				50px;
+	font-weight:			200;
+	margin-bottom:			50px;
+	cursor:					default;
+}
+
+#drag-to-upload {
+	margin:					10px;
+	padding:				10%;
+	color:					gray;
+	font-size:				1.2em;
+	border-radius:			30px;
+	text-align:				center;
+	border:					5px dashed lightgray;
+	cursor:					pointer;
+    overflow:               hidden;
+    text-overflow:          ellipsis;
+}
+
+#drag-to-upload.active {
+	background-color:		#fff2a8;
+}
+
+.review-list {
+    border-collapse:        collapse;
+    display:                block;
+    table-layout:           fixed;
+    overflow:               auto;
+}
+.review-list td {
+    color:                  #5c5e87;
+    padding:                10px;
+    font-size:              0.8em;
+}
+.review-list td:first-child {
+    font-size:              1.0em;
+}
+.review-list td.has-border {
+    border-left:            1px solid #dad9de;
+}
+.review-list tr:nth-child(2) {
+    background:             #ebebeb;
+}
+.review-list tr:hover {
+    background:             #f0f0f0;
+}
+

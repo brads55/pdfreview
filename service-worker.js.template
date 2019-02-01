@@ -1,0 +1,48 @@
+/*
+ * Javascript functions to handle offline mode.
+ * When supported by a browser, this service worker provides the same
+ * functionality as the applicationcache, but in a non-deprecated manner.
+ * Francois Botman, 2017.
+ */
+
+var offline_handler = self;
+var root = (function() {
+  var tokens = (self.location + '').split('/');
+  tokens[tokens.length - 1] = '';
+  return tokens.join('/');
+})();
+
+
+// Version information (for updating this file):
+%VERSION_DIFF%
+
+offline_handler.addEventListener('install', function(event) {
+    event.waitUntil(
+        caches.open('v1').then(function(cache) {
+            return cache.addAll([
+                %OFFLINE_FILE_LIST%
+            ]);
+        })
+    );
+});
+
+
+offline_handler.addEventListener('fetch', function(event) {
+    // Always try to load from the cache first, otherwise fetch via network
+    // Cache lookups ony work with GET
+    if(event.request.method == "GET") {
+        event.respondWith(caches.match(event.request).then(function(response) {
+            if(response) return response;
+            else return fetch(event.request).then(function(response) {
+                // Also add to the cache if we have fetched something new :)
+                return caches.open('v1').then(function(cache) {
+                    if(response) cache.put(event.request, response.clone());
+                    return response;
+                });
+            });
+        }));
+    }
+    else {
+        event.respondWith(fetch(event.request));
+    }
+});
