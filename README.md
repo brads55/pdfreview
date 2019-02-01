@@ -37,3 +37,5 @@ The tool is currently functional and is ready to be used. There are a
 number of limitations that are currently being worked on. See the issues
 list for more details.
 
+Just for informtation:
+[![Codefactor](https://www.codefactor.io/repository/github/franchie/pdfreview/badge)](https://www.codefactor.io/repository/github/franchie/pdfreview)
