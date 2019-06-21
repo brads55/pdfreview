@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!bin/python
 
 
 # This allows joining existing reviews and
@@ -66,7 +66,6 @@ def gen_random_string(size=128):
     return ''.join(random.choice(chars) for x in range(size))
 
 def string_sanitiser(txt, mode="replace"):
-    txt = txt.decode("utf-8", "replace").encode("ascii", mode)
     return "".join(txt.split("\x00"))
 
 def escape_ps(txt):
@@ -259,7 +258,7 @@ def list_my_reviews(db):
 #
 if(form_api == "add-comment"):
     print("Content-type: application/json\n")
-    if not form.has_key("comment"):
+    if not "comment" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: comment JSON :("}')
         sys.exit(0)
     if not form_review:
@@ -307,7 +306,7 @@ if(form_api == "add-comment"):
 
 if(form_api == "delete-comment"):
     print("Content-type: application/json\n")
-    if not form.has_key("commentid"):
+    if not "commentid" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: commentID :("}')
         sys.exit(0)
     if not form_review:
@@ -332,10 +331,10 @@ if(form_api == "delete-comment"):
 
 if(form_api == "update-comment-status"):
     print("Content-type: application/json\n")
-    if not form.has_key("commentid"):
+    if not "commentid" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: commentID :("}')
         sys.exit(0)
-    if not form.has_key("status"):
+    if not "status" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: status :("}')
         sys.exit(0)
     if not form_review:
@@ -354,10 +353,10 @@ if(form_api == "update-comment-status"):
 
 if(form_api == "update-comment-message"):
     print("Content-type: application/json\n")
-    if not form.has_key("commentid"):
+    if not "commentid" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: commentID :("}')
         sys.exit(0)
-    if not form.has_key("message"):
+    if not "message" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: message :("}')
         sys.exit(0)
     if not form_review:
@@ -389,7 +388,7 @@ if(form_api == "list-comments"):
     db = db_open()
     comments = list_comments(db, form_review)
     db_close(db)
-    print("""{"errorCode": 0, "errorMsg": "Success", "comments": %s}""" % (json.dumps(comments, encoding='latin1'),))
+    print("""{"errorCode": 0, "errorMsg": "Success", "comments": %s}""" % (json.dumps(comments),))
     sys.exit(0)
 
 if(form_api == "user-mark-comment"):
@@ -397,10 +396,10 @@ if(form_api == "user-mark-comment"):
     if not form_review:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
-    if not form.has_key("id"):
+    if not "id" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: commentID :("}')
         sys.exit(0)
-    if (not form.has_key("as")) or (not form.getvalue("as") in ["read", "unread"]):
+    if (not "as" in form) or (not form.getvalue("as") in ["read", "unread"]):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: mark state :("}')
         sys.exit(0)
 
@@ -512,7 +511,7 @@ if(form_api == "pdf-archive"):
             "-sOutputFile=" + archivefile,
             "-sDEVICE=pdfwrite",
             "-dPDFSETTINGS=/prepress"]
-    if form.has_key("password"):
+    if "password" in form:
         cmd.append("-sPDFPassword=" + cgi.escape(form.getvalue("password")))
         cmd.append("-sOwnerPassword=" + cgi.escape(form.getvalue("password")))
         cmd.append("-sUserPassword=" + cgi.escape(form.getvalue("password")))
@@ -566,7 +565,7 @@ if(form_api):
 #
 # Generate RSS feed ----------------------------------------------------------------------------------
 #
-if form.has_key("rss"):
+if "rss" in form:
     reviewId = form.getvalue("rss")
     print("Content-type: application/rss+xml\n")
     print('<?xml version="1.0" encoding="UTF-8" ?>')
@@ -603,7 +602,7 @@ if form.has_key("rss"):
 #
 # Offline application --------------------------------------------------------------------------------
 #
-if form.has_key("manifest"):
+if "manifest" in form:
     appcache = form.getvalue("manifest") == "appcache"
     svworker = form.getvalue("manifest") == "serviceworker"
     
@@ -680,7 +679,7 @@ if form.has_key("manifest"):
 if(form_action == "upload"):
     """PDF file upload requested"""
     print("Content-type: application/json\n")
-    if not form.has_key("file"):
+    if not "file" in form:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: file key :("}')
         sys.exit(0)
 
