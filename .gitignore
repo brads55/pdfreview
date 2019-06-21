@@ -3,3 +3,11 @@ pdfs/*
 *.pyc
 config.py
 docs/*
+
+# Python venv
+lib/*
+lib64
+bin/*
+share/*
+pyvenv.cfg
+
