@@ -17,11 +17,12 @@ import random
 from subprocess import Popen, PIPE
 import MySQLdb
 
-# DEV ONLY:
-# import cgitb
-# cgitb.enable()
-
 import config
+
+if config.config["debug"]:
+    import cgitb
+    cgitb.enable()
+
 
 form = cgi.FieldStorage()
 form_api    = form.getvalue("api")

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!bin/python
 
 # Create initial database tables
 # PDF Review tool, created by Francois Botman, 2017.
@@ -14,11 +14,12 @@ import string
 import random
 import MySQLdb
 
-# DEV ONLY:
-# import cgitb
-# cgitb.enable()
-
 import config
+
+if config.config["debug"]:
+    import cgitb
+    cgitb.enable()
+
 
 
 def db_open():

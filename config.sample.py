@@ -8,7 +8,8 @@ config = {
     "db_user":              "<sql user>",
     "db_passwd":            "<sql pwd>",
     "db_name":              "<sql db>",
-    "ghostscript_path":     "/path/to/gs"
+    "ghostscript_path":     "/path/to/gs",
+    "debug":                False
 }
 
 import os
