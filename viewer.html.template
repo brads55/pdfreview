@@ -19,8 +19,20 @@
     <SCRIPT language="javascript" src="js/jquery-3.2.0.min.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/dexie.min.js"></SCRIPT>
 	<SCRIPT language="javascript" src="js/pdf.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/app_common.min.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/app_viewer.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/comment-manager.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/material.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/modal-tool.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/viewer.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/hasher.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/link-service.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/modal-dialog.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/mousetools.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/search-service.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/sidebar-resizer.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ui-helper.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/pdf-review-app.js"></SCRIPT>
     <SCRIPT language="javascript">pdfURL = '%REVIEW_PDF_URL%';reviewId = '%REVIEW_PDF_ID%';scriptURL = '%SCRIPT_URL%';</SCRIPT>
     <META charset="UTF-8" />
 </HEAD>
