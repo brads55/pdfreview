@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<HTML manifest="%SCRIPT_URL%?manifest=appcache">
+<HTML>
 <HEAD>
     <TITLE>Review: %REVIEW_PDF_TITLE%</TITLE>
     <LINK type="text/css" rel="stylesheet" href="css/common.css" media="screen,projection" />
 	<LINK type="text/css" rel="stylesheet" href="css/viewer.css" media="screen,projection" />
     <!-- <link rel="alternate" type="application/rss+xml" title="RSS updates for this review" href="/?rss=%REVIEW_PDF_ID%" /> -->
     <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
-    <LINK rel="manifest" href="manifest.json" />
     <NOSCRIPT>
         <STYLE>html{display:none;}</STYLE>
         <META http-equiv="refresh" content="0.0;url=unsupported.html">

@@ -213,16 +213,16 @@ function Server() {
     $('#offline-status-text').hide();
 
     // Add ApplicationCache events
-    if(window.applicationCache) {
-        window.applicationCache.addEventListener("checking", function() {offlineCacheStatus("downloading");});
-        window.applicationCache.addEventListener("noupdate", function() {offlineCacheStatus("ready");});
-        window.applicationCache.addEventListener("downloading", function() {offlineCacheStatus("downloading");});
-        window.applicationCache.addEventListener("progress", function() {offlineCacheStatus("downloading");});
-        window.applicationCache.addEventListener("cached", function() {offlineCacheStatus("ready");});
-        window.applicationCache.addEventListener("updateready", function() {offlineCacheStatus("ready");});
-        window.applicationCache.addEventListener("obsolete", function() {offlineCacheStatus("error");});
-        window.applicationCache.addEventListener("error", function() {offlineCacheStatus("error");});
-    }
+    // if(window.applicationCache) {
+    //     window.applicationCache.addEventListener("checking", function() {offlineCacheStatus("downloading");});
+    //     window.applicationCache.addEventListener("noupdate", function() {offlineCacheStatus("ready");});
+    //     window.applicationCache.addEventListener("downloading", function() {offlineCacheStatus("downloading");});
+    //     window.applicationCache.addEventListener("progress", function() {offlineCacheStatus("downloading");});
+    //     window.applicationCache.addEventListener("cached", function() {offlineCacheStatus("ready");});
+    //     window.applicationCache.addEventListener("updateready", function() {offlineCacheStatus("ready");});
+    //     window.applicationCache.addEventListener("obsolete", function() {offlineCacheStatus("error");});
+    //     window.applicationCache.addEventListener("error", function() {offlineCacheStatus("error");});
+    // }
 
     // Disabling the use of service workers for two reasons:
     // 1) Cookies cannot be sent along with requests, which defeats authentication
