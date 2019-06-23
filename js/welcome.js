@@ -159,11 +159,12 @@ $( document ).ready(function() {
                 db.reviews.bulkPut(p.reviews).then(updateReviewList);
             });
         }
+        else {
+            // Ideally we'd like to only show the list once. But if we're uploading
+            // a lot of offline data this introduces a UI lag that prevents the list being displayed.
+            // So let's always display it here, even if that sometimes produces a bizarre flashing in the
+            // UI as it is updated again.
+            updateReviewList();
+        }
     }});
-    // Ideally we'd like to only show the list once. But if we're uploading
-    // a lot of offline data this introduces a UI lag that prevents the list being displayed.
-    // So let's always display it here, even if that sometimes produces a bizarre flashing in the
-    // UI as it is updated again.
-    updateReviewList();
-    
 });
