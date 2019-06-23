@@ -153,7 +153,7 @@ SearchToolUI.prototype.highlight = function(id, resultObj) {
     self.pdfApp.getPageText(resultObj.pageId).then(function(textCotent) {
         var viewport = container.viewport;
         var div      = document.createElement("DIV");
-        var tx       = PDFJS.Util.transform(viewport.transform, resultObj.transform);
+        var tx       = pdfjsLib.Util.transform(viewport.transform, resultObj.transform);
         var angle    = Math.atan2(tx[1], tx[0]);
         var style    = textCotent.styles[resultObj.fontName];
         div.id       = "search-result-" + id;

@@ -10,14 +10,15 @@ function PDFReviewApplication(pdfUrl, config) {
         zoomIncrement:      0.25
     }
     if(this.config.destroyRadius < this.config.preloadRadius) this.config.destroyRadius = this.config.preloadRadius - 1;
-    
-    PDFJS.imageResourcesPath = './img/';
-    PDFJS.workerSrc          = 'js/pdf.worker.js';
-    PDFJS.cMapUrl            = 'cmaps/';
-    PDFJS.cMapPacked         = true;
-    PDFJS.disableWebGL       = false;
-    PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
-    PDFJS.verbosity          = PDFJS.VERBOSITY_LEVELS.errors;
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js'
+    // PDFJS.imageResourcesPath = './img/';
+    // PDFJS.workerSrc          = 'js/pdf.worker.js';
+    // PDFJS.cMapUrl            = 'cmaps/';
+    // PDFJS.cMapPacked         = true;
+    // PDFJS.disableWebGL       = false;
+    // PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
+    // PDFJS.verbosity          = PDFJS.VERBOSITY_LEVELS.errors;
 
     this.pdfUrl         = pdfUrl;
     this.progressbar    = $(document.body.appendChild(document.createElement("DIV"))).addClass("progress").css("width", "0px");
@@ -30,12 +31,12 @@ function PDFReviewApplication(pdfUrl, config) {
 PDFReviewApplication.prototype.loadPDF = function() {
     var self = this;
     return new Promise(function(resolve) {
-        var load = PDFJS.getDocument(self.pdfUrl);
+        var load = pdfjsLib.getDocument(self.pdfUrl);
 
         // Incorrect password, ask for a new one.
         load.onPassword = function(updatePassword, reason) {
             self.isPasswordProtected = true;
-            if(reason == PDFJS.PasswordResponses.INCORRECT_PASSWORD) $('#password-reason').html('<SPAN style="color:red;">The specified password is incorrect.</SPAN>')
+            if(reason == pdfjsLib.PasswordResponses.INCORRECT_PASSWORD) $('#password-reason').html('<SPAN style="color:red;">The specified password is incorrect.</SPAN>')
             new ModalDialog("dialog-password", function(dialog, button) {
                 var password = $('#password-prompt').val()
                 if($(button).data("button") != "submit") $('#password-reason').html("<BR/>There's no ESCAPE!<BR/><BR/>If you're really lost, try going <A HREF=\"/\">back to the main page</A>.<BR/>")
@@ -52,9 +53,9 @@ PDFReviewApplication.prototype.loadPDF = function() {
             // Error when loading PDF
             var message = ""
             if(exception && exception.message) message = exception.message + "<BR/><BR/>";
-            if(exception instanceof PDFJS.InvalidPDFException)               message += 'Invalid or corrupted PDF file.<BR/><BR/>I mean it looks good, but it tastes really bad :/<BR/><BR/>';
-            else if (exception instanceof PDFJS.MissingPDFException)         message += 'The requested review PDF could not be located. Like, anywhere.<BR/><BR/>';
-            else if (exception instanceof PDFJS.UnexpectedResponseException) message += 'Unexpected server response.<BR/><BR/>That one is on me.<BR/><BR/>';
+            if(exception instanceof pdfjsLib.InvalidPDFException)               message += 'Invalid or corrupted PDF file.<BR/><BR/>I mean it looks good, but it tastes really bad :/<BR/><BR/>';
+            else if (exception instanceof pdfjsLib.MissingPDFException)         message += 'The requested review PDF could not be located. Like, anywhere.<BR/><BR/>';
+            else if (exception instanceof pdfjsLib.UnexpectedResponseException) message += 'Unexpected server response.<BR/><BR/>That one is on me.<BR/><BR/>';
             $('#error-reason').html(message);
             new ModalDialog("dialog-error");
         });
@@ -225,7 +226,7 @@ PDFReviewApplication.prototype.renderPage = function(container) {
 
         // Render SVG
         page.getOperatorList().then(function(opList) {
-            var svg = new PDFJS.SVGGraphics(page.commonObjs, page.objs);
+            var svg = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs);
             return svg.getSVG(opList, viewport);
         }).then(function (svg) {
             svg.setAttribute("class", "the-svg");
@@ -233,9 +234,15 @@ PDFReviewApplication.prototype.renderPage = function(container) {
             $(container).removeClass("loading-animation")
         });
 
+        // New mode: render canvas
+        // var ctx = $(container).getContext('2d');
+        // page.render({ canvasContext: ctx, viewport: viewport }).then(function(cvs) {
+        //     console
+        // })
+
         // Add the text layer
         self.getPageText(container.pageIndex).then(function(pdfText) {
-            PDFJS.renderTextLayer({
+            pdfjsLib.renderTextLayer({
                 textContent:    pdfText,
                 container:      container.textLayer,
                 viewport:       viewport,
@@ -257,7 +264,7 @@ PDFReviewApplication.prototype.renderPage = function(container) {
                 renderInteractiveForms: true,
                 linkService:    self.linkService
             };
-            PDFJS.AnnotationLayer.render(parameters);
+            pdfjsLib.AnnotationLayer.render(parameters);
         });
     });
 }
