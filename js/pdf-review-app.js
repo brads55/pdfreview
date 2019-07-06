@@ -12,13 +12,6 @@ function PDFReviewApplication(pdfUrl, config) {
     if(this.config.destroyRadius < this.config.preloadRadius) this.config.destroyRadius = this.config.preloadRadius - 1;
 
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js'
-    // PDFJS.imageResourcesPath = './img/';
-    // PDFJS.workerSrc          = 'js/pdf.worker.js';
-    // PDFJS.cMapUrl            = 'cmaps/';
-    // PDFJS.cMapPacked         = true;
-    // PDFJS.disableWebGL       = false;
-    // PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
-    // PDFJS.verbosity          = PDFJS.VERBOSITY_LEVELS.errors;
 
     this.pdfUrl         = pdfUrl;
     this.progressbar    = $(document.body.appendChild(document.createElement("DIV"))).addClass("progress").css("width", "0px");
@@ -31,7 +24,12 @@ function PDFReviewApplication(pdfUrl, config) {
 PDFReviewApplication.prototype.loadPDF = function() {
     var self = this;
     return new Promise(function(resolve) {
-        var load = pdfjsLib.getDocument(self.pdfUrl);
+        // Create an instance of the PDFJS library
+        // The following options are used:
+        //  - url: what is the url for the pdf file
+        //  - cMapUrl / cMapPacked: where the cMaps are located
+        //  - disableAutoFetch / disableStream / disableRange: this avoids making use of Ranged requests, which is not supported by ServiceWorkers used in offline mode
+        var load = pdfjsLib.getDocument({url: self.pdfUrl, cMapUrl: 'cmaps/', cMapPacked: true, disableAutoFetch: true, disableStream: true, disableRange: true});
 
         // Incorrect password, ask for a new one.
         load.onPassword = function(updatePassword, reason) {

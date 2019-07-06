@@ -26,7 +26,11 @@ function Server() {
 
     function _server_send(parameters, callbacks) {
         return new Promise(function(resolve) {
-            if(!navigator.onLine) return resolve({errorCode: -1, errorMsg: "Browser is offline."});
+            if(!navigator.onLine) {
+                if(callbacks.progress) callbacks.progress(-1);
+                if(callbacks.complete) callbacks.complete({errorCode: -1, errorMsg: "Browser is offline."});
+                return resolve({errorCode: -1, errorMsg: "Browser is offline."});
+            }
 
             // The famous XMLHTTP object!!!
             function getHttpObj() {
@@ -140,7 +144,6 @@ function Server() {
     }
 
     function server_get_data(url, options) {
-        if(!navigator.onLine && options.onlineOnly) return;
 
         var parameters = {url:        url,
                           postdata:   options.postdata,
@@ -150,6 +153,12 @@ function Server() {
                           attempts:   0
                         };
         var callbacks = {progress: options.progress, complete: options.complete};
+
+        if(!navigator.onLine && options.onlineOnly) {
+            if(callbacks.progress) callbacks.progress(-1);
+            if(callbacks.complete) callbacks.complete({errorCode: -1, errorMsg: "Browser is offline."});
+            return;
+        }
 
         // Postdata cannot be postponed
         if(options.postdata) {
@@ -212,39 +221,21 @@ function Server() {
     }
     $('#offline-status-text').hide();
 
-    // Add ApplicationCache events
-    // if(window.applicationCache) {
-    //     window.applicationCache.addEventListener("checking", function() {offlineCacheStatus("downloading");});
-    //     window.applicationCache.addEventListener("noupdate", function() {offlineCacheStatus("ready");});
-    //     window.applicationCache.addEventListener("downloading", function() {offlineCacheStatus("downloading");});
-    //     window.applicationCache.addEventListener("progress", function() {offlineCacheStatus("downloading");});
-    //     window.applicationCache.addEventListener("cached", function() {offlineCacheStatus("ready");});
-    //     window.applicationCache.addEventListener("updateready", function() {offlineCacheStatus("ready");});
-    //     window.applicationCache.addEventListener("obsolete", function() {offlineCacheStatus("error");});
-    //     window.applicationCache.addEventListener("error", function() {offlineCacheStatus("error");});
-    // }
-
-    // Disabling the use of service workers for two reasons:
-    // 1) Cookies cannot be sent along with requests, which defeats authentication
-    // 2) PDF.JS uses partial fetches to speed processing, which is not supported by ServiceWorkers.
-    // I may fix this in the future if ApplicationCache really becomes obsolete.
-    // // If this browser/server supports a ServiceWorker, use that instead.
-    // // While the ApplicationCache works nicely, it is deprecated and may be removed soon.
-    // // When enabled, the serviceworker supersedes the ApplicationCache.
-    // // Service workers only work on HTTPS, so don't even try if that's not what we're using.
-    // if('serviceWorker' in navigator && location.protocol.match("https") ) {
-        // try {
-            // offlineCacheStatus("downloading");
-            // navigator.serviceWorker.register(window.scriptURL + '?manifest=serviceworker', {scope: './'}).then(function(registration) {
-                // if(window.console) console.info("Using ServiceWorkers to provide offline access.");
-                // if(registration) offlineCacheStatus("ready");
-                // else offlineCacheStatus("error");
-            // });
-        // } catch(error) {
-            // if(window.console) console.info("Service workers failed to register, hopefully the application cache still works.");
-            // offlineCacheStatus("error");
-        // }
-    // }
+    // If this browser/server supports a ServiceWorker, use that instead.
+    // Service workers only work on HTTPS, so don't even try if that's not what we're using.
+    if('serviceWorker' in navigator && location.protocol.match("https") ) {
+     try {
+         offlineCacheStatus("downloading");
+         navigator.serviceWorker.register(window.scriptURL + '?manifest=serviceworker', {scope: './'}).then(function(registration) {
+             if(window.console) console.info("Using ServiceWorkers to provide offline access.");
+             if(registration) offlineCacheStatus("ready");
+             else offlineCacheStatus("error");
+         });
+     } catch(error) {
+         if(window.console) console.info("Service workers failed to register, hopefully the application cache still works.");
+         offlineCacheStatus("error");
+     }
+    }
 
     // Maintenance operations on the offline server todo list:
     self.db.todo.where("attempts").aboveOrEqual(20).each(function(obj) {

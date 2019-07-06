@@ -1,5 +1,5 @@
-/*
- * Javascript functions to handle offline mode.
+
+/* Javascript functions to handle offline mode.
  * When supported by a browser, this service worker provides the same
  * functionality as the applicationcache, but in a non-deprecated manner.
  * Francois Botman, 2017.

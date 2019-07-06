@@ -152,6 +152,7 @@ $( document ).ready(function() {
 
     // Fetch new list from server and store for offline use.
     server.get_data(window.scriptURL + "?api=get-review-list", {nocache: true,
+                                                                onlineOnly: true,
                                                                 complete: function(p) {
         if(p && p.errorCode == 0) {
             db.transaction("rw", "reviews", function() {
