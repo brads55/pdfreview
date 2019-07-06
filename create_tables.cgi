@@ -15,6 +15,7 @@ import random
 import MySQLdb
 
 import config
+from common import *
 
 if config.config["debug"]:
     import cgitb
@@ -22,19 +23,8 @@ if config.config["debug"]:
 
 
 
-def db_open():
-    return MySQLdb.connect(host   = config.config["db_host"],
-                           user   = config.config["db_user"],
-                           passwd = config.config["db_passwd"],
-                           db     = config.config["db_name"])
-
-
-def db_close(conn):
-    conn.close()
-
-
 def db_create(dbconn = None):
-    conn = dbconn if dbconn else db_open()
+    conn = dbconn if dbconn else db_open(config.config)
     cur  = conn.cursor()
 
     cur.execute("CREATE TABLE IF NOT EXISTS reviews   (id SERIAL PRIMARY KEY, reviewid TEXT, owner TEXT, closed BOOLEAN, pdffile TEXT, title TEXT);")
@@ -43,6 +33,9 @@ def db_create(dbconn = None):
     cur.execute("CREATE TABLE IF NOT EXISTS myreviews (id SERIAL PRIMARY KEY, reviewid TEXT, reader TEXT);")
     cur.execute("CREATE TABLE IF NOT EXISTS activity  (id SERIAL PRIMARY KEY, owner TEXT, msg TEXT, url TEXT, timestamp INTEGER, reviewid TEXT);")
     cur.execute("CREATE TABLE IF NOT EXISTS errors    (id SERIAL PRIMARY KEY, msg TEXT, details TEXT, owner TEXT, reviewid TEXT);")
+
+    # When using ADAL authentication:
+    cur.execute("CREATE TABLE IF NOT EXISTS adal_auth (id SERIAL PRIMARY KEY, authkey TEXT, name TEXT, email TEXT, expire INTEGER);")
 
     conn.commit()
     cur.close()

@@ -18,6 +18,7 @@ from subprocess import Popen, PIPE
 import MySQLdb
 
 import config
+from common import *
 
 if config.config["debug"]:
     import cgitb
@@ -29,34 +30,11 @@ form_api    = form.getvalue("api")
 form_action = form.getvalue("action")
 form_review = form.getvalue("review")
 
-
-#
-# Database functions ---------------------------------------------------------------------------------
-#
-
-def db_open():
-    return MySQLdb.connect(host   = config.config["db_host"],
-                           user   = config.config["db_user"],
-                           passwd = config.config["db_passwd"],
-                           db     = config.config["db_name"])
-
-def db_close(conn):
-    conn.close()
+(login_name, login_email) = config.do_login()
 
 #
 # Support functions ----------------------------------------------------------------------------------
 #
-
-def print_file(filename, substitutions = []):
-    """Prints out the file specified to the standard output, performing any requested substitutions.
-       The substitutions are in the form [[r'regex', 'replacement'], ...]"""
-    substitutions.append([r'%BRANDING%', config.config["branding"]])
-    f = open(filename, 'r')
-    for line in f:
-        for substitution in substitutions:
-            line = re.sub(substitution[0], substitution[1], line)
-        sys.stdout.write(line)
-    f.close()
 
 def gen_random_string(size=128):
     chars = ''.join([string.ascii_uppercase,
@@ -112,7 +90,7 @@ def change_review_status(db, reviewId, closed):
     result = cur.fetchone()
     if result and len(result) == 2:
         (id, owner) = result
-        if not owner == config.login_username:
+        if not owner == login_email:
             print('{"errorCode": 1, "errorMsg": "Only the owner of a PDF review can choose to %s it."}' % ("close" if closed else "reopen",))
             sys.exit(0)
     else:
@@ -126,7 +104,7 @@ def change_review_status(db, reviewId, closed):
 def list_comments(db, reviewId):
     processedResults = []
     cur = db.cursor()
-    cur.execute("SELECT comments.id, comments.hash, comments.author, comments.pageId, comments.type, comments.msg, comments.status, comments.rects, comments.replyToId, comments.timestamp, comments.deleted, myread.myread FROM comments LEFT JOIN myread ON comments.hash=myread.commenthash AND comments.reviewid=myread.reviewid AND myread.reader=%s WHERE comments.reviewid=%s ORDER BY comments.id ASC;", (config.login_username, reviewId))
+    cur.execute("SELECT comments.id, comments.hash, comments.author, comments.pageId, comments.type, comments.msg, comments.status, comments.rects, comments.replyToId, comments.timestamp, comments.deleted, myread.myread FROM comments LEFT JOIN myread ON comments.hash=myread.commenthash AND comments.reviewid=myread.reviewid AND myread.reader=%s WHERE comments.reviewid=%s ORDER BY comments.id ASC;", (login_email, reviewId))
     result = cur.fetchall()
     cur.close()
     if result:
@@ -138,13 +116,13 @@ def list_comments(db, reviewId):
                 "status":   status,
                 "secs_UTC": timestamp,
                 "deleted":  deleted,
-                "owner":    (author == config.login_name)
+                "owner":    (author == login_name)
             }
             if (pageId is not None):    tmp["pageId"] = pageId
             if (type is not None):      tmp["type"] = type
             if (replyToId is not None): tmp["replyToId"] = replyToId
             if (rects is not None):     tmp["rects"] = json.loads(rects)
-            if (not (read or author == config.login_name)): tmp["unread"] = True
+            if (not (read or author == login_name)): tmp["unread"] = True
             processedResults.append(tmp)
     return processedResults
 
@@ -240,7 +218,7 @@ def list_my_reviews(db):
     list = []
     cur  = db.cursor()
     cur2 = db.cursor()
-    cur.execute("SELECT reviewid FROM myreviews WHERE reader=%s GROUP BY reviewid ORDER BY reviewid DESC;", (config.login_username,))
+    cur.execute("SELECT reviewid FROM myreviews WHERE reader=%s GROUP BY reviewid ORDER BY reviewid DESC;", (login_email,))
     result = cur.fetchall()
     if result:
         for (reviewid,) in result:
@@ -248,7 +226,7 @@ def list_my_reviews(db):
             reviewdetails = cur2.fetchone()
             if reviewdetails and len(reviewdetails) == 5:
                 (reviewid, owner, closed, title, pdffile) = reviewdetails
-                list.append({"id": reviewid, "owner": owner == config.login_username, "title": title, "closed": closed, "pdf": pdffile})
+                list.append({"id": reviewid, "owner": owner == login_email, "title": title, "closed": closed, "pdf": pdffile})
     cur.close()
     cur2.close()
     return list
@@ -273,12 +251,12 @@ if(form_api == "add-comment"):
         print('{"errorCode": 2, "errorMsg": "Missing ID parameter for comment :("}')
         sys.exit(0)
 
-    db  = db_open()
+    db  = db_open(config.config)
     ensure_review_open(db, form_review)
     cur = db.cursor()
     cur.execute("INSERT INTO activity (msg, owner, url, reviewid, timestamp) VALUES (%s, %s, %s, %s, %s);",
-        ("<B>" + config.login_name + "</B> " + ("added a comment: " if not comment.get("replyToId") else "replied to a comment: ") + escape_html(comment.get("msg", "")),
-         config.login_username,
+        ("<B>" + login_name + "</B> " + ("added a comment: " if not comment.get("replyToId") else "replied to a comment: ") + escape_html(comment.get("msg", "")),
+         login_email,
          config.config["url"] + "?review=" + form_review,
          form_review,
          time.time()))
@@ -289,7 +267,7 @@ if(form_api == "add-comment"):
     if not result or len(result) == 0:
         cur.execute("INSERT INTO comments (hash, author, pageId, type, msg, status, rects, replyToId, reviewid, timestamp, deleted) VALUES (%s, %s, %s, %s, %s, 'None', %s, %s, %s, %s, %s);",
             (comment.get("id"),
-             config.login_name,
+             login_name,
              comment.get("pageId"),
              comment.get("type"),
              comment.get("msg", ""),
@@ -313,16 +291,16 @@ if(form_api == "delete-comment"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db  = db_open()
+    db  = db_open(config.config)
     ensure_review_open(db, form_review)
     cur = db.cursor()
     cur.execute("INSERT INTO activity (msg, owner, url, reviewid, timestamp) VALUES (%s, %s, %s, %s, %s);",
-        ("<B>" + config.login_name + "</B> deleted a comment.",
-         config.login_username,
+        ("<B>" + login_name + "</B> deleted a comment.",
+         login_email,
          config.config["url"] + "?review=" + form_review,
          form_review,
          time.time()))
-    cur.execute("UPDATE comments SET deleted=%s WHERE hash=%s AND reviewid=%s AND author=%s;", (True, form.getvalue("commentid"), form_review, config.login_name))
+    cur.execute("UPDATE comments SET deleted=%s WHERE hash=%s AND reviewid=%s AND author=%s;", (True, form.getvalue("commentid"), form_review, login_name))
     db.commit()
     cur.close()
     db_close(db)
@@ -341,7 +319,7 @@ if(form_api == "update-comment-status"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db  = db_open()
+    db  = db_open(config.config)
     # This is allowed even when reviews are closed
     cur = db.cursor()
     cur.execute("UPDATE comments SET status=%s WHERE hash=%s AND reviewid=%s;", (string_sanitiser(form.getvalue("status")), form.getvalue("commentid"), form_review))
@@ -363,16 +341,16 @@ if(form_api == "update-comment-message"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db  = db_open()
+    db  = db_open(config.config)
     ensure_review_open(db, form_review)
     cur = db.cursor()
     cur.execute("INSERT INTO activity (msg, owner, url, reviewid, timestamp) VALUES (%s, %s, %s, %s, %s);",
-        ("<B>" + config.login_name + "</B> updated a comment's message. New message: " + escape_html(form.getvalue("message")),
-         config.login_username,
+        ("<B>" + login_name + "</B> updated a comment's message. New message: " + escape_html(form.getvalue("message")),
+         login_email,
          config.config["url"] + "?review=" + form_review,
          form_review,
          time.time()))
-    cur.execute("UPDATE comments SET msg=%s WHERE hash=%s AND reviewid=%s AND author=%s;", (string_sanitiser(form.getvalue("message")), form.getvalue("commentid"), form_review, config.login_name))
+    cur.execute("UPDATE comments SET msg=%s WHERE hash=%s AND reviewid=%s AND author=%s;", (string_sanitiser(form.getvalue("message")), form.getvalue("commentid"), form_review, login_name))
     db.commit()
     cur.close()
     db_close(db)
@@ -385,7 +363,7 @@ if(form_api == "list-comments"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db = db_open()
+    db = db_open(config.config)
     comments = list_comments(db, form_review)
     db_close(db)
     print("""{"errorCode": 0, "errorMsg": "Success", "comments": %s}""" % (json.dumps(comments),))
@@ -403,17 +381,17 @@ if(form_api == "user-mark-comment"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: mark state :("}')
         sys.exit(0)
 
-    db = db_open()
+    db = db_open(config.config)
     cur = db.cursor()
     cur.execute("DELETE FROM myread WHERE commenthash=%s AND reviewid=%s AND reader=%s;",
         (form.getvalue("id"),
          form_review,
-         config.login_username))
+         login_email))
     if form.getvalue("as") == "read":
         cur.execute("INSERT INTO myread (commenthash, reviewid, reader, myread) VALUES (%s, %s, %s, %s);",
             (form.getvalue("id"),
              form_review,
-             config.login_username,
+             login_email,
              True))
     db.commit()
     cur.close()
@@ -427,7 +405,7 @@ if(form_api in ["close-review", "reopen-review"]):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db = db_open()
+    db = db_open(config.config)
     change_review_status(db, form_review, form_api == "close-review")
     db_close(db)
     print("""{"errorCode": 0, "errorMsg": "Success"}""")
@@ -439,10 +417,10 @@ if(form_api == "delete-review"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db = db_open()
+    db = db_open(config.config)
     change_review_status(db, form_review, form_api == "close-review")
     cur = db.cursor()
-    cur.execute("SELECT pdffile FROM reviews WHERE reviewid=%s AND owner=%s;", (form_review, config.login_username))
+    cur.execute("SELECT pdffile FROM reviews WHERE reviewid=%s AND owner=%s;", (form_review, login_email))
     result = cur.fetchone()
     if result and len(result) == 1:
         pdffile     = result[0]
@@ -473,7 +451,7 @@ if(form_api == "export-comments"):
         print('{"errorCode": 1, "errorMsg": "Invalid requested output format :("}')
         sys.exit(0)
 
-    db  = db_open()
+    db  = db_open(config.config)
     comments = list_comments(db, form_review)
     exportedComments = []
     for comment in comments:
@@ -489,7 +467,7 @@ if(form_api == "pdf-archive"):
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
 
-    db = db_open()
+    db = db_open(config.config)
     cur = db.cursor()
     cur.execute("SELECT pdffile FROM reviews WHERE reviewid=%s;", (form_review,))
     result = cur.fetchone()
@@ -534,11 +512,11 @@ if(form_api == "pdf-archive"):
 
 if (form_api == "report-error"):
     print("Content-type: application/json\n")
-    db = db_open()
+    db = db_open(config.config)
     cur = db.cursor()
     cur.execute("INSERT INTO errors (reviewid, owner, details, msg) VALUES (%s, %s, %s, %s);",
         (form_review,
-         config.login_name,
+         login_name,
          form.getvalue("details"),
          form.getvalue("msg")))
     db.commit()
@@ -549,7 +527,7 @@ if (form_api == "report-error"):
 
 if (form_api == "get-review-list"):
     print("Content-type: application/json\n")
-    db = db_open()
+    db = db_open(config.config)
     review_list = list_my_reviews(db)
     db_close(db)
     print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "reviews": review_list or []}))
@@ -571,7 +549,7 @@ if "rss" in form:
     print('<?xml version="1.0" encoding="UTF-8" ?>')
     print('<rss version="2.0">')
     print('<channel>')
-    db = db_open()
+    db = db_open(config.config)
     cur = db.cursor()
     cur.execute("SELECT title FROM reviews WHERE reviewid=%s;", (reviewId,))
     result = cur.fetchall()
@@ -582,7 +560,7 @@ if "rss" in form:
     print('<link>%s?rss=%s</link>' % (config.config["url"], reviewId))
     print('<description>This feed lists the latest changes to the review. This does not include your own changes, it is assumed you know about these.</description>')
     
-    cur.execute("SELECT id, msg, url, timestamp FROM activity WHERE reviewid=%s AND NOT(owner=%s);", (reviewId, config.login_username))
+    cur.execute("SELECT id, msg, url, timestamp FROM activity WHERE reviewid=%s AND NOT(owner=%s);", (reviewId, login_email))
     result = cur.fetchall()
     if result:
         for (id, msg, url, timestamp) in result:
@@ -606,7 +584,7 @@ if "manifest" in form:
     appcache = form.getvalue("manifest") == "appcache"
     svworker = form.getvalue("manifest") == "serviceworker"
     
-    db = db_open()
+    db = db_open(config.config)
     review_list = list_my_reviews(db)
     output = ""
     versionList = ""
@@ -667,7 +645,7 @@ if "manifest" in form:
         print_file("./service-worker.js.template", [
             [r'%VERSION_DIFF%', versionList],
             [r'%OFFLINE_FILE_LIST%', "'" + "',\n                '".join(output.rstrip().split("\n")) + "'"]
-        ])
+        ], config.config)
     db_close(db)
     sys.exit(0)
 
@@ -713,7 +691,7 @@ if(form_action == "upload"):
 
     # Insert entry into database + return ID
     review_id = gen_random_string(16)
-    db = db_open()
+    db = db_open(config.config)
     cur = db.cursor()
 
     # Prevent multiple entires with the same name...
@@ -732,12 +710,12 @@ if(form_action == "upload"):
         pdf_title += ' - one of many'
 
     # Insert into database
-    cur.execute("INSERT INTO reviews (reviewid, owner, closed, pdffile, title) VALUES (%s, %s, 'false', %s, %s);", (review_id, config.login_username, filename, pdf_title))
+    cur.execute("INSERT INTO reviews (reviewid, owner, closed, pdffile, title) VALUES (%s, %s, 'false', %s, %s);", (review_id, login_email, filename, pdf_title))
     db.commit()
-    cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (review_id, config.login_username))
+    cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (review_id, login_email))
     result = cur.fetchone()
     if not result:
-        cur.execute("INSERT INTO myreviews (reviewid, reader) VALUES (%s, %s);", (review_id, config.login_username))
+        cur.execute("INSERT INTO myreviews (reviewid, reader) VALUES (%s, %s);", (review_id, login_email))
         db.commit()
     cur.close()
     db_close(db)
@@ -749,12 +727,12 @@ if(form_action == "upload"):
 elif(form_review):
     """Show the PDF review UI."""
     print("Content-type: text/html\n")
-    db = db_open()
+    db = db_open(config.config)
     cur = db.cursor()
-    cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (form_review, config.login_username))
+    cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (form_review, login_email))
     result = cur.fetchone()
     if not result:
-        cur.execute("INSERT INTO myreviews (reviewid, reader) VALUES (%s, %s);", (form_review, config.login_username))
+        cur.execute("INSERT INTO myreviews (reviewid, reader) VALUES (%s, %s);", (form_review, login_email))
         db.commit()
     cur.execute("SELECT reviewid, owner, closed, pdffile, title FROM reviews WHERE reviewid=%s;", (form_review,))
     result = cur.fetchone()
@@ -765,9 +743,9 @@ elif(form_review):
             [r'%REVIEW_PDF_URL%',   pdffile],
             [r'%REVIEW_PDF_ID%',    form_review],
             [r'%SCRIPT_URL%',       config.config["url"]]
-        ])
+        ], config.config)
     else:
-        print_file("./notfound.html.template")
+        print_file("./notfound.html.template", [], config.config)
     cur.close()
     db_close(db)
     sys.exit(0)
@@ -777,5 +755,5 @@ else:
     print("Content-type: text/html\n")
     print_file("./welcome.html.template", [
         [r'%SCRIPT_URL%',  config.config["url"]]
-    ])
+    ], config.config)
     sys.exit(0)

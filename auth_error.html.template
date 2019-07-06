@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE>%BRANDING% PDF Review</TITLE>
+    <LINK type="text/css" rel="stylesheet" href="css/common.css"   media="screen,projection" />
+    <LINK type="text/css" rel="stylesheet" href="css/welcome.css"  media="screen,projection" />
+    <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
+    <NOSCRIPT>
+        <STYLE>html{display:none;}</STYLE>
+        <META http-equiv="refresh" content="0.0;url=unsupported.html">
+    </NOSCRIPT>
+    <META charset="UTF-8" />
+</HEAD>
+<BODY>
+
+<CENTER style="padding-top: 50px;">
+    <B>Authentication Error</B><BR/>
+    You could not be authenticated.<BR/><BR/><BR/>
+
+    <PRE>%ERROR_MESSAGE%</PRE>
+</CENTER>
+
+
+</BODY>
+</HTML>
