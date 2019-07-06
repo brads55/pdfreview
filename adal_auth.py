@@ -125,7 +125,7 @@ def auth_error(msg, config):
 def get_cookie(name):
     if 'HTTP_COOKIE' in os.environ:
         for cookie in map(str.strip, str.split(os.environ['HTTP_COOKIE'], ';')):
-            (key, value ) = str.split(cookie, '=')
+            (key, value ) = str.split(cookie, '=', 1)
             if key == name:
                 return value
     return None
