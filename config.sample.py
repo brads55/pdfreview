@@ -11,6 +11,9 @@ config = {
     "ghostscript_path":     "/path/to/gs",
     "debug":                False,
 
+    # Messages
+    "no_review_msg":        "No reviews in progress. Create one today!",
+
     # The following are used for ADAL authentication
     # If an alternative authentication mechanism is used, the following entries can be removed.
     "adal_expires_sec":     15 * 24 * 60 * 60,

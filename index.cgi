@@ -754,6 +754,7 @@ else:
     """The default case -- no action requested, show the welcome screen."""
     print("Content-type: text/html\n")
     print_file("./welcome.html.template", [
-        [r'%SCRIPT_URL%',  config.config["url"]]
+        [r'%SCRIPT_URL%',  config.config["url"]],
+        [r'%NO_REVIEW_MSG%', config.config["no_review_msg"]]
     ], config.config)
     sys.exit(0)
