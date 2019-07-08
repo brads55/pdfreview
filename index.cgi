@@ -458,7 +458,7 @@ if(form_api == "export-comments"):
         if not comment.get("replyToId") and not comment.get("deleted"):
             exportedComments.append(get_comment_export(comments, comment["id"]))
     db_close(db)
-    print(json.dumps(exportedComments, encoding='latin1'))
+    print(json.dumps(exportedComments))
     sys.exit(0)
 
 if(form_api == "pdf-archive"):
