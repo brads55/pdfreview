@@ -497,7 +497,7 @@ if(form_api == "pdf-archive"):
     cmd.append(pdffile)
 
     ps = create_ps_from_comments(comments)
-    output_file = open(psfile, 'wb')
+    output_file = open(psfile, 'w')
     output_file.write(ps)
     output_file.write("%% %s\n" % (" ".join(cmd)))
     output_file.close()
