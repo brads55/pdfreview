@@ -259,6 +259,7 @@ PDFReviewApplication.prototype.renderPage = function(container) {
                 div:            container.annotationLayer,
                 annotations:    annotations,
                 page:           page,
+                imageResourcesPath: 'img/',
                 renderInteractiveForms: true,
                 linkService:    self.linkService
             };
