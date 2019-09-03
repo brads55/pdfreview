@@ -710,7 +710,7 @@ if(form_action == "upload"):
         pdf_title += ' - one of many'
 
     # Insert into database
-    cur.execute("INSERT INTO reviews (reviewid, owner, closed, pdffile, title) VALUES (%s, %s, 'false', %s, %s);", (review_id, login_email, filename, pdf_title))
+    cur.execute("INSERT INTO reviews (reviewid, owner, closed, pdffile, title) VALUES (%s, %s, %s, %s, %s);", (review_id, login_email, False, filename, pdf_title))
     db.commit()
     cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (review_id, login_email))
     result = cur.fetchone()
