@@ -42,7 +42,6 @@ offline_handler.addEventListener('fetch', function(event) {
             });
         }));
     }
-    else {
-        event.respondWith(fetch(event.request));
-    }
+    // Otherwise fallback to the default action -- this can be done by simply not
+    // calling respondWith.
 });
