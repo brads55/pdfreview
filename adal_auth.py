@@ -23,6 +23,7 @@ from common import *
 TOKEN_NAME = "adal-token"
 REFRESH_TOKEN = "adal-refresh-token"
 UUID_TOKEN = "adal-auth-session"
+URI_TOKEN = "app-uri-context"
 
 
 def login(config):
@@ -96,10 +97,16 @@ def login(config):
                 cur.close()
                 db_close(db)
 
+                uri_context = get_cookie(URI_TOKEN)
+                url = config["url"]
+                if (uri_context):
+                    url += "?" + uri_context
                 print("Status: 307 Redirect")
-                print("Location: " + config["url"])
+                print("Location: " + url)
                 set_cookie(TOKEN_NAME, user_key, config["adal_expires_sec"], "Lax")
                 set_cookie(REFRESH_TOKEN, token["refreshToken"], config["adal_session_state_timeout_sec"], "Lax")
+                delete_cookie(URI_TOKEN)
+                delete_cookie(UUID_TOKEN)
                 print("\n")
 
             else:
@@ -109,7 +116,7 @@ def login(config):
         #
         # Otherwise, redirect to authentication interface
         #
-        redirect_to_portal(config)
+        redirect_to_portal(config, form)
         sys.exit(0)
 
     except adal.AdalError as e:
@@ -134,8 +141,11 @@ def set_cookie(name, value, expires_seconds, policy = "Strict"):
     """This should come after a Content-type response"""
     print("Set-Cookie: {name}={value}; SameSite={policy}; Max-age={expires_seconds};".format(**locals()))
 
+def delete_cookie(name):
+    """This should come after a Content-type response"""
+    print("Set-Cookie: {name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT;".format(**locals()))
 
-def redirect_to_portal(config):
+def redirect_to_portal(config, form):
     session_state = uuid.uuid1()
     redirect_url  = ('https://login.microsoftonline.com/{}/oauth2/authorize?' +
                         'response_type=code&client_id={}&redirect_uri={}&state={}&resource={}').format(
@@ -146,6 +156,8 @@ def redirect_to_portal(config):
                                 config["adal_RESOURCE"])
     print("Status: 307 Redirect")
     print("Location: " + redirect_url)
+    if ("?" in os.environ["REQUEST_URI"]):
+        set_cookie(URI_TOKEN, os.environ["REQUEST_URI"].split("?")[-1], config["adal_session_state_timeout_sec"], "Lax")
     set_cookie(UUID_TOKEN, session_state, config["adal_session_state_timeout_sec"], "Lax")
     print("Content-type: text/html")
     print("\n")
