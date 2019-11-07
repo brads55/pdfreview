@@ -14,7 +14,8 @@ def db_open(config):
     return MySQLdb.connect(host   = config["db_host"],
                            user   = config["db_user"],
                            passwd = config["db_passwd"],
-                           db     = config["db_name"])
+                           db     = config["db_name"],
+                           charset='utf8')
 
 def db_close(conn):
     conn.close()

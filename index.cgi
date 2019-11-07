@@ -24,6 +24,9 @@ if config.config["debug"]:
     import cgitb
     cgitb.enable()
 
+from system_checks import check_encoding, require_db_version
+check_encoding()
+require_db_version('be22b508808d')
 
 form = cgi.FieldStorage()
 form_api    = form.getvalue("api")
