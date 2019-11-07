@@ -113,7 +113,9 @@ $( document ).ready(function() {
                 html += '<TABLE class="review-list">\n';
                 for(var i = 0; i < reviews.length; i++) {
                     var review = reviews[i];
-                    html += '\t<TR><TD><A HREF="' + window.scriptURL + '?review=' + review["id"] + '">' + review["title"] + '</A></TD>';
+                    escaped = document.createElement('p');
+                    escaped.appendChild(document.createTextNode(review["title"]));
+                    html += '\t<TR><TD><A HREF="' + window.scriptURL + '?review=' + review["id"] + '">' + escaped.innerHTML + '</A></TD>';
                     if(review["owner"]) {
                         html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=close-review\');">Close review</A></TD>';
                     } else {
