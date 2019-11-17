@@ -10,4 +10,15 @@ lib64
 bin/*
 share/*
 pyvenv.cfg
+venv
 
+# Cypress test framework
+node_modules/
+cypress/videos
+cypress/screenshots
+
+# Coverage related
+.coverage
+coverage
+.nyc_output
+instrumentedjs/

@@ -14,8 +14,8 @@
             window.location = 'unsupported.html';
         }
     </SCRIPT>
-    <SCRIPT language="javascript" src="js/jquery-3.4.1.min.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/dexie.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ext/jquery-3.4.1.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ext/dexie.min.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/welcome.js"></SCRIPT>

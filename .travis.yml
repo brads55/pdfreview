@@ -1,0 +1,36 @@
+language: python
+
+python:
+    - 3.6
+
+addons:
+    apt:
+        packages:
+            - lighttpd
+            - ghostscript
+
+services:
+    - mysql
+
+before_install:
+    - mysql -e "CREATE DATABASE pdf;"
+    - mysql -e "CREATE USER 'webuser'@'localhost' IDENTIFIED BY 'password';"
+    - mysql -e "USE pdf; GRANT ALL PRIVILEGES ON pdf.* TO 'webuser'@'localhost';"
+    - sudo cp lighttpd-pdfreview-travis.conf /etc/lighttpd/conf-available/95-pdf-rev.conf
+    - sudo lighty-enable-mod cgi
+    - sudo lighty-enable-mod pdf-rev
+    - sudo ln -s $PWD /var/www/html/pdfreview
+    - sudo systemctl restart lighttpd.service
+    - mv config_travis.py config.py
+
+install:
+    - pip install -r requirements.txt
+    - npm install
+
+before_script:
+    - "sudo chown -R $USER:www-data ."
+    - "sudo chmod o+x /home/$USER"
+    - alembic upgrade head
+
+script:
+    - ./run_tests

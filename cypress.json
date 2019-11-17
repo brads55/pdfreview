@@ -1,0 +1,4 @@
+{
+    "baseUrl": "http://localhost/pdfreview",
+    "defaultCommandTimeout": 10000
+}

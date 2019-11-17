@@ -1,6 +1,8 @@
 # PDF review
 A collaborative PDF review tool
 
+[![Build Status](https://travis-ci.com/danieljabailey/pdfreview.svg?token=xUczVsXLJ9Z4CV4PfzTU&branch=dev)](https://travis-ci.com/danieljabailey/pdfreview)
+
 This tool allows end users to upload PDF documents and share comments
 relating to specific aspects. This is a bit like the comment system
 used by common PDF viewers, but designed to be hosted centrally and

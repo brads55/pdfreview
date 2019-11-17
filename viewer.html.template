@@ -15,13 +15,13 @@
             window.location = 'unsupported.html';
         }
     </SCRIPT>
-    <SCRIPT language="javascript" src="js/jquery-3.4.1.min.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/dexie.min.js"></SCRIPT>
-	<SCRIPT language="javascript" src="js/pdf.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ext/jquery-3.4.1.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ext/dexie.min.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ext/pdf.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/ext/material.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/comment-manager.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/material.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/modal-tool.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/viewer.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/hasher.js"></SCRIPT>

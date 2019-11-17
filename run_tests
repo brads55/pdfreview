@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+echo Initialising...
+if [ "$VIRTUAL_ENV" == "" ]; then
+    source venv/bin/activate
+fi
+rm -f .coverage
+echo Instrumenting JavaScript code...
+set -e
+./node_modules/.bin/nyc instrument --sourceMap=false -x 'js/ext/*' js instrumentedjs
+cp -r js/ext instrumentedjs/ext
+mv js _js
+set +e
+ln -s instrumentedjs js
+echo Running tests...
+./node_modules/.bin/cypress run
+result=$?
+echo Cleaning up...
+rm js
+mv _js js
+echo Generating reports...
+coverage report --omit 'venv/**.py,/home/travis/virtualenv/**.py' -m
+# The Cypress plugin does this already but for some reason confuses the instrumented JS for the normal JS. Bug?? This is a workaround.
+./node_modules/.bin/nyc report --reporter=html
+# Then show a text based report on the terminal
+./node_modules/.bin/nyc report
+exit $result
