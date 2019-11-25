@@ -57,3 +57,23 @@ Cypress.Commands.add("reset_db", ()=>{
 });
 
 
+Cypress.Commands.add("comment", (url, type, text, params) =>{
+    var parsed = queryString.parse(url);
+    var p_url = new URL(url)
+    cy.log(p_url);
+    // TODO make this more generic, so it doesn't default to page 0 point style comment at 50,50 with ID "foo"
+    var form = {
+        'api':'add-comment'
+        ,'review': p_url.searchParams.get('review')
+        ,'comment': JSON.stringify({
+            'msg': text
+            ,'id': 'foo'
+            ,'rects': [{'tl':[50,50]}]
+            ,'pageId':0
+            ,'type':'comment'
+            , ...params})
+    };
+    cy.request({method:'POST', url:'/index.cgi', form:true, body:form}).then(resp=>{
+        cy.wrap(resp.body).should('have.property', 'errorCode', 0);
+    });
+});

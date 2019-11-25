@@ -80,3 +80,19 @@ describe('PDF viewer comment buttons', ()=>{
         });
     });
 });
+
+describe('PDF viewer comment sidebar', ()=>{
+
+    before(()=>{
+        cy.reset_db();
+        cy.pdf('blank.pdf').then(url=>{
+            cy.visit(url);
+            cy.comment(url, 'point', 'Test comment', {});
+        });
+    });
+
+    it('shows existing comments', ()=>{
+        cy.get('div#comment-container').should('contain', 'Test comment');
+    });
+
+});
