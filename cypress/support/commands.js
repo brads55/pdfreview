@@ -57,7 +57,7 @@ Cypress.Commands.add("reset_db", ()=>{
 });
 
 
-Cypress.Commands.add("comment", (url, type, text, params) =>{
+Cypress.Commands.add("comment", (url, cid, text, params) =>{
     var parsed = queryString.parse(url);
     var p_url = new URL(url)
     cy.log(p_url);
@@ -67,7 +67,7 @@ Cypress.Commands.add("comment", (url, type, text, params) =>{
         ,'review': p_url.searchParams.get('review')
         ,'comment': JSON.stringify({
             'msg': text
-            ,'id': 'foo'
+            ,'id': cid
             ,'rects': [{'tl':[50,50]}]
             ,'pageId':0
             ,'type':'comment'
