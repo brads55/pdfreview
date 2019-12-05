@@ -31,9 +31,33 @@ describe('Search tool', ()=>{
         cy.get('div#sidebar-left-search-results').children().then(els => {
             cy.wrap(els).should('have.property', 'length', 2);
             cy.wrap(els[0]).click()
-            cy.get('div#search-result-0').should('be.visible');
+            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
             cy.wrap(els[1]).click()
-            cy.get('div#search-result-1').should('be.visible');
+            cy.get('div#search-result-1').should('be.visible').should('have.class', 'selected');
+        });
+    });
+
+    // This one currently fails because of a slight UX issue :( See issue #12
+    // https://github.com/Franchie/pdfreview/issues/12
+    it.skip('Lets you jog up and down results using butons and keyboard shortfuts', ()=>{
+        cy.get('div#sidebar-left-search-results').children().then(els => {
+            cy.wrap(els).should('have.property', 'length', 2);
+            cy.wrap(els[0]).click()
+            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
+            cy.get('div#button-search-next').click()
+            cy.get('div#search-result-1').should('be.visible').should('have.class', 'selected');
+            cy.get('div#button-search-prev').click()
+            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
+
+            cy.get('body').trigger('keydown', { keyCode: 114 })
+                .trigger('keyup', { keyCode: 114 })
+            cy.get('div#search-result-1').should('be.visible').should('have.class', 'selected');
+            cy.get('body')
+                .trigger('keydown', { keyCode: 16 })
+                .trigger('keydown', { keyCode: 114 })
+                .trigger('keyup', { keyCode: 114 })
+                .trigger('keyup', { keyCode: 16 })
+            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
         });
     });
 });
