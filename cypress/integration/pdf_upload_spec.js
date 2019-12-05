@@ -31,4 +31,67 @@ describe('PDF Upload page', ()=>{
         });
     });
 
+    it('Allows you to close and reopen existing reviews', ()=>{
+        cy.pdf('blank.pdf').then(()=>{
+            cy.visit('');
+            cy.contains('Close review').click();
+            cy.contains('Your closed reviews:');
+            cy.contains('Reopen').click();
+            cy.contains('Your active reviews:');
+        });
+    });
+
+    it('Allows you to delete existing reviews', ()=>{
+        cy.pdf('blank.pdf').then(()=>{
+            cy.visit('');
+            cy.contains('Close review').click();
+            cy.contains('Your closed reviews:');
+            cy.contains('Delete').click();
+            cy.contains('No reviews in progress.');
+        });
+    });
+
+    it('Presents a password prompt when a pdf is password protected', ()=>{
+        cy.pdf('secret.pdf').then(()=>{
+            // Check the UI and the owner password and button click to submit
+            cy.contains('Please enter a password to join this review.');
+            cy.get('input#password-prompt').type('owner');
+            cy.contains('Submit').click()
+            cy.contains('This is a super secret PDF');
+        });
+    });
+
+    it.skip('Lets the user press enter to confirm the password on the password prompt', ()=>{
+        cy.pdf('secret.pdf').then(()=>{
+            // Check the user password and keyboard enter key submit
+            cy.get('input#password-prompt').type('user{enter}');
+            cy.contains('This is a super secret PDF');
+        });
+    });
+
+    // Not sure how best to test this, it opens in a new tab or window, and also triggers that bug in cypress
+    it.skip('Allows you to download archived PDFs', ()=>{
+        cy.pdf('blank.pdf').then(()=>{
+            cy.visit('');
+            cy.contains('Close review').click();
+            cy.contains('Your closed reviews:');
+            cy.contains('Archived PDF').click();
+            cy.url().should('include', '/pdfs/');
+            cy.url().should('include', '.pdf');
+        });
+    });
+
+    // Same issue as above, but also there is an acutal bug in pdfreview right now, sadly tricky to test it
+    // because of the cypress bug and tricky-to-test new tab thing
+    it.skip('Allows you to download archived PDFs with passwords', ()=>{
+        cy.pdf('secret.pdf').then(()=>{
+            cy.visit('');
+            cy.contains('Close review').click();
+            cy.contains('Your closed reviews:');
+            cy.contains('Archived PDF').click();
+            cy.url().should('include', '/pdfs/');
+            cy.url().should('include', '.pdf');
+        });
+    });
+
 });
