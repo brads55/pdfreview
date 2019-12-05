@@ -158,4 +158,23 @@ describe('PDF viewer comment sidebar', ()=>{
         cy.get('select.select-status').select('Accepted');
         cy.get('div#review-comment-accept').should('contain', 'Accepted');
     });
+
+    it('scales text when the text scale buttons are clicked', ()=>{
+        cy.get('div#comment-container').contains('Accept me').then(els => {
+            var el = els[0];
+            var start_size = el.computedStyleMap().get('font-size').value;
+            cy.get('div#button-comment-text-smaller').click();
+            cy.get('div#comment-container').contains('Accept me').then(els => {
+                var el = els[0];
+                var small_size = el.computedStyleMap().get('font-size').value;
+                cy.get('div#button-comment-text-larger').click().click();
+                cy.get('div#comment-container').contains('Accept me').then(els => {
+                    var el = els[0];
+                    var large_size = el.computedStyleMap().get('font-size').value;
+                    cy.wrap(start_size).should('be.greaterThan', small_size);
+                    cy.wrap(large_size).should('be.greaterThan', start_size);
+                });
+            });
+        });
+    });
 });
