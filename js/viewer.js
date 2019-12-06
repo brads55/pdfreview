@@ -97,6 +97,16 @@ $( document ).ready(function() {
         $('#button-zoom-select').on("change", function() {window.PDFReviewApp.zoom(this.value);});
         $('#button-zoom-plus').on( "click", function() {window.PDFReviewApp.zoom("+");});
         $('#button-zoom-minus').on("click", function() {window.PDFReviewApp.zoom("-");});
+
+        // Mousewheel events have recently been made "passive" by default, which means that
+        // it is not possible to prevent default browser behaviours from taking place. This
+        // workaround forces these events to be "active" (should work in all modern browsers).
+        jQuery.event.special.wheel = {
+            setup: function( _, ns, handle ) {
+                this.addEventListener("wheel", handle, { passive: false });
+            }
+        };
+        jQuery.event.special.mousewheel = jQuery.event.special.wheel;
         $(window).on('mousewheel wheel', function(e) {
             if(e.ctrlKey || e.metaKey) {
                 window.PDFReviewApp.zoom(e.originalEvent.deltaY > 0 ? "-" : "+");
