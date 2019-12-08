@@ -20,6 +20,7 @@ describe('PDF Upload page', ()=>{
         cy.upload_pdf('blank.pdf').then(()=>{
             cy.url().should('include', 'index.cgi?review=');
             cy.get('div#pdfview').should('exist');
+            cy.contains('The PDF is now ready to be reviewed.');
         });
     });
 
