@@ -45,6 +45,15 @@ describe('PDF viewer navigation', ()=>{
                     .trigger('keydown', { keyCode: 189, key:'-', code:'Minus', ctrlKey:true })
                     .trigger('keyup', { keyCode: 189, key:'-', code:'Minus', ctrlKey:true })
             });
+
+            // By scrolling with ctrl held
+            test_zoom(()=>{
+                cy.get('body')
+                    .trigger('wheel', { deltaY:-1, ctrlKey:true })
+            },()=>{
+                cy.get('body')
+                    .trigger('wheel', { deltaY:1, ctrlKey:true })
+            });
         });
     });
 
