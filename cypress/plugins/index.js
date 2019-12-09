@@ -11,8 +11,15 @@
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
 
+const clipboardy = require('clipboardy');
+
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
-  on('task', require('@cypress/code-coverage/task'))
+    // `on` is used to hook into various events Cypress emits
+    // `config` is the resolved Cypress config
+    on('task', require('@cypress/code-coverage/task'))
+    on('task', {
+        getClipboard () {
+            return clipboardy.readSync();
+        }
+    });
 }

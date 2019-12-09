@@ -11,7 +11,7 @@ describe('PDF Upload page', ()=>{
         cy.get('#drag-to-upload').should('exist');
     });
 
-    it('Allows you to upload PDF files, and redirects to the review page', ()=>{
+    it('Allows you to upload PDF files, and redirects to the review page, clipboard modal dialog works', ()=>{
         // TODO remove this hack as soon as cypress is fixed
         // see: https://github.com/cypress-io/cypress/issues/5717
         // see: CI hack in /pdfreview/index.html
@@ -20,7 +20,9 @@ describe('PDF Upload page', ()=>{
         cy.upload_pdf('blank.pdf').then(()=>{
             cy.url().should('include', 'index.cgi?review=');
             cy.get('div#pdfview').should('exist');
-            cy.contains('The PDF is now ready to be reviewed.');
+            cy.contains('The PDF is now ready to be reviewed.').should('be.visible');
+            cy.get('div#button-copy-to-clip-link').should('be.visible').click();
+            cy.task('getClipboard').should('contain', 'index.cgi?review=');
         });
     });
 
