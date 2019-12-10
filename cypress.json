@@ -1,4 +1,5 @@
 {
-    "baseUrl": "http://localhost/pdfreview",
-    "defaultCommandTimeout": 10000
+    "baseUrl": "http://localhost/pdfreview"
+    ,"defaultCommandTimeout": 10000
+    ,"video": false
 }
