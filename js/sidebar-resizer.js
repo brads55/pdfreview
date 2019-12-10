@@ -6,6 +6,8 @@
 function SidebarResizer(targetElem, leftright, associatedElement) {
     var div = document.createElement("DIV");
 
+    div.id = targetElem.id + '-resizer';
+
     $(div).addClass("resizer");
     document.body.appendChild(div);
     this.hidden            = false;
