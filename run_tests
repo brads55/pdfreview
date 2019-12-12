@@ -13,6 +13,7 @@ mv js _js
 set +e
 ln -s instrumentedjs js
 echo Running tests...
+export PATH=$PWD/node_modules/.bin:$PATH # This wasn't needed before???
 ./node_modules/.bin/cypress run
 result=$?
 echo Cleaning up...

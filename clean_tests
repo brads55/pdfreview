@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+echo Cleaning up...
+rm js
+mv _js js
