@@ -100,7 +100,7 @@ def login(config):
                 uri_context = get_cookie(URI_TOKEN)
                 url = config["url"]
                 if (uri_context):
-                    url += "?" + uri_context
+                    url += uri_context
                 print("Status: 307 Redirect")
                 print("Location: " + url)
                 set_cookie(TOKEN_NAME, user_key, config["adal_expires_sec"], "Lax")
@@ -157,7 +157,9 @@ def redirect_to_portal(config, form):
     print("Status: 307 Redirect")
     print("Location: " + redirect_url)
     if ("?" in os.environ["REQUEST_URI"]):
-        set_cookie(URI_TOKEN, os.environ["REQUEST_URI"].split("?")[-1], config["adal_session_state_timeout_sec"], "Lax")
+        set_cookie(URI_TOKEN, "?" + os.environ["REQUEST_URI"].split("?")[-1], config["adal_session_state_timeout_sec"], "Lax")
+    else:
+        set_cookie(URI_TOKEN, "", config["adal_session_state_timeout_sec"], "Lax")
     set_cookie(UUID_TOKEN, session_state, config["adal_session_state_timeout_sec"], "Lax")
     print("Content-type: text/html")
     print("\n")
