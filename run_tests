@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+function cleanup(){
+    kill $(ps -o pid= --ppid $$) || true
+    ./clean_tests
+    exit 1
+}
+
 echo Initialising...
 if [ "$VIRTUAL_ENV" == "" ]; then
     source venv/bin/activate
@@ -7,6 +13,7 @@ fi
 rm -f .coverage
 echo Instrumenting JavaScript code...
 set -e
+trap 'cleanup' INT
 ./node_modules/.bin/nyc instrument --sourceMap=false -x 'js/ext/*' js instrumentedjs
 cp -r js/ext instrumentedjs/ext
 mv js _js
@@ -16,9 +23,7 @@ echo Running tests...
 export PATH=$PWD/node_modules/.bin:$PATH # This wasn't needed before???
 ./node_modules/.bin/cypress run
 result=$?
-echo Cleaning up...
-rm js
-mv _js js
+./clean_tests
 echo Generating reports...
 coverage report --omit 'venv/**.py,/home/travis/virtualenv/**.py' -m
 # The Cypress plugin does this already but for some reason confuses the instrumented JS for the normal JS. Bug?? This is a workaround.
