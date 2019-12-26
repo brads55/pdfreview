@@ -39,8 +39,10 @@ describe('PDF Upload page', ()=>{
             cy.visit('');
             cy.contains('Close review').click();
             cy.contains('Your closed reviews:');
+            cy.get('table.review-list').contains('blank.pdf')
             cy.contains('Reopen').click();
             cy.contains('Your active reviews:');
+            cy.get('table.review-list').contains('blank.pdf')
         });
     });
 
@@ -49,6 +51,7 @@ describe('PDF Upload page', ()=>{
             cy.visit('');
             cy.contains('Close review').click();
             cy.contains('Your closed reviews:');
+            cy.get('table.review-list').contains('blank.pdf')
             cy.contains('Delete').click();
             cy.contains('No reviews in progress.');
         });
