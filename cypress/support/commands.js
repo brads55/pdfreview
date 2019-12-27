@@ -61,7 +61,6 @@ Cypress.Commands.add("comment", (url, cid, text, params) =>{
     var parsed = queryString.parse(url);
     var p_url = new URL(url)
     cy.log(p_url);
-    // TODO make this more generic, so it doesn't default to page 0 point style comment at 50,50 with ID "foo"
     var form = {
         'api':'add-comment'
         ,'review': p_url.searchParams.get('review')
@@ -76,4 +75,13 @@ Cypress.Commands.add("comment", (url, cid, text, params) =>{
     cy.request({method:'POST', url:'/index.cgi', form:true, body:form}).then(resp=>{
         cy.wrap(resp.body).should('have.property', 'errorCode', 0);
     });
+});
+
+Cypress.Commands.add("select_el_text", el=>{
+    const document = el.ownerDocument;
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    document.getSelection().removeAllRanges(range);
+    document.getSelection().addRange(range);
+    cy.document().trigger('selectionchange');
 });
