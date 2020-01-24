@@ -71,9 +71,10 @@ def login(config):
             if err:
                 auth_error(err + ": " + errmsg, config)
 
-            state_ref = get_cookie(UUID_TOKEN)
-            if (state_ref != state):
-                auth_error("The session states for ADAL authentication do not match, possible CSI breach. Expected {}, got {}".format(state_ref, state), config)
+            # Disabling state checks -- for some reason this does not play well with offline storage and is causing more problems than it's worth.
+            # state_ref = get_cookie(UUID_TOKEN)
+            # if (state_ref != state):
+            #     auth_error("The session states for ADAL authentication do not match, possible CSI breach. Expected {}, got {}".format(state_ref, state), config)
             token = get_token(code, config)
 
             headers = {'Content-Type':'application/json', 'Authorization':'Bearer {0}'.format(token['accessToken'])}

@@ -33,10 +33,14 @@ offline_handler.addEventListener('fetch', function(event) {
     if(event.request.method == "GET") {
         event.respondWith(caches.match(event.request).then(function(response) {
             if(response) return response;
-            else return fetch(event.request).then(function(response) {
+            else return fetch(event.request, {mode: 'no-cors', redirect: 'manual'}).then(function(response) {
+                // If the response code is not 200, then we need to simply return and
+                // not add this to the cache.
+                if(!response || response.status != 200) return response;
+
                 // Also add to the cache if we have fetched something new :)
                 return caches.open('v1').then(function(cache) {
-                    if(response) cache.put(event.request, response.clone());
+                    cache.put(event.request, response.clone());
                     return response;
                 });
             });

@@ -10,7 +10,7 @@
  *		- nocache:		set to true if you want to specifically avoid these requests being cached.
  *      - onlineOnly:   only perform this request if currently online, do not retry.
  *	Francois Botman, 2012.
- *  Updated 2017.
+ *  Updated 2017, 2020.
  */
 
 function Server() {
@@ -22,6 +22,7 @@ function Server() {
     self.db.version(1).stores({todo: "++id,attempts"});
 
     self.syncInProgress = false;
+    self.reauthenticationRequestInProgress = false;
 
 
     function _server_send(parameters, callbacks) {
@@ -93,9 +94,26 @@ function Server() {
                             }
                             if(callbacks.progress) callbacks.progress(100);
                             if(callbacks.complete) callbacks.complete(json);
+                            $('#offline-status-text').hide();
                             resolve(json);
                         }
                         else {
+                            $('#offline-status-text').show().html('Experiencing difficulties (<A HREF="?reauthentication-attempt=' + (new Date()).getTime() + '&review=' + window.reviewId + '">are you logged out</A>?)');
+                            // It is possible we are no longer authenticated, in which case we will receive some sort of redirect request (300..399).
+                            if((http.status == 0 || (http.status >= 300 && http.status < 400)) && !self.reauthenticationRequestInProgress) {
+                                self.reauthenticationRequestInProgress = true;
+
+                                // Open an authentication pop-up
+                                var wndref = window.open("?reauthentication-attempt=" + (new Date()).getTime(), "reauthentication",
+                                    "centerscreen=yes,alwaysOnTop=yes,resizable,scrollbars,status");
+                                if(wndref == null || wndref.closed) alert("You appear to no longer be logged-in. Please check your popup blocker for a reauthentication window.");
+                                else wndref.focus();
+                                console.info("Received server redirect request -- attempting to open authentication dialog", wndref, http);
+
+                                // And re-attempt this authentication a minute later...
+                                window.setTimeout(function() {self.reauthenticationRequestInProgress = false;}, 60000);
+                            }
+                            else console.error("Failed to fetch request", http);
                             if(callbacks.progress) callbacks.progress(-1);
                             if(callbacks.complete) callbacks.complete({errorCode: -1, errorMsg: "Did not return HTTP 200."});
                             resolve({errorCode: -1, errorMsg: "Did not return HTTP 200."});
