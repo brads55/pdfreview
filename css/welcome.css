@@ -50,7 +50,7 @@ body {
 .review-list td.has-border {
     border-left:            1px solid #dad9de;
 }
-.review-list tr:nth-child(2) {
+.review-list tr:nth-child(even) {
     background:             #ebebeb;
 }
 .review-list tr:hover {
