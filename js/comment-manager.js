@@ -543,7 +543,6 @@ CommentManager.prototype.applyFilters = function() {
     var filtersApplied = self.filters.txt.length || self.filters.unreadOnly || self.filters.status.length || self.filters.reviewers.length;
     if(filtersApplied) self.filterButton.addClass("active");
     else self.filterButton.removeClass("active");
-    $("#comment-container div.review-comment.selected").removeClass("selected");
 
     // Phase 2: hide all comments
     $('.review-comment').addClass("filteredOut").removeClass("filteredIn");
