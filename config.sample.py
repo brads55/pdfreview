@@ -8,6 +8,7 @@ config = {
     "db_user":              "<sql user>",
     "db_passwd":            "<sql pwd>",
     "db_name":              "<sql db>",
+    "sqlalchemy.url":       "<sqlalchemy url>",
     "ghostscript_path":     "/path/to/gs",
     "debug":                False,
 

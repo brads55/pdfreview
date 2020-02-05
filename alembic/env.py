@@ -5,6 +5,15 @@ from sqlalchemy import pool
 
 from alembic import context
 
+# PDF review stores its configuration in the parent directory's config.py file
+import os
+import sys
+currentdir = os.path.dirname(os.path.abspath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+import config as pdfreview_config
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -37,7 +46,7 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url = pdfreview_config.config["sqlalchemy.url"]
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -56,8 +65,10 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    ini_section = config.get_section(config.config_ini_section)
+    ini_section['sqlalchemy.url'] = pdfreview_config.config["sqlalchemy.url"]
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        ini_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
