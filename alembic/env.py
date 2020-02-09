@@ -12,6 +12,7 @@ currentdir = os.path.dirname(os.path.abspath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 import config as pdfreview_config
+from urllib.parse import quote_plus
 
 
 # this is the Alembic Config object, which provides
@@ -33,6 +34,18 @@ target_metadata = None
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+def get_connection_url():
+    c = pdfreview_config.config
+    url = 'mysql://{}:{}@{}/{}?charset=utf8mb4'.format(
+        *[quote_plus(s) for s in [
+            c['db_user']
+            ,c['db_passwd']
+            ,c['db_host']
+            ,c['db_name']
+        ]]
+    )
+    print(url)
+    return url
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
@@ -46,16 +59,17 @@ def run_migrations_offline():
     script output.
 
     """
-    url = pdfreview_config.config["sqlalchemy.url"]
-    context.configure(
-        url=url,
-        target_metadata=target_metadata,
-        literal_binds=True,
-        dialect_opts={"paramstyle": "named"},
-    )
+    raise Exception('Offline migrations are not supported by this script')
+    #url = get_connection_url()
+    #context.configure(
+    #    url=url,
+    #    target_metadata=target_metadata,
+    #    literal_binds=True,
+    #    dialect_opts={"paramstyle": "named"},
+    #)
 
-    with context.begin_transaction():
-        context.run_migrations()
+    #with context.begin_transaction():
+    #    context.run_migrations()
 
 
 def run_migrations_online():
@@ -66,7 +80,7 @@ def run_migrations_online():
 
     """
     ini_section = config.get_section(config.config_ini_section)
-    ini_section['sqlalchemy.url'] = pdfreview_config.config["sqlalchemy.url"]
+    ini_section['sqlalchemy.url'] = get_connection_url()
     connectable = engine_from_config(
         ini_section,
         prefix="sqlalchemy.",
