@@ -34,6 +34,14 @@ describe('PDF Upload page', ()=>{
         });
     });
 
+    it('Allows UTF-8 chars in pdf titles', ()=>{
+        cy.visit('');
+        cy.upload_pdf('一个中文PDF🥠.pdf').then(()=>{
+            cy.visit('');
+            cy.contains('一个中文PDF🥠.pdf').should('exist');
+        });
+    });
+
     it('Allows you to close and reopen existing reviews', ()=>{
         cy.pdf('blank.pdf').then(()=>{
             cy.visit('');

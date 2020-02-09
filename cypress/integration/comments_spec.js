@@ -81,9 +81,9 @@ describe('PDF viewer comment buttons', ()=>{
                     var y = - page_r.top + r.top;
                     cy.get('div.page.comment-tool').trigger('click', x, y, {which:1});
                     cy.contains('Please enter an associated comment');
-                    cy.get('textarea#comment-msg').type('我们可以用UTF-8！棒棒达');
+                    cy.get('textarea#comment-msg').type('我们可以用UTF-8！棒棒达🥰');
                     cy.get('div#dialog-comment').contains('Submit').click();
-                    cy.get('div#comment-container').should('contain', '我们可以用UTF-8！棒棒达');
+                    cy.get('div#comment-container').should('contain', '我们可以用UTF-8！棒棒达🥰');
                 });
             });
         });
