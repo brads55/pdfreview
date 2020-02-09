@@ -26,7 +26,7 @@ if config.config["debug"]:
 
 from system_checks import check_encoding, require_db_version
 check_encoding()
-require_db_version('be22b508808d')
+require_db_version('c472597eb7ac')
 
 form = cgi.FieldStorage()
 form_api    = form.getvalue("api")

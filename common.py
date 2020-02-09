@@ -15,7 +15,7 @@ def db_open(config):
                            user   = config["db_user"],
                            passwd = config["db_passwd"],
                            db     = config["db_name"],
-                           charset='utf8')
+                           charset='utf8mb4')
 
 def db_close(conn):
     conn.close()

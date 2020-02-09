@@ -7,6 +7,7 @@ Create Date: 2019-11-07 18:50:10.993855
 """
 from alembic import op
 import sqlalchemy as sa
+import re
 
 
 # revision identifiers, used by Alembic.
@@ -89,7 +90,12 @@ def upgrade():
         )
 
     except sa.exc.OperationalError as e:
-        if e.code != 'e3q8':
+        # Acceptable error if it's because a table already exists, this means it's the
+        # old non-alembic database, which can be upgraded to this revision of the
+        # schema by a no-op
+        re_accept = re.compile("1050[^T]+Table [^ ]+ already exists")
+        m = re_accept.search(e.args[0])
+        if m is None:
             raise
 
 

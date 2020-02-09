@@ -7,6 +7,10 @@ Create Date: ${create_date}
 """
 from alembic import op
 import sqlalchemy as sa
+# Add to import path, so `import migration_support` works
+from os import path
+import sys
+sys.path.append(path.dirname(__file__)+'/../')
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.
