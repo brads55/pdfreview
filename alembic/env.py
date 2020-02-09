@@ -14,6 +14,11 @@ sys.path.insert(0, parentdir)
 import config as pdfreview_config
 from urllib.parse import quote_plus
 
+if sys.stdout.encoding != 'UTF-8':
+    print("Unsupported environment. Locale does not use utf-8. Is LC_ALL set to the right value?", file=sys.stderr)
+    print("    Current encoding: " + sys.stdout.encoding, file=sys.stderr)
+    sys.exit(1)
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -44,7 +49,6 @@ def get_connection_url():
             ,c['db_name']
         ]]
     )
-    print(url)
     return url
 
 def run_migrations_offline():
