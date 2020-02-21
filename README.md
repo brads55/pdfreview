@@ -1,7 +1,8 @@
 # PDF review
 A collaborative PDF review tool
 
-[![Build Status](https://travis-ci.com/danieljabailey/pdfreview.svg?token=xUczVsXLJ9Z4CV4PfzTU&branch=dev)](https://travis-ci.com/danieljabailey/pdfreview)
+[![Build Status](https://travis-ci.com/Franchie/pdfreview.svg?token=qU1pa1oRCKo2ULiE6xYB&branch=dev)](https://travis-ci.com/Franchie/pdfreview)
+[![CodeFactor](https://www.codefactor.io/repository/github/franchie/pdfreview/badge?s=2ee5f8aa231990b0db6d5595f87f7aa0253a9221)](https://www.codefactor.io/repository/github/franchie/pdfreview)
 
 This tool allows end users to upload PDF documents and share comments
 relating to specific aspects. This is a bit like the comment system
@@ -39,5 +40,3 @@ The tool is currently functional and is ready to be used. There are a
 number of limitations that are currently being worked on. See the issues
 list for more details.
 
-Just for informtation:
-[![Codefactor](https://www.codefactor.io/repository/github/franchie/pdfreview/badge)](https://www.codefactor.io/repository/github/franchie/pdfreview)
