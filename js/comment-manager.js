@@ -155,6 +155,11 @@ CommentManager.prototype.fetchAllComments = function() {
                 self.refreshComments(false);
                 self.applyFilters();
             });
+
+            if(p.status != "open") {
+                new ModalDialog("dialog-closed-review");
+                window.reviewClosed = true;
+            }
         }
         else if(p && p.errorCode > 0) {
             $('#error-reason').html("Failed to fetch comment list: " + p.errorMsg);
@@ -401,7 +406,7 @@ CommentManager.prototype.addComment = function(comment, action) {
     server.get_data(window.scriptURL, { nocache: true,
                                         formdata: formData,
                                         complete: function(p) {
-        if(!p && p.errorCode > 0) {
+        if(!p || p.errorCode > 0) {
             $('#error-reason').html(failure_msg + (p ? p.errorMsg : ""));
             new ModalDialog("dialog-error");
         }

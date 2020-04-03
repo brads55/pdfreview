@@ -368,8 +368,16 @@ if(form_api == "list-comments"):
 
     db = db_open(config.config)
     comments = list_comments(db, form_review)
+    cur = db.cursor()
+    cur.execute("SELECT id, closed FROM reviews WHERE reviewid=%s;", (form_review,))
+    result = cur.fetchone()
+    review_status = "closed"
+    if result and len(result) == 2:
+        (id, closed) = result
+        if not closed:
+            review_status = "open"
     db_close(db)
-    print("""{"errorCode": 0, "errorMsg": "Success", "comments": %s}""" % (json.dumps(comments),))
+    print("""{"errorCode": 0, "errorMsg": "Success", "comments": %s, "status": "%s"}""" % (json.dumps(comments), review_status))
     sys.exit(0)
 
 if(form_api == "user-mark-comment"):
