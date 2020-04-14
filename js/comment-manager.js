@@ -212,7 +212,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
                                  rects:     e.data.comment.rects,
                                  replyToId: e.data.comment.id}, "add-comment");
             }
-        });
+        }, false);
         return cancel(e);
     }
     function commentDelete(e) {
@@ -277,9 +277,9 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
                     comment.unsync = true;
                     self.addComment(comment, "update-comment-message");
                 }
-            });
+            }, false);
             $("#comment-msg").val(comment.msg);
-        });
+        }, false);
         return cancel(e);
     }
 

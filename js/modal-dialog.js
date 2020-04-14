@@ -3,12 +3,13 @@
  * Francois Botman, 2017.
  */
 
-function ModalDialog(id, onclose) {
+function ModalDialog(id, onclose, overlayClose = true) {
     this.id      = id;
     this.dialog  = $('#' + id);
     this.overlay = $('#modal-container');
     this.onclose = onclose;
-    
+    this.overlayClose = overlayClose;
+
     this.open();
 }
 
@@ -28,7 +29,7 @@ ModalDialog.prototype.open = function() {
 
     // Register event handlers
     $('#' + self.id + " .button.modal-close").on("click", close);
-    this.overlay.on("click", close);
+    if(self.overlayClose) this.overlay.on("click", close);
     this.dialog.on ("click", function(e) { e.stopPropagation();});
     $(document).on("keydown.modal", function(e) {
         if (e.which == 27) close(); // ESCAPE

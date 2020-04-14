@@ -178,7 +178,7 @@ MouseTools.prototype._selectionToolStart = function() {
                                                            msg:    $("#comment-msg").val(),
                                                            rects:  elements}, "add-comment");
                 }
-            });
+            }, false);
         }
     }
     
@@ -268,7 +268,7 @@ MouseTools.prototype._comment = function() {
                                                        msg:    $("#comment-msg").val(),
                                                        rects:  elements}, "add-comment");
             }
-        });
+        }, false);
     });
 }
 
@@ -333,7 +333,7 @@ MouseTools.prototype._rectangle = function() {
                                                            msg:    $("#comment-msg").val(),
                                                            rects:  elements}, "add-comment");
                 }
-            });
+            }, false);
         });
 
         return cancel(e);
