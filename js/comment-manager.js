@@ -469,9 +469,9 @@ CommentManager.prototype.redraw = function(pageId, pageContainer) {
             d.className     = "finder";                         // The finders are hidden by default
             d.id            = "reviewlayer-comment-" + comment.id;
             d.style.top     = (boundingRect.top - 10) + "px";
-            d.style.left    = (boundingRect.left - 10) + "px";
+            d.style.left    = "-20px";
             d.style.height  = (boundingRect.bottom - boundingRect.top + 20) + "px";
-            d.style.width   = (boundingRect.right - boundingRect.left + 20) + "px";
+            d.style.width   = "1px";
             reviewLayer.appendChild(d);
         }
 
@@ -526,12 +526,17 @@ CommentManager.prototype.selectComment = function(commentId, scrollComments, dbl
             commentCardParent.animate({ scrollTop: target + "px"}, 200);
         }
     }
-
+    $('.selectedComment').removeClass("selectedComment");
+    $('.pdf-comment-div-for-' + commentId).addClass("selectedComment");
     $(".reviewLayer div.finder").hide();
     $("#comment-container div.review-comment.selected").removeClass("selected");
     commentCard.addClass("selected");
     commentSel.show();
     self.flashing = commentId;
+
+    // Scroll element into view if needed (and supported by the browser -- this will only work on Chrome)
+    var scrollView = $('.selectedComment')[0];
+    if(scrollView && scrollView.scrollIntoViewIfNeeded) scrollView.scrollIntoViewIfNeeded();
 
     if(dblClickAction) {
         commentCard.trigger("dblclick");

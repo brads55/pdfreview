@@ -232,16 +232,17 @@ select.button * {
 .page.highlight-tool .textLayer ::selection { background: #06cc43; }
 .page.highlight-tool .textLayer ::-moz-selection { background: #06cc43; }
 .reviewLayer div.highlight, .page div.highlight-rectangle, .annotationLayer .highlightAnnotation {
-    opacity:                0.7;
+    opacity:                0.5;
     background:             #06cc43;
 }
+
 .page div.highlight-rectangle {
     border:                 2px solid #f0e0a0;
 }
 .page.strike-tool .textLayer ::selection { background: #ffb7b7; }
 .page.strike-tool .textLayer ::-moz-selection { background: #ffb7b7; }
 .reviewLayer div.strike, .annotationLayer .strikeoutAnnotation {
-    opacity:                0.7;
+    opacity:                0.5;
     background:             #ffb7b7;
 }
 .reviewLayer div.comment, .annotationLayer .textAnnotation {
@@ -272,6 +273,13 @@ select.button * {
     -o-transform-origin:        0% 0%;
     -ms-transform-origin:       0% 0%;
     transform-origin:           0% 0%;
+}
+/* Make the selected comment appear differently... */
+.reviewLayer div.highlight.selectedComment, .page div.highlight-rectangle.selectedComment, .reviewLayer div.strike.selectedComment, .reviewLayer div.comment.selectedComment {
+    border-bottom:          2px dotted blue;
+}
+.reviewLayer div.highlight.selectedComment, .page div.highlight-rectangle.selectedComment, .reviewLayer div.strike.selectedComment {
+    opacity:                0.7;
 }
 .page.default-tool > div {
     cursor:                 text;
@@ -475,8 +483,8 @@ select.button * {
 }
 .reviewLayer div.finder {
     display:                none;
-    border-radius:          20px;
-    border:                 5px solid #009fc1;
+    border-radius:          5px;
+    border:                 3px solid #009fc1;
 }
 
 .review-comment {
