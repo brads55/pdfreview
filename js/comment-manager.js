@@ -157,7 +157,7 @@ CommentManager.prototype.fetchAllComments = function() {
             });
 
             if(p.status != "open") {
-                new ModalDialog("dialog-closed-review");
+                if (!window.reviewClosed) new ModalDialog("dialog-closed-review");
                 window.reviewClosed = true;
             }
         }
