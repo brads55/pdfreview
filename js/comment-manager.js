@@ -448,15 +448,41 @@ CommentManager.prototype.redraw = function(pageId, pageContainer) {
                     boundingRect.right  = boundingRect.right  ? Math.max(boundingRect.right,  br_rect[0]) : br_rect[0];
                 }
                 reviewLayer.appendChild(d);
+
+                function cancelBubbleDrag() {
+                    $(document).off("mousemove.bubble");
+                    $(document).off("mouseup.bubble");
+                }
+
                 if(comment.type == "comment") {
                     boundingRect.top    = tl_rect[1] - d.clientHeight/2;
                     boundingRect.bottom = tl_rect[1] + d.clientHeight/2;
                     boundingRect.left   = tl_rect[0] - d.clientWidth/2;
                     boundingRect.right  = tl_rect[0] + d.clientWidth/2;
+
+                    $(d).on("mousedown", {bubble: d}, function(e) {
+                        var parentOffset = $(this).parent().offset();
+                        var position = $(this).position();
+                        $(document).on("mousemove.bubble", {
+                            bubble: e.data.bubble,
+                            startX: position.left,
+                            startY: position.top,
+                            mouseX: e.pageX,
+                            mouseY: e.pageY
+                        }, function(e) {
+                            cancel(e);
+                            e.data.bubble.style.top  = (e.data.startY + (e.pageY - e.data.mouseY)) + "px";
+                            e.data.bubble.style.left = (e.data.startX + (e.pageX - e.data.mouseX)) + "px";
+                        });
+                        $(document).on("mouseup.bubble", {}, cancelBubbleDrag);
+                    });
                 }
 
                 // Add interactive features
-                $(d).on("mouseup", {commentId: comment.id}, function(e) {
+                $(d).on("mouseup", {commentId: comment.id, cancelBubble: (comment.type == "comment")}, function(e) {
+                    // Cancel draggable bubbles
+                    if(e.data.cancelBubble) cancelBubbleDrag();
+
                     // If the current tool allows insertion of comments, update the current comment.
                     if(window.mouseTools.activeTool == "highlight" || window.mouseTools.activeTool == "strike" || window.mouseTools.activeTool == "comment") {
                         self.selectComment(e.data.commentId, true, true);
