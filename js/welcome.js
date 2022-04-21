@@ -103,6 +103,9 @@ $( document ).ready(function() {
     db.version(1).stores({reviews: "id,closed"});
 
     function updateReviewList() {
+        const title_key = (lst) => lst["title"].toLowerCase();
+        const sortAlphaNum = (a, b) => title_key(a).localeCompare(title_key(b), 'en', { numeric: true })
+
         // Find any reviews
         $('#review-list-none').show();
         db.reviews.filter(function(obj) {return obj.closed == false;}).toArray(function(reviews) {
@@ -111,6 +114,7 @@ $( document ).ready(function() {
                 $('#review-list-none').hide();
                 html += "Your active reviews:<BR/>\n";
                 html += '<TABLE class="review-list">\n';
+                reviews = reviews.sort(sortAlphaNum);
                 for(var i = 0; i < reviews.length; i++) {
                     var review = reviews[i];
                     escaped = document.createElement('p');
@@ -133,6 +137,7 @@ $( document ).ready(function() {
                     $('#review-list-none').hide();
                     html += "Your closed reviews:<BR/>\n";
                     html += '<TABLE class="review-list">\n';
+                    reviews = reviews.sort(sortAlphaNum);
                     for(var i = 0; i < reviews.length; i++) {
                         var review = reviews[i];
                         html += '\t<TR><TD><A HREF="' + window.scriptURL + '?review=' + review["id"] + '&closed=true">' + review["title"] + '</A></TD>';
