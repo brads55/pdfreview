@@ -318,7 +318,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
         $(div).hide();
     }
     else {
-        $(div).append($("<B>").addClass("author").text(comment.author || "You"))
+        $(div).append($("<B>").addClass("author").text(comment.author || "You").attr('title', "Comment from " + (new Date(comment.secs_UTC * 1000)).toLocaleString()))
               .append($("<SPAN>").addClass("status").text(comment.status == "None" ? "" : comment.status))
               .append($("<DIV>").addClass("comment-content").text(comment.msg || ""))
               .append(actions);
