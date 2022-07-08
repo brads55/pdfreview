@@ -567,6 +567,11 @@ select.button * {
     margin-left:            20px;
 }
 
+#sidebar-left-bookmarks .bookmark-current {
+    border:                 1px solid lightblue;
+    border-radius:          5px;
+}
+
 .progress {
     position:               absolute;
     left:                   0px;

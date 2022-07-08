@@ -63,6 +63,7 @@
             <DIV id="toolbar" class="toolbar white-text">
                 <!-- Toolbar centre left -->
                 <DIV id="button-left-sidebar-toggle" style="float: left;" class="button" data-icon="img/toolbarButton-sidebarToggle-left.png" title="Toggle left sidebar"></DIV>
+                <DIV id="button-bookmark-sync" style="float: left;" class="button" data-icon="img/toolbarButton-book-marker.png" title="Synchronise bookmark location"></DIV>
                 <DIV style="padding: 7px;float: left;cursor: pointer;" id="button-link-options" title="Potential actions you can take!">
                     <SPAN id="main-logo" class="white-text">&#x25bc; %BRANDING%</SPAN> <SPAN class="lightwhite-text">PDF Review</SPAN>
                 </DIV>

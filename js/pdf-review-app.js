@@ -106,27 +106,61 @@ PDFReviewApplication.prototype._showOutline = function(outlines, parent) {
     if(!parent) parent = $(document.getElementById("sidebar-left-bookmarks"));
     if(!outlines) return;
     for(var i = 0; i < outlines.length; i++) {
-        var outlineItem = outlines[i];
-        var div = document.createElement("DIV");
-        parent.append(div);
-        div = $(div);
-        div.addClass("bookmark-link");
-        div.text(outlineItem.title);
-        if(outlineItem.items && outlineItem.items.length > 0) {
-            div.addClass("has-child").addClass("collapsed");
-            self._showOutline(outlineItem.items, div);
+        let outlineItem = outlines[i];
+        self.pdf.getPageIndex(outlineItem.dest[0]).then(function(pageNum) {
+            var div = document.createElement("DIV");
+            parent.append(div);
+            div = $(div);
+            div.addClass("bookmark-link");
+            div.text(outlineItem.title);
+            if(outlineItem.items && outlineItem.items.length > 0) {
+                div.addClass("has-child").addClass("collapsed");
+                self._showOutline(outlineItem.items, div);
+            }
+            div.on("click", {dest: outlineItem.dest}, function(e) {
+                var offset = $(this).offset();
+                var cornerSize = 20;
+                if((e.pageX - offset.left) < cornerSize && (e.pageY - offset.top) < cornerSize) {   // Click on the "collapse" icon to collapse
+                    $(this).toggleClass("collapsed");
+                }
+                else {  // Go to PDF element
+                    self.linkService.navigateTo(e.data.dest);
+                }
+                return cancel(e);
+            })
+            div.data('pageId', pageNum)
+        })
+    }
+}
+
+PDFReviewApplication.prototype.updateOutline = function(uncollapse) {
+    let self = this;
+    let items = $("#sidebar-left-bookmarks").find(".bookmark-link");
+    // Find handle closest (but below) pageId
+    var best = false;
+    var bestPageId = 0;
+    for(var i = 0; i < items.length; i++) {
+        let p = $(items[i]).data('pageId')
+        if(p <= self.currentPage && p >= bestPageId) {
+            bestPageId = p;
+            best = $(items[i]);
         }
-        div.on("click", {dest: outlineItem.dest}, function(e) {
-            var offset = $(this).offset();
-            var cornerSize = 20;
-            if((e.pageX - offset.left) < cornerSize && (e.pageY - offset.top) < cornerSize) {   // Click on the "collapse" icon to collapse
-                $(this).toggleClass("collapsed");
+    }
+    if(best) {
+        if(!self.currentOutlineItem || self.currentOutlineItem != best) {
+            if(self.currentOutlineItem) self.currentOutlineItem.removeClass("bookmark-current")
+            self.currentOutlineItem = best;
+            best.addClass("bookmark-current")
+
+            if(uncollapse) {
+                var e = best;
+                while(e.hasClass("bookmark-link")) {
+                    e.removeClass("collapsed")
+                    e = e.parent()
+                }
+                e.get(0).scrollIntoView();
             }
-            else {  // Go to PDF element
-                self.linkService.navigateTo(e.data.dest);
-            }
-            return cancel(e);
-        });
+        }
     }
 }
 
@@ -207,6 +241,8 @@ PDFReviewApplication.prototype.redraw = function() {
             self.unrenderPage(self.pageContainers[i]);
         }
     }
+
+    self.updateOutline(false);
 }
 
 PDFReviewApplication.prototype.renderPage = function(container) {

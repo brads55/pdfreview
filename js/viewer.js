@@ -56,7 +56,7 @@ $( document ).ready(function() {
         window.sidebarRight.toggle();
         $("#button-right-sidebar-toggle").toggleClass("active");
     });
-    window.sidebarLeft.hide();
+    //window.sidebarLeft.hide();
     $('#button-comment-text-smaller').on("click", function() {
         var commentContainer = $('#comment-container');
         commentContainer.css('font-size', (parseInt(commentContainer.css('font-size'))-2) + "px")
@@ -97,6 +97,10 @@ $( document ).ready(function() {
         $('#button-zoom-select').on("change", function() {window.PDFReviewApp.zoom(this.value);});
         $('#button-zoom-plus').on( "click", function() {window.PDFReviewApp.zoom("+");});
         $('#button-zoom-minus').on("click", function() {window.PDFReviewApp.zoom("-");});
+        $("#button-bookmark-sync").on("click", function(e) {
+            window.sidebarLeft.show();
+            window.PDFReviewApp.updateOutline(true);
+        });
 
         // Mousewheel events have recently been made "passive" by default, which means that
         // it is not possible to prevent default browser behaviours from taking place. This
