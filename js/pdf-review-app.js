@@ -107,29 +107,39 @@ PDFReviewApplication.prototype._showOutline = function(outlines, parent) {
     if(!outlines) return;
     for(var i = 0; i < outlines.length; i++) {
         let outlineItem = outlines[i];
-        self.pdf.getPageIndex(outlineItem.dest[0]).then(function(pageNum) {
-            var div = document.createElement("DIV");
-            parent.append(div);
-            div = $(div);
-            div.addClass("bookmark-link");
-            div.text(outlineItem.title);
-            if(outlineItem.items && outlineItem.items.length > 0) {
-                div.addClass("has-child").addClass("collapsed");
-                self._showOutline(outlineItem.items, div);
+        let div = document.createElement("DIV");
+        parent.append(div);
+        div = $(div);
+        div.addClass("bookmark-link");
+        div.text(outlineItem.title);
+        if(outlineItem.items && outlineItem.items.length > 0) {
+            div.addClass("has-child").addClass("collapsed");
+            self._showOutline(outlineItem.items, div);
+        }
+        div.on("click", {dest: outlineItem.dest}, function(e) {
+            var offset = $(this).offset();
+            var cornerSize = 20;
+            if((e.pageX - offset.left) < cornerSize && (e.pageY - offset.top) < cornerSize) {   // Click on the "collapse" icon to collapse
+                $(this).toggleClass("collapsed");
             }
-            div.on("click", {dest: outlineItem.dest}, function(e) {
-                var offset = $(this).offset();
-                var cornerSize = 20;
-                if((e.pageX - offset.left) < cornerSize && (e.pageY - offset.top) < cornerSize) {   // Click on the "collapse" icon to collapse
-                    $(this).toggleClass("collapsed");
-                }
-                else {  // Go to PDF element
-                    self.linkService.navigateTo(e.data.dest);
-                }
-                return cancel(e);
-            })
-            div.data('pageId', pageNum)
+            else {  // Go to PDF element
+                self.linkService.navigateTo(e.data.dest);
+            }
+            return cancel(e);
         })
+        // Annotate with pagenum information
+        if(typeof outlineItem.dest === 'string') {
+            self.pdf.getDestination(outlineItem.dest).then(function (destArr) {
+                self.pdf.getPageIndex(destArr[0]).then(function(pageNum) {
+                    div.data('pageId', pageNum)
+                }, function() {console.log("Found invalid link data 2:", outlineItem.dest, destArr)})
+            }, function() {});
+        }
+        else {
+            self.pdf.getPageIndex(outlineItem.dest[0]).then(function(pageNum) {
+                div.data('pageId', pageNum)
+            }, function() {console.log("Found invalid link data:", outlineItem, outlineItem.dest, outlineItem.dest[0])})
+        }
     }
 }
 
