@@ -1,0 +1,10 @@
+on: [push]
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        name: Unit and integration tests
+        steps:
+            - uses: actions/checkout@v3
+            - run: sudo apt-get remove -y nginx
+            - run: sudo apt-get install -y lighttpd ghostscript mysql-server
+            - run: ./ci_script

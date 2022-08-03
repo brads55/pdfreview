@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "Start MySQL..."
+sudo systemctl start mysql
+
+echo "Create blank database..."
+SQL="mysql -uroot -proot -e"
+$SQL "CREATE DATABASE pdf;"
+$SQL "CREATE USER 'webuser'@'localhost' IDENTIFIED BY 'password';"
+$SQL "USE pdf; GRANT ALL PRIVILEGES ON pdf.* TO 'webuser'@'localhost';"
+
+echo "Configure lighttpd..."
+sudo cp lighttpd-pdfreview-ci.conf /etc/lighttpd/conf-available/95-pdf-rev.conf
+sudo chown -R $USER:www-data /home/runner
+sudo lighty-enable-mod cgi
+sudo lighty-enable-mod pdf-rev
+sudo ln -s $GITHUB_WORKSPACE /var/www/html/pdfreview
+
+echo "Configure pdfreview and install dependencies..."
+mv config_ci.py config.py
+pip install -r requirements.txt
+npm install
+
+echo "Create DB schema..."
+alembic upgrade head
+
+echo '"""Fix""" permissions and restart server...'
+sudo chmod -R 777 /home/runner # yeah, it's overkill, I know, but I'm tired of debugging permissions errors when lighttpd doesn't make that easy at all
+sudo systemctl restart lighttpd.service
+
+set +e
+echo "Run tests..."
+./run_tests
+rc=$?
+echo lighttpd error log...
+sudo cat /var/log/lighttpd/error.log
+echo Lighttpd jounralctl
+sudo journalctl -u lighttpd
+exit $rc
