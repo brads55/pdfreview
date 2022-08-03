@@ -11,14 +11,13 @@ function PDFReviewApplication(pdfUrl, config) {
     }
     if(this.config.destroyRadius < this.config.preloadRadius) this.config.destroyRadius = this.config.preloadRadius - 1;
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.js'
-
     this.pdfUrl         = pdfUrl;
     this.progressbar    = $(document.body.appendChild(document.createElement("DIV"))).addClass("progress").css("width", "0px");
     this.scale          = 1.0;
     this.pdfView        = $("#pdfview");
     this.currentPage    = -1;
     this.isPasswordProtected = false;
+    this.scale_promise = Promise.resolve(0);
 }
 
 PDFReviewApplication.prototype.loadPDF = function() {
@@ -44,7 +43,7 @@ PDFReviewApplication.prototype.loadPDF = function() {
         load.onProgress = function(progress) {
             self.progressbar.css("width", (100.0 * progress.loaded / progress.total) + "%");
         }
-        load.then(function(pdf) {
+        load.promise.then(function(pdf) {
             self._documentLoaded.call(self, pdf);
             resolve(self);
         }, function(exception) {
@@ -76,6 +75,9 @@ PDFReviewApplication.prototype._documentLoaded = function(pdf) {
         $(e).addClass("page");
         self.pageContainers[page] = e;
         self.pdfView.append(self.pageContainers[page]);
+        e.canvas = document.createElement("canvas")
+        $(e.canvas).addClass("canvasLayer");
+        $(e).append(e.canvas);
         e.textLayer = document.createElement("DIV")
         $(e.textLayer).addClass("textLayer");
         $(e).append(e.textLayer);
@@ -88,7 +90,7 @@ PDFReviewApplication.prototype._documentLoaded = function(pdf) {
     }
 
     if(window.reviewClosed) {
-        $('.page').prepend($('<div>').addClass("sticker"));
+        $('.page').append($('<div>').addClass("sticker"));
     }
 
     // Monitor scroll and update scale
@@ -174,7 +176,7 @@ PDFReviewApplication.prototype.updateOutline = function(uncollapse) {
     }
 }
 
-PDFReviewApplication.prototype.setScale = function(scale) {
+PDFReviewApplication.prototype.doScale = async function(scale) {
     var self = this;
     var currentPage = self.currentPage;
 
@@ -188,18 +190,27 @@ PDFReviewApplication.prototype.setScale = function(scale) {
         $(container.reviewLayer).empty();
     }
     // Update page viewport
-    self.getPageObj(0).then(function(pageObj) {
-        var viewport = pageObj.getViewport(self.scale);
+    await self.getPageObj(0).then(async function(pageObj) {
+        var viewport = pageObj.getViewport({scale:self.scale});
         self.pageContainers[0].viewport = viewport;
         $('.page').css({width: viewport.width, height: viewport.height});
 
-        self.redraw();
+        await self.redraw();
         self.linkService.navigateTo("page=" + (currentPage+1));
 
         // any callback?
         if(self.onscale) self.onscale(self.scale);
         $(window).trigger("pdf-scale");
     });
+}
+
+PDFReviewApplication.prototype.setScale = function(scale) {
+    // ensure zoom operation only starts if last one is done
+    // TODO can this be done without overkill async and await?
+    // currently it has to do a full render at every level, even if you scroll through several
+    // zoom levels quickly, it would be nice to skip the intermediate renders when multiple
+    // zoom steps are queued. At least this doesn't crash though.
+    this.scale_promise = this.scale_promise.then(async ()=>{await this.doScale(scale);});
 }
 
 PDFReviewApplication.prototype.zoom = function(zoom) {
@@ -209,7 +220,7 @@ PDFReviewApplication.prototype.zoom = function(zoom) {
     else if(zoom == "-") self.setScale(self.scale - self.config.zoomIncrement);
     else if(zoom == "page-width" || zoom == "page-fit") {
         self.getPageObj(self.currentPage).then(function(page) {
-            var viewport  = page.getViewport(1.0);
+            var viewport  = page.getViewport({scale:1.0});
             var container = document.getElementById("pdfview");
             if(zoom == "page-width") self.setScale(container.clientWidth/viewport.width);
             if(zoom == "page-fit")   self.setScale(Math.min(container.clientWidth/viewport.width,
@@ -218,7 +229,7 @@ PDFReviewApplication.prototype.zoom = function(zoom) {
     }
 }
 
-PDFReviewApplication.prototype.redraw = function() {
+PDFReviewApplication.prototype.redraw = async function() {
     var self    = this;
     var visible = getVisibleElements(self.pdfView.get(0), self.pageContainers, true);
     if(visible.views.length) {
@@ -230,19 +241,19 @@ PDFReviewApplication.prototype.redraw = function() {
     // First try to render any visible page
     for(var i = 0; i < visible.views.length; i++) {
         var container = visible.views[i].view;
-        if(!container.rendered) self.renderPage(container);
+        if(!container.rendered) await self.renderPage(container);
     }
 
     // Then speculatively render any upcoming page (to enable smooth scrolling)
     for(var i = visible.last.view.pageIndex; i < self.pdf.numPages && i < (visible.last.view.pageIndex + self.config.preloadRadius); i++) {
         var container = self.pageContainers[i];
-        if(!container.rendered) self.renderPage(container);
+        if(!container.rendered) await self.renderPage(container);
     }
 
     // Then speculatively render any previous page
     for(var i = visible.first.view.pageIndex; i >= 0 && i > (visible.last.view.pageIndex - self.config.preloadRadius); i--) {
         var container = self.pageContainers[i];
-        if(!container.rendered) self.renderPage(container);
+        if(!container.rendered) await self.renderPage(container);
     }
 
     // Then remove obsolete pages
@@ -255,37 +266,39 @@ PDFReviewApplication.prototype.redraw = function() {
     self.updateOutline(false);
 }
 
-PDFReviewApplication.prototype.renderPage = function(container) {
+PDFReviewApplication.prototype.renderPage = async function(container) {
     var self = this;
 
     if(container.rendered) return;
     container.rendered = true;
     $(container).addClass("loading-animation");
 
-    self.getPageObj(container.pageIndex).then(function(page) {
-        var viewport = page.getViewport(self.scale);
+    await self.getPageObj(container.pageIndex).then(async function(page) {
+        var viewport = page.getViewport({scale: self.scale});
         $(container).css({width: viewport.width, height: viewport.height});
         $(container.textLayer).css({width: viewport.width, height: viewport.height});
         container.viewport = viewport;
 
-        // Render SVG
-        page.getOperatorList().then(function(opList) {
-            var svg = new pdfjsLib.SVGGraphics(page.commonObjs, page.objs);
-            return svg.getSVG(opList, viewport);
-        }).then(function (svg) {
-            svg.setAttribute("class", "the-svg");
-            $(container).append(svg);
+        // Prepare canvas using PDF page dimensions
+        //var canvas = document.getElementById('the-canvas');
+        var canvas = container.canvas;
+        var context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render PDF page into canvas context
+        var renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+
+        var renderTask = page.render(renderContext);
+        await renderTask.promise.then(function () {
             $(container).removeClass("loading-animation")
         });
 
-        // New mode: render canvas
-        // var ctx = $(container).getContext('2d');
-        // page.render({ canvasContext: ctx, viewport: viewport }).then(function(cvs) {
-        //     console
-        // })
-
         // Add the text layer
-        self.getPageText(container.pageIndex).then(function(pdfText) {
+        await self.getPageText(container.pageIndex).then(function(pdfText) {
             pdfjsLib.renderTextLayer({
                 textContent:    pdfText,
                 container:      container.textLayer,
@@ -299,7 +312,7 @@ PDFReviewApplication.prototype.renderPage = function(container) {
         self.commentService.redraw(container.pageIndex, container);
 
         // Add annotation layer
-        page.getAnnotations({intent: 'display'}).then(function (annotations) {
+        await page.getAnnotations({intent: 'display'}).then(function (annotations) {
             var parameters = {
                 viewport:       viewport.clone({ dontFlip: true }),
                 div:            container.annotationLayer,
@@ -317,8 +330,9 @@ PDFReviewApplication.prototype.renderPage = function(container) {
 PDFReviewApplication.prototype.unrenderPage = function(container) {
     var self = this;
     if(container.rendered) {
-        $(container).find(".the-svg").remove();
         $(container.textLayer).empty();
+        var ctx = container.canvas.getContext("2d");
+        ctx.clearRect(0, 0, container.canvas.width, container.canvas.height);
         $(container.annotationLayer).empty();
         container.rendered = false;
     }
@@ -339,7 +353,7 @@ PDFReviewApplication.prototype.getPageObj = function(pageId) {
         if(pageContainer.page) resolve(pageContainer.page);
         else self.pdf.getPage(pageId + 1).then(function(pageObj) {
             self.pageContainers[pageId].page = pageObj;
-            self.pageContainers[pageId].viewport = pageObj.getViewport(self.scale);
+            self.pageContainers[pageId].viewport = pageObj.getViewport({scale:self.scale});
             resolve(pageObj);
         });
     });

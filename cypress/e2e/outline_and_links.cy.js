@@ -8,7 +8,6 @@ describe('PDF outline view and internal links', ()=>{
 
     it('Shows all bookmarks in a PDF and lets you click them to jump to them', ()=>{
         cy.pdf('internal_links.pdf').then(()=>{
-            cy.get('div#button-left-sidebar-toggle').click();
             cy.get('div#sidebar-left-bookmarks').children().then(els => {
                 cy.wrap(els).should('have.property', 'length', 3);
             });

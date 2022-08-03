@@ -38,8 +38,13 @@ PDFLinkService.prototype.getDestinationHash = function(dest) {
     return this.internalLinkUrl(name);
 }
 
+PDFLinkService.prototype.goToDestination = function(dest) {
+    this.pdf.getDestination(dest).then(a=>{this.navigateTo(a, false)});
+}
+
 PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
     var self = this;
+
 
     // Navigate to somewhere unspecified -- default to top.
     if(!dest) $('#pdfview').scrollTop(0).scrollLeft(0);
@@ -76,7 +81,7 @@ PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
         function goToPageIndex(pageId, x, y) {
             var container = self.pdfApp.getPageContainer(pageId);
             self.pdfApp.getPageObj(pageId).then(function(page) {
-                var viewport = page.getViewport(self.pdfApp.scale);
+                var viewport = page.getViewport({scale: self.pdfApp.scale});
                 var vprect   = viewport.convertToViewportPoint(x, y);
                 var rect     = {left: Math.max(vprect[0] - container.offsetLeft - self.config.targetX, 0), top: Math.max(vprect[1] + container.offsetTop - self.config.targetY, 0)};
 

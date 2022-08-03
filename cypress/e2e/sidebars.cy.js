@@ -6,10 +6,9 @@ describe('The various sidebars', ()=>{
         cy.reset_db();
     });
 
-    function resize_test(test_desc, div_name, startx, endx, setup_func) {
+    function resize_test(test_desc, div_name, startx, endx) {
         it(test_desc, ()=>{
             cy.pdf('internal_links.pdf').then(()=>{
-                setup_func();
                 cy.get('div#'+div_name).should('be.visible').then(els => {
                     var start_size = els[0].computedStyleMap().get('width').value;
                     cy.get('div#' + div_name + '-resizer')
@@ -26,9 +25,7 @@ describe('The various sidebars', ()=>{
         });
     }
 
-    resize_test('Allows resizing of the outline view', 'sidebar-left', 1, 200, ()=>{
-        cy.get('div#button-left-sidebar-toggle').click();
-    });
-    resize_test('Allows resizing of the comment view', 'sidebar-right', 1, 400, ()=>{});
+    resize_test('Allows resizing of the outline view', 'sidebar-left', 1, 200);
+    resize_test('Allows resizing of the comment view', 'sidebar-right', 1, 400);
 
 });

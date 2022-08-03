@@ -117,14 +117,15 @@ $( document ).ready(function() {
                 return cancel(e);
             }
         });
-        $(window).on("keydown.zoom", function(e)  {
-            if((e.which == 107 || e.which == 187) && (e.ctrlKey || e.metaKey)) {   // + and =
+        $(window).on("keydown.zoom", function(e1)  {
+            e = e1.originalEvent;
+            if((e.key == '=') && (e.ctrlKey || e.metaKey)) {   // + and =
                 window.PDFReviewApp.zoom("+");
-                return cancel(e);
+                return cancel(e1);
             }
-            if((e.which == 109 || e.which == 189) && (e.ctrlKey || e.metaKey)) {   // - and _
+            if((e.key == '-') && (e.ctrlKey || e.metaKey)) {   // - and _
                 window.PDFReviewApp.zoom("-");
-                return cancel(e);
+                return cancel(e1);
             }
         });
         window.PDFReviewApp.onscale = function(scale) {
