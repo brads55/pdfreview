@@ -10,7 +10,7 @@ def e500():
     print("Content-type: text/html\n")
 
 def check_encoding():
-    if sys.stdout.encoding != 'UTF-8':
+    if sys.stdout.encoding.upper() != 'UTF-8':
         e500()
         print("<p>Fatal error: Output encoding is not utf-8, it is " + sys.stdout.encoding + '</p>')
         if debug:

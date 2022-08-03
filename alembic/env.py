@@ -14,7 +14,7 @@ sys.path.insert(0, parentdir)
 import config as pdfreview_config
 from urllib.parse import quote_plus
 
-if sys.stdout.encoding != 'UTF-8':
+if sys.stdout.encoding.upper() != 'UTF-8':
     print("Unsupported environment. Locale does not use utf-8. Is LC_ALL set to the right value?", file=sys.stderr)
     print("    Current encoding: " + sys.stdout.encoding, file=sys.stderr)
     sys.exit(1)
