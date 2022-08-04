@@ -19,10 +19,13 @@ cp -r js/ext instrumentedjs/ext
 mv js _js
 set +e
 ln -s instrumentedjs js
-echo Running tests...
 export PATH=$PWD/node_modules/.bin:$PATH # This wasn't needed before???
-./node_modules/.bin/cypress run
-result=$?
+echo Running tests in Google Chrome...
+./node_modules/.bin/cypress run --browser chrome
+chrome_result=$?
+echo Running tests in Firefox...
+./node_modules/.bin/cypress run --browser firefox
+firefox_result=$?
 ./clean_tests
 echo Generating reports...
 coverage report --omit 'venv/**.py,/home/runner/.local/lib/python3.8/site-packages/**.py' -m
@@ -30,4 +33,5 @@ coverage report --omit 'venv/**.py,/home/runner/.local/lib/python3.8/site-packag
 ./node_modules/.bin/nyc report --reporter=html
 # Then show a text based report on the terminal
 ./node_modules/.bin/nyc report
+let "result = $chrome_result + $firefox_result"
 exit $result
