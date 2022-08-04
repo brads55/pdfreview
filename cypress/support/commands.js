@@ -30,13 +30,8 @@ const queryString = require('query-string');
 
 Cypress.Commands.add('upload_pdf', (fileName) => {
     cy.visit('');
-    cy.fixture(fileName, 'base64').then(fileContent => {
-        cy.get('#drag-to-upload').upload(
-            { fileContent, fileName, mimeType: 'application/pdf', encoding:'base64' },
-            { subjectType: 'drag-n-drop' },
-        );
-        cy.url().should('contain', '?review=');
-    });
+    cy.get('#drag-to-upload').selectFile('cypress/fixtures/' + fileName, {action: 'drag-drop'});
+    cy.url().should('contain', '?review=');
 });
 
 Cypress.Commands.add('pdf', (fileName) =>{
