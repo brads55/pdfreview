@@ -5,14 +5,17 @@ function test_zoom(in_func, out_func){
         var el = els[0];
         var start_size = el.scrollWidth;
         out_func();
+        cy.wait(100);
         cy.contains('Search for the words on this page').should('be.visible');
         cy.get('div.page').invoke('css', 'width').should('not.be', start_size);
         cy.get('div.page').then(els => {
             var el = els[0];
             var small_size = el.scrollWidth;
             in_func();
+            cy.wait(100);
             cy.contains('Search for the words on this page').should('be.visible');
             in_func();
+            cy.wait(100);
             cy.contains('Search for the words on this page').should('be.visible');
             cy.get('div.page').invoke('css', 'width').should('not.be', small_size);
             cy.get('div.page').invoke('css', 'width').should('not.be', start_size);
@@ -22,6 +25,7 @@ function test_zoom(in_func, out_func){
                 cy.wrap(start_size).should('be.greaterThan', small_size);
                 cy.wrap(large_size).should('be.greaterThan', start_size);
                 out_func();
+                cy.wait(100);
                 cy.get('div.page').invoke('css', 'width').should('not.be', large_size);
                 cy.contains('Search for the words on this page').should('be.visible');
             });
@@ -76,6 +80,7 @@ describe('PDF viewer navigation', ()=>{
         cy.pdf('search_me.pdf').then(()=>{
             cy.contains('Search for the words on this page').should('be.visible');
             cy.get('input#page-number').type('3{enter}');
+            cy.wait(100);
             cy.contains('page 3').should('be.visible');
         });
     });

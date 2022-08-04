@@ -8,6 +8,8 @@ describe('PDF outline view and internal links', ()=>{
 
     it('Shows all bookmarks in a PDF and lets you click them to jump to them', ()=>{
         cy.pdf('internal_links.pdf').then(()=>{
+            cy.fitpage();
+            cy.wait(500);
             cy.get('div#sidebar-left-bookmarks').children().then(els => {
                 cy.wrap(els).should('have.property', 'length', 3);
             });
@@ -19,6 +21,8 @@ describe('PDF outline view and internal links', ()=>{
 
     it('Allows internal links to jump to parts of the PDF', ()=>{
         cy.pdf('internal_links.pdf').then(()=>{
+            cy.fitpage();
+            cy.wait(500);
             cy.get('a.internalLink[href="#chapter.3"]').click();
             cy.contains('Chapter 3').should('be.visible');
         });

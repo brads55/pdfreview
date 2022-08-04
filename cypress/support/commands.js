@@ -34,7 +34,15 @@ Cypress.Commands.add('upload_pdf', (fileName) => {
     cy.url().should('contain', '?review=');
 });
 
-Cypress.Commands.add('pdf', (fileName) =>{
+var fitpage = () =>{
+    cy.get('#pdfview').should('be.visible');
+    cy.get('#button-zoom-select').should('be.visible');
+    cy.get('#button-zoom-select').select('Page Fit');
+}
+
+Cypress.Commands.add('fitpage', fitpage);
+
+Cypress.Commands.add('pdf', (fileName, skipautosize) =>{
     cy.upload_pdf(fileName);
     cy.location().then((loc)=>{
         var parsed = queryString.parse(loc.search);
@@ -43,7 +51,11 @@ Cypress.Commands.add('pdf', (fileName) =>{
         var newurl = 'http://localhost' + loc.pathname + '?' + newsearch;
         cy.log(newurl);
         cy.visit(newurl);
-        cy.url().should('contain', '?review=');
+        if (!skipautosize){
+            fitpage();
+        }
+        cy.wait(200); // for good luck :)
+        cy.url().should('contain', '?review=')
     });
 });
 

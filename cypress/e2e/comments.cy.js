@@ -98,7 +98,7 @@ describe('PDF viewer comment sidebar', ()=>{
             cy.comment(url, 'comment1', 'Test comment', {});
             cy.comment(url, 'deleteme', 'A comment to be deleted', {});
             cy.comment(url, 'accept', 'Accept me', {});
-            cy.visit(url);
+            cy.reload();
         });
     });
 

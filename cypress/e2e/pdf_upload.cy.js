@@ -66,7 +66,7 @@ describe('PDF Upload page', ()=>{
     });
 
     it('Presents a password prompt when a pdf is password protected', ()=>{
-        cy.pdf('secret.pdf').then(()=>{
+        cy.pdf('secret.pdf', true).then(()=>{
             // Check the UI and the owner password and button click to submit
             cy.contains('Please enter a password to join this review.');
             cy.get('input#password-prompt').type('owner');
@@ -76,7 +76,7 @@ describe('PDF Upload page', ()=>{
     });
 
     it.skip('Lets the user press enter to confirm the password on the password prompt', ()=>{
-        cy.pdf('secret.pdf').then(()=>{
+        cy.pdf('secret.pdf', true).then(()=>{
             // Check the user password and keyboard enter key submit
             cy.get('input#password-prompt').type('user{enter}');
             cy.contains('This is a super secret PDF');
