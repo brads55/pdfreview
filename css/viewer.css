@@ -55,7 +55,7 @@ textarea {
 .toolbar {
     display:                block;
     width:                  100%;
-    height:                 32px;
+    min-height:             32px;
     background-color:       #009fc1;
     box-shadow:             0 1px 0 hsla(0,0%,0%,.15),
                             0 1px 1px hsla(0,0%,0%,.1);

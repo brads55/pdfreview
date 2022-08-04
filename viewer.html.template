@@ -74,7 +74,10 @@
 
                 <!-- Toolbar centre right -->
                 <DIV id="button-right-sidebar-toggle" class="button active" data-icon="img/toolbarButton-sidebarToggle-right.png" title="Toggle right sidebar" style="float: right;"></DIV>
-                <SELECT id="button-zoom-select" class="button white-text" style="float: right;">
+                <div style="float:right">
+                <div id="button-zoom-plus"  class="button left">+</div>
+                <div id="button-zoom-minus" class="button right">-</div>
+                <SELECT id="button-zoom-select" class="button white-text">
                     <OPTION value="page-fit">Page Fit</OPTION>
                     <OPTION value="page-width">Page Width</OPTION>
                     <OPTION value="0.5">50%</OPTION>
@@ -87,19 +90,18 @@
                     <OPTION value="4">400%</OPTION>
                     <OPTION value="0" id="button-zoom-select-custom">Custom</OPTION>
                 </SELECT>
-                <DIV id="button-zoom-minus" class="button right" style="float: right;">-</DIV>
-                <DIV id="button-zoom-plus"  class="button left" style="float: right;">+</DIV>
+                </div>
                 <DIV id="pageBrowser" style="float:right;">Page <INPUT id="page-number" name="pageselection" autocomplete=off /> of <SPAN id="num-pages"></SPAN></DIV>
 
                 <!-- Toolbar centre middle -->
-                <CENTER>
+                <div style="float:left;">
                         <DIV id="button-mode-pointer"   class="button"        data-icon="img/toolbarButton-mouse.png"     title="Cancel annotation tools (CTRL+1)"></DIV>
                         <DIV id="button-mode-highlight" class="button left"   data-icon="img/toolbarButton-highlight.png" title="Highlight text as review comment (CTRL+2)">
                   </DIV><DIV id="button-mode-rectangle" class="button middle" data-icon="img/toolbarButton-rectangle.png" title="Highlight a region as a review comment (CTRL+3)">
                   </DIV><DIV id="button-mode-comment"   class="button middle" data-icon="img/toolbarButton-comment.png"   title="Add a review comment (CTRL+4)">
                   </DIV><DIV id="button-mode-strike"    class="button right"  data-icon="img/toolbarButton-strike.png"    title="Strikethrough some text as a review comment (CTRL+5)"></DIV>
                         <DIV id="button-mode-grab"      class="button"        data-icon="img/toolbarButton-grab.png"      title="Grab and move pdf (CTRL+6)"></DIV>
-                </CENTER>
+                </div>
             </DIV>
 
             <!-- PDF view -->
