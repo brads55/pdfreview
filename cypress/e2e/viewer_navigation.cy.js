@@ -3,13 +3,13 @@ function test_zoom(in_func, out_func){
     cy.contains('Search for the words on this page').should('be.visible');
     cy.get('div.page').then(els => {
         var el = els[0];
-        var start_size = el.computedStyleMap().get('width').value;
+        var start_size = el.scrollWidth;
         out_func();
         cy.contains('Search for the words on this page').should('be.visible');
         cy.get('div.page').invoke('css', 'width').should('not.be', start_size);
         cy.get('div.page').then(els => {
             var el = els[0];
-            var small_size = el.computedStyleMap().get('width').value;
+            var small_size = el.scrollWidth;
             in_func();
             cy.contains('Search for the words on this page').should('be.visible');
             in_func();
@@ -18,10 +18,11 @@ function test_zoom(in_func, out_func){
             cy.get('div.page').invoke('css', 'width').should('not.be', start_size);
             cy.get('div.page').then(els => {
                 var el = els[0];
-                var large_size = el.computedStyleMap().get('width').value;
+                var large_size = el.scrollWidth;
                 cy.wrap(start_size).should('be.greaterThan', small_size);
                 cy.wrap(large_size).should('be.greaterThan', start_size);
                 out_func();
+                cy.get('div.page').invoke('css', 'width').should('not.be', large_size);
                 cy.contains('Search for the words on this page').should('be.visible');
             });
         });
