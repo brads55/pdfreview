@@ -102,6 +102,16 @@
                   </DIV><DIV id="button-mode-strike"    class="button right"  data-icon="img/toolbarButton-strike.png"    title="Strikethrough some text as a review comment (CTRL+5)"></DIV>
                         <DIV id="button-mode-grab"      class="button"        data-icon="img/toolbarButton-grab.png"      title="Grab and move pdf (CTRL+6)"></DIV>
                 </div>
+                <div style="clear:both;"></div>
+                <div id="search-tool" class="" style="display: none;float:left;font-size: 12px;">
+                    Find:
+                    <input id="search-tool-query" class="tool-enter-action autofocus" />
+                    <input type="checkbox" id="search-tool-config-case" class="tool-change-action"/>
+                    <label for="search-tool-config-case">Match case</label>
+                    <input type="checkbox" id="search-tool-config-regex" class="tool-change-action"/>
+                    <label for="search-tool-config-regex">Regex</label>
+                    <i id="search-tool-wrap" class="lightwhite-text"></i>
+                </div>
             </DIV>
 
             <!-- PDF view -->
@@ -246,18 +256,8 @@
         </DIV>
     </DIV>
 
+
     <!-- Container for tools -->
-    <DIV>
-        <DIV id="search-tool" class="tool" style="display: none;">
-            Find:
-            <INPUT id="search-tool-query" class="tool-enter-action autofocus" />
-            <INPUT type="checkbox" id="search-tool-config-case" class="tool-change-action"/>
-            <LABEL for="search-tool-config-case">Match case</LABEL>
-            <INPUT type="checkbox" id="search-tool-config-regex" class="tool-change-action"/>
-            <LABEL for="search-tool-config-regex">Regex</LABEL>
-            <I id="search-tool-wrap" class="lightwhite-text"></I>
-        </DIV>
-    </DIV>
     <DIV>
         <DIV id="ui-logo-tool" class="tool" style="display: none;">
             <DIV class="link tool-close-action" onclick="window.location=scriptURL;">Go to list of reviews</DIV>
