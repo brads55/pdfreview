@@ -11,7 +11,7 @@ describe('PDF Upload page', ()=>{
         cy.get('#drag-to-upload').should('exist');
     });
 
-    it('Allows you to upload PDF files, and redirects to the review page, clipboard modal dialog works', ()=>{
+    it('Allows you to upload PDF files, and redirects to the review page, modal dialog appears', ()=>{
         // TODO remove this hack as soon as cypress is fixed
         // see: https://github.com/cypress-io/cypress/issues/5717
         // see: CI hack in /pdfreview/index.html
@@ -21,8 +21,11 @@ describe('PDF Upload page', ()=>{
             cy.url().should('include', 'index.cgi?review=');
             cy.get('div#pdfview').should('exist');
             cy.contains('The PDF is now ready to be reviewed.').should('be.visible');
-            cy.get('div#button-copy-to-clip-link').should('be.visible').click();
-            cy.task('getClipboard').should('contain', 'index.cgi?review=');
+            // The clipboard part is so unreliable, that I removed the test.
+            // Modern browser (especially in test mode) are quite right to not interact with the clipboard without real user interaction
+            // cy.get('div#button-copy-to-clip-link').should('be.visible').click();
+            cy.get('div#button-copy-to-clip-link').should('be.visible');
+            // cy.task('getClipboard').should('contain', 'index.cgi?review=');
         });
     });
 
