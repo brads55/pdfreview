@@ -153,15 +153,15 @@ describe('PDF viewer comment sidebar', ()=>{
     it('scales text when the text scale buttons are clicked', ()=>{
         cy.get('div#comment-container').contains('Accept me').then(els => {
             var el = els[0];
-            var start_size = el.computedStyleMap().get('font-size').value;
+            var start_size = parseInt(window.getComputedStyle(el).getPropertyValue('font-size'));
             cy.get('div#button-comment-text-smaller').click();
             cy.get('div#comment-container').contains('Accept me').then(els => {
                 var el = els[0];
-                var small_size = el.computedStyleMap().get('font-size').value;
+                var small_size = parseInt(window.getComputedStyle(el).getPropertyValue('font-size'));
                 cy.get('div#button-comment-text-larger').click().click();
                 cy.get('div#comment-container').contains('Accept me').then(els => {
                     var el = els[0];
-                    var large_size = el.computedStyleMap().get('font-size').value;
+                    var large_size = parseInt(window.getComputedStyle(el).getPropertyValue('font-size'));
                     cy.wrap(start_size).should('be.greaterThan', small_size);
                     cy.wrap(large_size).should('be.greaterThan', start_size);
                 });
