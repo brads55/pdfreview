@@ -81,6 +81,7 @@ function SearchToolUI(pdfApp) {
             }
             else openSearch();
         }
+        else if (e.key == 'Escape') {closeSearch();}
         else return ;
         return cancel(e);
     });

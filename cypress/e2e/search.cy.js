@@ -15,13 +15,20 @@ describe('Search tool', ()=>{
         cy.get('input#search-tool-query').should('not.be.visible');
     });
 
-    it.skip('Summons the search box when you CTRL-F', ()=>{
+    // realType needs Google Chrome or Electron, skip this test if in firefox
+    const ctrl_f_test = ()=>{
         cy.contains('Search for the words on this page.');
         cy.get('body').type('{ctrl}f');
         cy.get('input#search-tool-query').should('be.visible');
-        cy.get('body').type('{esc}');
+        cy.get('input#search-tool-query').realType('{esc}');
         cy.get('input#search-tool-query').should('not.be.visible');
-    });
+    };
+    if (Cypress.browser.name == 'firefox'){
+        it.skip('Summons the search box when you CTRL-F', ctrl_f_test);
+    }
+    else{
+        it('Summons the search box when you CTRL-F', ctrl_f_test);
+    }
 
     it('Finds matching texts on multiple pages', ()=>{
         cy.contains('Search for the words on this page.');
