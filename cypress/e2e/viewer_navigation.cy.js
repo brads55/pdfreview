@@ -6,6 +6,7 @@ function test_zoom(in_func, out_func){
         var start_size = el.scrollWidth;
         out_func();
         cy.wait(100);
+        cy.contains('Search for the words on this page').scrollIntoView();
         cy.contains('Search for the words on this page').should('be.visible');
         cy.get('div.page').invoke('css', 'width').should('not.be', start_size);
         cy.get('div.page').then(els => {
@@ -13,9 +14,11 @@ function test_zoom(in_func, out_func){
             var small_size = el.scrollWidth;
             in_func();
             cy.wait(100);
+            cy.contains('Search for the words on this page').scrollIntoView();
             cy.contains('Search for the words on this page').should('be.visible');
             in_func();
             cy.wait(100);
+            cy.contains('Search for the words on this page').scrollIntoView();
             cy.contains('Search for the words on this page').should('be.visible');
             cy.get('div.page').invoke('css', 'width').should('not.be', small_size);
             cy.get('div.page').invoke('css', 'width').should('not.be', start_size);
@@ -27,6 +30,7 @@ function test_zoom(in_func, out_func){
                 out_func();
                 cy.wait(100);
                 cy.get('div.page').invoke('css', 'width').should('not.be', large_size);
+                cy.contains('Search for the words on this page').scrollIntoView();
                 cy.contains('Search for the words on this page').should('be.visible');
             });
         });
@@ -78,6 +82,7 @@ describe('PDF viewer navigation', ()=>{
 
     it('Lets you skip to a specific page number', ()=>{
         cy.pdf('search_me.pdf').then(()=>{
+            cy.contains('Search for the words on this page').scrollIntoView();
             cy.contains('Search for the words on this page').should('be.visible');
             cy.get('input#page-number').type('3{enter}');
             cy.wait(100);
