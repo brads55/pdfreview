@@ -29,6 +29,7 @@ firefox_result=$?
 ./clean_tests
 echo Generating reports...
 coverage report --omit 'venv/**.py,/home/runner/.local/lib/python3.8/site-packages/**.py' -m
+coverage lcov --omit 'venv/**.py,/home/runner/.local/lib/python3.8/site-packages/**.py' -o python_lcov.info
 # The Cypress plugin does this already but for some reason confuses the instrumented JS for the normal JS. Bug?? This is a workaround.
 ./node_modules/.bin/nyc report --reporter=html
 # Then show a text based report on the terminal

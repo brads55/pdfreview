@@ -8,3 +8,8 @@ jobs:
             - run: sudo apt-get remove -y nginx
             - run: sudo apt-get install -y lighttpd ghostscript mysql-server
             - run: ./ci_script
+            - name: Upload coverage to Codecov
+              uses: codecov/codecov-action@v3
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: "./coverage/lcov.info,./python_lcov.info"

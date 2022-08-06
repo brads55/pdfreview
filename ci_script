@@ -33,9 +33,3 @@ sudo systemctl restart lighttpd.service
 set +e
 echo "Run tests..."
 ./run_tests
-rc=$?
-echo lighttpd error log...
-sudo cat /var/log/lighttpd/error.log
-echo Lighttpd jounralctl
-sudo journalctl -u lighttpd
-exit $rc
