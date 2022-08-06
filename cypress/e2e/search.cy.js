@@ -45,9 +45,7 @@ describe('Search tool', ()=>{
         cy.get('div#button-search-toggle').click();
     });
 
-    // This one currently fails because of a slight UX issue :( See issue #12
-    // https://github.com/Franchie/pdfreview/issues/12
-    it.skip('Lets you jog up and down results using butons and keyboard shortcuts', ()=>{
+    it('Lets you jog up and down results using butons and keyboard shortcuts', ()=>{
         cy.contains('Search for the words on this page.');
         cy.get('div#button-search-toggle').click();
         cy.get('input#search-tool-query').should('be.visible').type('Search for the words{enter}');
@@ -56,20 +54,14 @@ describe('Search tool', ()=>{
             cy.wrap(els[0]).click()
             cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
             cy.get('div#button-search-next').click()
-            cy.get('div#search-result-1').should('be.visible').should('have.class', 'selected');
+            cy.get('div#search-result-1').should('have.class', 'selected');
             cy.get('div#button-search-prev').click()
-            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
+            cy.get('div#search-result-0').should('have.class', 'selected');
 
-            cy.get('body').trigger('keydown', { keyCode: 114 })
-                .trigger('keyup', { keyCode: 114 })
-            cy.get('div#search-result-1').should('be.visible').should('have.class', 'selected');
-            // Is this even how you do modifier keys????
-            cy.get('body')
-                .trigger('keydown', { keyCode: 16 })
-                .trigger('keydown', { keyCode: 114 })
-                .trigger('keyup', { keyCode: 114 })
-                .trigger('keyup', { keyCode: 16 })
-            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
+            cy.get('body').trigger("keydown", { key: "F3", keyCode: 114, which: 114 });
+            cy.get('div#search-result-1').should('have.class', 'selected');
+            cy.get('body').trigger("keydown", { key: "F3", keyCode: 114, which: 114, shiftKey: true });
+            cy.get('div#search-result-0').should('have.class', 'selected');
         });
         cy.get('div#button-search-toggle').click();
     });

@@ -60,7 +60,7 @@ PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
             if(pageId >= self.pdf.numPages) pageId = self.pdf.numPages - 1;
             if(isNaN(pageId)) return;
             var container = self.pdfApp.getPageContainer(pageId);
-            $('#pdfview').scrollTop(container.offsetTop);
+            $('#pdfview').scrollTop(container.offsetTop - $('#pdfview')[0].getBoundingClientRect().top - 5);
             if(window.history && !doNotAddHistory) history.pushState(dest, "Page " + (pageId + 1), self.getDestinationHash(dest));
         }
         // Named destination
