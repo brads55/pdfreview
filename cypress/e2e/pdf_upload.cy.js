@@ -86,15 +86,21 @@ describe('PDF Upload page', ()=>{
         });
     });
 
-    // Not sure how best to test this, it opens in a new tab or window, and also triggers that bug in cypress
-    it.skip('Allows you to download archived PDFs', ()=>{
-        cy.pdf('blank.pdf').then(()=>{
+    // This test uses XHR intercepts to inspect the api call directly, rather than trying to observe the window
+    // that gets opened, since intercepting window.open is actually hard
+    it('Allows you to download archived PDFs', ()=>{
+        cy.pdf('blank.pdf').then((url)=>{
+            cy.comment(url, 'comment1', 'Test comment', {});
             cy.visit('');
             cy.contains('Close review').click();
             cy.contains('Your closed reviews:');
+            cy.intercept('GET', /index.cgi?.*api=.*/).as('apicall');
             cy.contains('Archived PDF').click();
-            cy.url().should('include', '/pdfs/');
-            cy.url().should('include', '.pdf');
+            cy.wait('@apicall').its('request.url').should('include', 'api=pdf-archive');
+            cy.get('@apicall').its('response.body.url').should('include', '.pdf');
+            cy.get('@apicall').then((r)=>{
+                cy.request(r.response.body.url).its('body').should('match', /^%PDF-/);
+            });
         });
     });
 
