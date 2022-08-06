@@ -38,9 +38,9 @@ describe('Search tool', ()=>{
         cy.get('div#sidebar-left-search-results').children().then(els => {
             cy.wrap(els).should('have.property', 'length', 2);
             cy.wrap(els[0]).click()
-            cy.get('div#search-result-0').should('be.visible').should('have.class', 'selected');
+            cy.get('div#search-result-0').should('have.class', 'selected');
             cy.wrap(els[1]).click()
-            cy.get('div#search-result-1').should('be.visible').should('have.class', 'selected');
+            cy.get('div#search-result-1').should('have.class', 'selected');
         });
         cy.get('div#button-search-toggle').click();
     });
