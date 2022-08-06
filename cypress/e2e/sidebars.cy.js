@@ -28,4 +28,25 @@ describe('The various sidebars', ()=>{
     resize_test('Allows resizing of the outline view', 'sidebar-left', 1, 200);
     resize_test('Allows resizing of the comment view', 'sidebar-right', 1, 400);
 
+    it('Can hide and show each sidebar', ()=>{
+        // Test every combination of visibilities
+        // Hide left
+        cy.get('#sidebar-left').should('be.visible');
+        cy.get('#button-left-sidebar-toggle').click();
+        cy.get('#sidebar-left').should('not.be.visible');
+        // Hide right
+        cy.get('#sidebar-right').should('be.visible');
+        cy.get('#button-right-sidebar-toggle').click();
+        cy.get('#sidebar-right').should('not.be.visible');
+        // Show right
+        cy.get('#button-right-sidebar-toggle').click();
+        cy.get('#sidebar-right').should('be.visible');
+        // Show left
+        cy.get('#button-left-sidebar-toggle').click();
+        cy.get('#sidebar-left').should('be.visible');
+        // Hide right
+        cy.get('#button-right-sidebar-toggle').click();
+        cy.get('#sidebar-right').should('not.be.visible');
+    });
+
 });
