@@ -110,6 +110,8 @@ a {
 /* Page structure */
 .columns {
     white-space:            nowrap;
+    display: flex;
+    flex-flow:row;
 }
 .columns > div {
 	float: 					left;

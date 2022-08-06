@@ -123,8 +123,6 @@ select.button * {
                             inset -1px 0 0 hsla(0,0%,0%,.25);
 }
 .sidebar > div:last-child {
-    height:                 100%;
-    height:                 calc(100% - 32px);
     padding:                3px;
 }
 
@@ -826,3 +824,10 @@ canvas.canvasLayer{
     top: 0;
     left: 0;
 }
+
+.flex-column{
+    display:flex;
+    flex-flow:column;
+    height:100vh;
+}
+
