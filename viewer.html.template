@@ -16,12 +16,12 @@
         }
     </SCRIPT>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf_viewer.min.css" integrity="sha512-9bpXhh/f384gLv3rj7EFql0VTKCpy9Qw6mZTASCf0G8+/Tuhyp1TAQGU3lrFqCFGCfvyf6K2egveKLvUuQCgNQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.2/dexie.min.js" integrity="sha512-/Aa8vGWIh0EnOTIVN/ZWTS3UqyJJDhWYtIPS/IqtaaSG0VA6hC6CSvtWdh2+T72q74+2l1RFgu+ig91LGLX57A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.min.js" integrity="sha512-xzh64kBm/sNMH3yE0yfg/V6gl1uzZ6oJCAC14KTY9ORUZzUVe2B/GJYlpmV2J2vrpbheZaeqHIw3XzOePOjx6Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.15.349/pdf.worker.min.js" integrity="sha512-UZdEqz7Jjnq89rRn0FD9hS6M8c0vaDkT7983wVL0l01GYiAAUDipV1tSbU9HkSi/HOhwMbXGPNDwLyhs2QP01w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <SCRIPT language="javascript" src="js/ext/material.js"></SCRIPT>
+    <link rel="stylesheet" href="css/pdf_viewer.min.css"/>
+    <script src="js/ext/jquery.d/jquery.min.js"></script>
+    <script src="js/ext/dexie.d/dexie.min.js"></script>
+    <script src="js/ext/pdf.d/pdf.min.js"></script>
+    <script src="js/ext/pdf.d/pdf.worker.min.js"></script>
+    <script src="js/ext/material.d/material.js"></script>
     <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/comment-manager.js"></SCRIPT>

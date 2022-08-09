@@ -15,8 +15,8 @@
         }
     </SCRIPT>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.2/dexie.min.js" integrity="sha512-/Aa8vGWIh0EnOTIVN/ZWTS3UqyJJDhWYtIPS/IqtaaSG0VA6hC6CSvtWdh2+T72q74+2l1RFgu+ig91LGLX57A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/ext/jquery.d/jquery.min.js"></script>
+    <script src="js/ext/dexie.d/dexie.min.js"></script>
     <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/welcome.js"></SCRIPT>

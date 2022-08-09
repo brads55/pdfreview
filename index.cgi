@@ -614,8 +614,7 @@ if "manifest" in form:
     files += glob.glob("css/*")
     files += glob.glob("font/*")
     files += glob.glob("img/*")
-    files += glob.glob("js/*.js")
-    files += glob.glob("js/ext/*.js")
+    files += glob.glob("js/**.js", recursive=True)
     files += glob.glob("manifest.json")
     
     for file in files:
