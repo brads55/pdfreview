@@ -103,7 +103,7 @@ function Server() {
                         else {
                             $('#offline-status-text').show().html('Experiencing difficulties (<A HREF="?reauthentication-attempt=' + (new Date()).getTime() + '&review=' + window.reviewId + '">are you logged out</A>?)');
                             // It is possible we are no longer authenticated, in which case we will receive some sort of redirect request (300..399).
-                            if((http.status == 0 || (http.status >= 300 && http.status < 400)) && !self.reauthenticationRequestInProgress) {
+                            if((http.status >= 300 && http.status < 400) && !self.reauthenticationRequestInProgress) {
                                 self.reauthenticationRequestInProgress = true;
 
                                 // Open an authentication pop-up
