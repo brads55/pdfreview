@@ -3,6 +3,14 @@
  * Many of these functions are adopted from the pdf.js example code.
  * Francois Botman, 2017.
  */
+const LinkTarget = {
+      NONE: 0, // Default value.
+      SELF: 1,
+      BLANK: 2,
+      PARENT: 3,
+      TOP: 4,
+};
+const DEFAULT_LINK_REL = "noopener noreferrer nofollow";
 
 function PDFLinkService(pdfApp) {
     var self = this;
@@ -27,6 +35,48 @@ PDFLinkService.prototype.setDocument = function(pdf) {
 
 PDFLinkService.prototype.internalLinkUrl = function(dest) {
     return '#' + dest;
+}
+
+/**
+ * Adds various attributes (href, title, target, rel) to hyperlinks.
+ * @param {HTMLAnchorElement} link - The link element.
+ * @param {ExternalLinkParameters} params
+ */
+PDFLinkService.prototype.addLinkAttributes = function(link, url, target, rel, enabled = true) {
+    if (!url || typeof url !== "string") {
+        throw new Error('A valid "url" parameter must provided.');
+    }
+
+    if (enabled) {
+        link.href = link.title = url;
+    } else {
+        link.href = "";
+        link.title = `Disabled: ${url}`;
+        link.onclick = () => {
+            return false;
+        };
+    }
+
+    let targetStr = ""; // LinkTarget.NONE
+    switch (target) {
+        case LinkTarget.NONE:
+            break;
+        case LinkTarget.SELF:
+            targetStr = "_self";
+            break;
+        case LinkTarget.BLANK:
+            targetStr = "_blank";
+            break;
+        case LinkTarget.PARENT:
+            targetStr = "_parent";
+            break;
+        case LinkTarget.TOP:
+            targetStr = "_top";
+            break;
+    }
+    link.target = targetStr;
+
+    link.rel = typeof rel === "string" ? rel : DEFAULT_LINK_REL;
 }
 
 PDFLinkService.prototype.getDestinationHash = function(dest) {
