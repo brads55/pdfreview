@@ -19,8 +19,8 @@
     <link rel="stylesheet" href="css/pdf_viewer.min.css"/>
     <script src="js/ext/jquery.d/jquery.min.js"></script>
     <script src="js/ext/dexie.d/dexie.min.js"></script>
-    <script src="js/ext/pdf.d/pdf.min.js"></script>
-    <script src="js/ext/pdf.d/pdf.worker.min.js"></script>
+    <script src="js/ext/pdf.d/pdf.js"></script>
+    <script src="js/ext/pdf.d/pdf.worker.js"></script>
     <script src="js/ext/material.d/material.js"></script>
     <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
     <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
