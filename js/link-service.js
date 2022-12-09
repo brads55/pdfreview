@@ -89,7 +89,7 @@ PDFLinkService.prototype.getDestinationHash = function(dest) {
 }
 
 PDFLinkService.prototype.goToDestination = function(dest) {
-    this.pdf.getDestination(dest).then(a=>{this.navigateTo(a, false)});
+    this.navigateTo(dest, false);
 }
 
 PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
