@@ -10,7 +10,7 @@ def all_text_cols(conn):
 def esc(s):
     # Not sure this actually escapes the table names and column names correctly, but the table names are fixed anyway so it's not a problem
     # sqlalchemy insists on wrapping quotes around bound params, which MySQL does not like at all :'( which is why I need this function
-    return MySQLdb.escape_string(s).decode('utf-8')
+    return MySQLdb._mysql.escape_string(s).decode('utf-8')
 
 def switch_to_encoding(tables, enc, colate):
     conn = op.get_bind()
