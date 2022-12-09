@@ -31,6 +31,7 @@ PDFReviewApplication.prototype.loadPDF = function() {
         //  - disableFontFace: needed to work around a canvas rendering bug in Chrome using hardware acceleration
         //    that would cause corruption in the text rendering. This is suboptimal and should be removed in a
         //    future release...
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/ext/pdf.d/pdf.worker.js';
         var load = pdfjsLib.getDocument({url: self.pdfUrl, cMapUrl: 'cmaps/', cMapPacked: true, disableAutoFetch: true, disableStream: true, disableRange: true, disableFontFace: true});
 
         // Incorrect password, ask for a new one.
