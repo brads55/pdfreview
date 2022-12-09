@@ -28,7 +28,10 @@ PDFReviewApplication.prototype.loadPDF = function() {
         //  - url: what is the url for the pdf file
         //  - cMapUrl / cMapPacked: where the cMaps are located
         //  - disableAutoFetch / disableStream / disableRange: this avoids making use of Ranged requests, which is not supported by ServiceWorkers used in offline mode
-        var load = pdfjsLib.getDocument({url: self.pdfUrl, cMapUrl: 'cmaps/', cMapPacked: true, disableAutoFetch: true, disableStream: true, disableRange: true});
+        //  - disableFontFace: needed to work around a canvas rendering bug in Chrome using hardware acceleration
+        //    that would cause corruption in the text rendering. This is suboptimal and should be removed in a
+        //    future release...
+        var load = pdfjsLib.getDocument({url: self.pdfUrl, cMapUrl: 'cmaps/', cMapPacked: true, disableAutoFetch: true, disableStream: true, disableRange: true, disableFontFace: true});
 
         // Incorrect password, ask for a new one.
         load.onPassword = function(updatePassword, reason) {
