@@ -621,6 +621,7 @@ select.button * {
     overflow-x:             hidden;
     overflow-y:             auto;
     font-size:              14px;
+    height:                 100%;
 }
 
 #sidebar-left-search-results > div {
