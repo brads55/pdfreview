@@ -46,23 +46,23 @@
     <DIV id="offline-status-text" class="notification bottom online-only" style="display: none;"></DIV>
 
     <DIV id="content-container" class="columns">
-        <DIV id="sidebar-left"  style="width: 10%;padding: 0px;border-right: 5px solid #ccc;" class="sidebar flex-column">
+        <DIV id="sidebar-left"  style="width: 10%;padding: 0px;" class="sidebar">
             <!-- Sidebar-left toolbar -->
-            <div id="toolbar" class="toolbar columns white-text">
+            <DIV id="toolbar" class="toolbar columns white-text">
                 <CENTER>
                           <DIV id="button-search-prev" class="button left"  data-icon="img/toolbarButton-search-prev.png" style="display: none;" title="Previous search result (SHIFT+F3)">
                     </DIV><DIV id="button-search-next" class="button right" data-icon="img/toolbarButton-search-next.png" style="display: none;" title="Next search result (F3)"></DIV>
                 </CENTER>
             </DIV>
-            <div>
+            <DIV>
                 <DIV id="sidebar-left-bookmarks"></DIV>
                 <DIV id="sidebar-left-search-results" style="display: none;"></DIV>
             </DIV>
         </DIV>
 
-        <div id="main-content"  style="width: 70%;padding: 0px;" class="mainbar flex-column">
+        <DIV id="main-content"  style="width: 70%;padding: 0px;" class="mainbar">
             <!-- Main application toolbar -->
-            <div id="toolbar" class="toolbar white-text">
+            <DIV id="toolbar" class="toolbar white-text">
                 <!-- Toolbar centre left -->
                 <DIV id="button-left-sidebar-toggle" style="float: left;" class="button" data-icon="img/toolbarButton-sidebarToggle-left.png" title="Toggle left sidebar"></DIV>
                 <DIV id="button-bookmark-sync" style="float: left;" class="button" data-icon="img/toolbarButton-book-marker.png" title="Synchronise bookmark location"></DIV>
@@ -114,19 +114,19 @@
             </DIV>
 
             <!-- PDF view -->
-            <div id="pdfview">
-            </div>
+            <DIV id="pdfview">
+            </DIV>
 
         </DIV>
 
-        <DIV id="sidebar-right" style="width: 20%;padding: 0px;border-left: 5px solid #ccc;" class="sidebar flex-column" oncontextmenu="return false;">
+        <DIV id="sidebar-right" style="width: 20%;padding: 0px;" class="sidebar" oncontextmenu="return false;">
             <!-- Sidebar-right toolbar -->
-            <div id="toolbar" class="toolbar columns white-text">
+            <DIV id="toolbar" class="toolbar columns white-text">
                 <DIV id="button-comment-filter" class="button" style="padding: 3px 10px;" title="Filter comments based on configurable criteria (CTRL+H)">Filter</DIV>
                       <DIV id="button-comment-text-smaller" class="button left"  data-icon="img/toolbarButton-text-smaller.png" title="Make comment text smaller">
                 </DIV><DIV id="button-comment-text-larger"  class="button right" data-icon="img/toolbarButton-text-larger.png"  title="Make comment text larger"></DIV>
             </DIV>
-            <div id="sidebar-right-container">
+            <DIV id="sidebar-right-container">
                 <DIV id="comment-status-msg" class="lightwhite-text"></DIV>
                 <DIV id="comment-status-loading" class="lightwhite-text">Loading comments...</DIV>
                 <DIV id="comment-container"></DIV>
