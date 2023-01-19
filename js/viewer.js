@@ -57,6 +57,7 @@ $( document ).ready(function() {
         $("#button-right-sidebar-toggle").toggleClass("active");
     });
     //window.sidebarLeft.hide();
+    $("#button-left-sidebar-toggle").addClass("active");
     $('#button-comment-text-smaller').on("click", function() {
         var commentContainer = $('#comment-container');
         commentContainer.css('font-size', (parseInt(commentContainer.css('font-size'))-2) + "px")
