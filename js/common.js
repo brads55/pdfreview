@@ -47,6 +47,7 @@ function api(url) {
 
 window.addEventListener('unhandledrejection', function(error) {
     // Dexie has a tendency to quitely blow up. But we want this to be caught by our main error handler.
-    console.error("unhandledrejectionerror", error);
-    throw new Error("Unhandled database error: " + error);
+    let reason = event.reason;
+    console.error("unhandledrejectionerror", error, reason, reason.stack);
+    throw new Error("Unhandled database error: " + error + ": " + reason + ": " + reason.stack);
 });
