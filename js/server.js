@@ -258,12 +258,22 @@ function Server() {
      }
     }
 
-    // Maintenance operations on the offline server todo list:
-    self.db.todo.where("attempts").aboveOrEqual(20).each(function(obj) {
-        obj.attempts = 0;   // reset # attempts
-        self.db.todo.update(obj.id, obj);
-    });
-    server_sync();
+    function _force_server_sync(info) {
+        if(!info) console.log("Forcing server sync");
+        if(!info && !navigator.onLine) console.log("Cannot perform sync as the navigator is offline", navigator.onLine);
+        if(!info) self.db.todo.toArray().then(function(data) {
+            console.log("[debug] Captured offline db items to synchronise:", data);
+        });
+        // Maintenance operations on the offline server todo list:
+        self.syncInProgress = false;
+        self.db.todo.where("attempts").aboveOrEqual(20).each(function(obj) {
+            obj.attempts = 0;   // reset # attempts
+            self.db.todo.update(obj.id, obj);
+        });
+        server_sync();
+    }
+    window.force_server_sync = _force_server_sync;
+    _force_server_sync(true);
 }
 
 Server.prototype.get_data = function(url, options) {
