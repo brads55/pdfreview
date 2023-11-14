@@ -43,22 +43,35 @@ def login(config):
             cgitb.enable()
 
         #
+        # Bearer token login
+        #
+        if 'HTTP_AUTHORIZATION' in os.environ:
+            bearer   = os.environ['HTTP_AUTHORIZATION']
+            user_key = bearer.split(" ", 1)[1]
+            # Either this is already in the database, just look it up
+            result = db_get_user(config, user_key)
+            if result and len(result) == 2:
+                (name, email) = result
+                return {"name": name, "email": email.lower()}
+
+            # ....Or it's not, authenticate with microsoft.
+            headers = {'Content-Type':'application/json', 'Authorization': bearer}
+            endpoint = "https://graph.microsoft.com/v1.0/me/"
+            response = requests.get(endpoint, headers=headers)
+            if response.status_code == 200:
+                json_data = json.loads(response.text)
+                username  = json_data["displayName"]
+                useremail = json_data["mail"]
+                db_add_user(config, user_key, username, useremail)
+                return {"name": username, "email": useremail.lower()}
+            # (or keep going if that failed...)
+
+        #
         # If the user has a valid token, validate that now
         #
         cookie = get_cookie(TOKEN_NAME)
         if cookie:
-            # Perform database token expiration maintenance
-            db = db_open(config)
-            cur = db.cursor()
-            cur.execute("DELETE FROM adal_auth WHERE expire<%s;", (int(time.time()),))
-            db.commit()
-
-            # Find user in table
-            cur.execute("SELECT name, email from adal_auth WHERE authkey=%s;", (cookie,))
-            result = cur.fetchone()
-            cur.close()
-            db_close(db)
-
+            result = db_get_user(config, cookie)
             if result and len(result) == 2:
                 (name, email) = result
                 return {"name": name, "email": email.lower()}
@@ -87,17 +100,7 @@ def login(config):
                 useremail = json_data["mail"]
                 user_key  = uuid.uuid1()
 
-                db = db_open(config)
-                cur = db.cursor()
-                cur.execute("INSERT INTO adal_auth (authkey, name, email, expire) VALUES (%s, %s, %s, %s);", (
-                        user_key,
-                        username,
-                        useremail,
-                        int(time.time() + config["adal_expires_sec"])))
-                db.commit()
-                cur.close()
-                db_close(db)
-
+                db_add_user(config, user_key, username, useremail)
                 uri_context = get_cookie(URI_TOKEN)
                 url = config["url"]
                 if (uri_context):
@@ -129,6 +132,31 @@ def auth_error(msg, config):
     print("Content-type: text/html\n")
     print_file("./auth_error.html.template", [[r'%ERROR_MESSAGE%', msg]], config)
     sys.exit(0)
+
+def db_add_user(config, user_key, username, useremail):
+    db = db_open(config)
+    cur = db.cursor()
+    cur.execute("INSERT INTO adal_auth (authkey, name, email, expire) VALUES (%s, %s, %s, %s);", (
+            user_key,
+            username,
+            useremail,
+            int(time.time() + config["adal_expires_sec"])))
+    db.commit()
+    cur.close()
+    db_close(db)
+
+def db_get_user(config, user_key):
+    db = db_open(config)
+    cur = db.cursor()
+    cur.execute("DELETE FROM adal_auth WHERE expire<%s;", (int(time.time()),))
+    db.commit()
+
+    # Find user in table
+    cur.execute("SELECT name, email from adal_auth WHERE authkey=%s;", (user_key,))
+    result = cur.fetchone()
+    cur.close()
+    db_close(db)
+    return result   # None, or (name, email)
 
 def get_cookie(name):
     if 'HTTP_COOKIE' in os.environ:
