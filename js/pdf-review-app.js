@@ -206,7 +206,6 @@ PDFReviewApplication.prototype.doScale = async function(scale) {
         }
 
         await self.redraw();
-        self.linkService.navigateTo("page=" + (currentPage+1));
 
         // any callback?
         if(self.onscale) self.onscale(self.scale);

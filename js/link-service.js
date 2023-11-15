@@ -19,12 +19,14 @@ function PDFLinkService(pdfApp) {
     this.page    = 0;
     this._cachedEntries = {};
     this._numCachedEntries = 0;
+    this.nextHistorySilent = false;
     this.config = {
         targetX: 0,
         targetY: 100
     };
     $(window).on("popstate.linkService", function(e) {
-        self.navigateTo(e.originalEvent.state, true);
+        if(e.originalEvent.state) self.navigateTo(e.originalEvent.state, true);
+        else if(e.originalEvent.target.location.hash) self.navigateTo(e.originalEvent.target.location.hash.replace("#",""), true);
         return cancel(e);
     });
 }
@@ -82,7 +84,10 @@ PDFLinkService.prototype.addLinkAttributes = function(link, url, target, rel, en
 PDFLinkService.prototype.getDestinationHash = function(dest) {
     var name = "";
     if(typeof dest === 'string')   name = dest;
-    else if(dest instanceof Array) name = "_ref" + escape(this._numCachedEntries++);
+    else if(dest instanceof Array) {
+        if(dest.length == 5 && dest[4]) name = "comment=" + escape(dest[4]);
+        else                            name = "_ref" + escape(this._numCachedEntries++);
+    }
     for(var i in this._cachedEntries) if(this._cachedEntries[i] === dest) return this.internalLinkUrl(i);
     this._cachedEntries[name] = dest;
     return this.internalLinkUrl(name);
@@ -94,7 +99,10 @@ PDFLinkService.prototype.goToDestination = function(dest) {
 
 PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
     var self = this;
-
+    if(self.nextHistorySilent) {
+        doNotAddHistory = true;
+        self.nextHistorySilent = false;
+    }
 
     // Navigate to somewhere unspecified -- default to top.
     if(!dest) $('#pdfview').scrollTop(0).scrollLeft(0);
@@ -112,6 +120,13 @@ PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
             var container = self.pdfApp.getPageContainer(pageId);
             $('#pdfview').scrollTop(container.offsetTop - $('#pdfview')[0].getBoundingClientRect().top - 5);
             if(window.history && !doNotAddHistory) history.pushState(dest, "Page " + (pageId + 1), self.getDestinationHash(dest));
+        }
+        // Comment
+        else if(dest.match("comment=")) {
+            commentId = dest.replace("comment=","")
+            s = $("#review-comment-" + commentId)
+            self.nextHistorySilent = true
+            if(s) s.click()
         }
         // Named destination
         else {
@@ -137,6 +152,10 @@ PDFLinkService.prototype.navigateTo = function(dest, doNotAddHistory) {
 
                 $('#pdfview').scrollTop(rect.top).scrollLeft(rect.left);
                 if(window.history && !doNotAddHistory) history.pushState(dest, "Page " + (pageId + 1), self.getDestinationHash(dest));
+                if(dest.length == 5 && dest[4]) {
+                    s = $("#review-comment-" + dest[4])
+                    if(s) s.trigger("commentSelect");
+                }
                 self.pdfApp.redraw();
             });
         }

@@ -21,6 +21,8 @@ function CommentManager(pdfApp, commentContainer) {
     self.filters          = jQuery.extend({}, self.rstfilters,
                                 JSON.parse(window.localStorage["filters_" + window.reviewId] || '{}'));
 
+    self.goToComment      = location.hash && location.hash.match("page|comment");
+
     // Create comment-per-page containers
     for(var i = 0; i < self.pdfApp.pdf.numPages; i++) {
         var div = document.createElement("div");
@@ -154,6 +156,10 @@ CommentManager.prototype.fetchAllComments = function() {
             self.commentDB.comments.bulkPut(p.comments).then(function() {
                 self.refreshComments(false);
                 self.applyFilters();
+                if(self.goToComment) {
+                    self.goToComment = false
+                    self.pdfApp.linkService.navigateTo(location.hash.replace("#",""), true)
+                }
             });
 
             if(p.status != "open") {
@@ -334,7 +340,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
                         if(e.data.comment.pageId != self.pdfApp.currentPage) {  // Go to PDF page if not currently on that page
                             if(e.data.comment.rects && e.data.comment.rects.length > 0 && e.data.comment.rects[0].tl && e.data.comment.rects[0].tl.length) {
                                 // Try to go the the right place on the page:
-                                self.pdfApp.linkService.navigateTo(["direct", e.data.comment.pageId, e.data.comment.rects[0].tl[0], e.data.comment.rects[0].tl[1]]);
+                                self.pdfApp.linkService.navigateTo(["direct", e.data.comment.pageId, e.data.comment.rects[0].tl[0], e.data.comment.rects[0].tl[1], e.data.comment.id]);
                             }
                             else {
                                 // Otherwise default to the page it's on:
@@ -345,7 +351,10 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
                     }
                     return cancel(e);
                 })
-              .on("dblclick", {comment: comment, commentid: comment.id}, comment.owner ? commentUpdate : commentReply);
+              .on("dblclick", {comment: comment}, comment.owner ? commentUpdate : commentReply)
+              .on("commentSelect", {comment: comment}, function(e) {
+                  self.selectComment(e.data.comment.id, false);
+              });
     }
 }
 
