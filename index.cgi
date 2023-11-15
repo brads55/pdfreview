@@ -164,7 +164,7 @@ def get_ps_comment_reply(comments, replyToId, indent = 1):
             txt += get_ps_comment_reply(comments, comment["id"], indent + 1)
     return txt
 
-def create_ps_from_comments(comments):
+def create_ps_from_comments(comments, pageOffset):
     ps  = '%!PS\n\n'
     ps += '[ /Producer (%s PDF Review)\n' % (config.config["branding"],)
     ps += '  /DOCINFO pdfmark\n\n'
@@ -207,7 +207,7 @@ def create_ps_from_comments(comments):
             else:
                 ps += '  /Subtype /Text\n'
                 ps += '  /Color [1 0.95 0.66]\n'    #fff2a8
-            ps += '  /SrcPg %s\n' % ((comment["pageId"] + 1),)
+            ps += '  /SrcPg %s\n' % ((comment["pageId"] + 1 - pageOffset),)
             if len(quadpoints) > 0:
                 ps += '  /QuadPoints [%s]\n' % (quadpoints,)
             status = (" \(%s\)" % (comment["status"],)) if not comment["status"] == "None" else ""
@@ -493,21 +493,40 @@ if(form_api == "pdf-archive"):
 
     # Create postscript annotations
     psfile      = re.sub(r'\.pdf', r'-archive.ps', pdffile)
-    archivefile = re.sub(r'\.pdf', r'-archive.pdf', pdffile)
+    archivefile = re.sub(r'\.pdf', r'-archive.png', pdffile) if ("format" in form and form.getvalue("format") == "png") else re.sub(r'\.pdf', r'-archive.pdf', pdffile)
     cmd = [config.config["ghostscript_path"],
             "-dSAFER",
+            "-dBATCH",
+            "-dNOPAUSE",
             "-q",
             "-sOutputFile=" + archivefile,
-            "-sDEVICE=pdfwrite",
+            "-sDEVICE=pngalpha" if ("format" in form and form.getvalue("format") == "png") else "-sDEVICE=pdfwrite",
             "-dPDFSETTINGS=/prepress"]
     if "password" in form:
         cmd.append("-sPDFPassword=" + cgi.escape(form.getvalue("password")))
         cmd.append("-sOwnerPassword=" + cgi.escape(form.getvalue("password")))
         cmd.append("-sUserPassword=" + cgi.escape(form.getvalue("password")))
+
+    # The whole thing, or just a specific comment?
+    pageNum = 0
+    commentId = form.getvalue("commentid")
+    if commentId:
+        newcomments = [x for x in comments if x.get("id") == commentId or x.get("replyToId") == commentId]
+        comments = newcomments
+        if len(comments) == 0:
+            print('{"errorCode": 4, "errorMsg": "No suitable comments could be found."}')
+            sys.exit(0)
+        for x in comments:
+            if x.get("pageId"): pageNum = x.get("pageId")
+        cmd.append("-r250")
+        cmd.append("-dPrinted=false")
+        cmd.append("-dFirstPage=" + str(int(pageNum)+1))
+        cmd.append("-dLastPage=" + str(int(pageNum)+1))
+
     cmd.append(psfile)
     cmd.append(pdffile)
 
-    ps = create_ps_from_comments(comments)
+    ps = create_ps_from_comments(comments, pageNum)
     output_file = open(psfile, 'w')
     output_file.write(ps)
     output_file.write("%% %s\n" % (" ".join(cmd)))
