@@ -347,6 +347,11 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
                                 self.pdfApp.linkService.navigateTo("page=" + (e.data.comment.pageId + 1));
                             }
                         }
+                        else if(window.history) {
+                            history.pushState("comment="+e.data.comment.id, "Comment " + e.data.comment.id, self.pdfApp.linkService.getDestinationHash(
+                                ["direct", e.data.comment.pageId, e.data.comment.rects[0].tl[0], e.data.comment.rects[0].tl[1], e.data.comment.id]
+                            ));
+                        }
                         self.selectComment(e.data.comment.id, false);
                     }
                     return cancel(e);
@@ -519,7 +524,10 @@ CommentManager.prototype.redraw = function(pageId, pageContainer) {
         }
         else {
             pdfCommentDivs.show();
-            if(self.flashing == comment.id) $('#reviewlayer-comment-' + comment.id).show();
+            if(self.flashing == comment.id) {
+                $('#reviewlayer-comment-' + comment.id).show();
+                pdfCommentDivs.addClass("selectedComment");
+            }
         }
     })["catch"](function(e){throw new Error(e);});
 }
