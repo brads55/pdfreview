@@ -235,7 +235,10 @@ function Server() {
          offlineCacheStatus("downloading");
          navigator.serviceWorker.register(window.scriptURL + '?manifest=serviceworker', {scope: './'}).then(function(registration) {
              if(window.console) console.info("Using ServiceWorkers to provide offline access.");
-             if(registration) offlineCacheStatus("ready");
+             if(registration) {
+                 offlineCacheStatus("ready");
+                 registration.update();
+             }
              else offlineCacheStatus("error");
          });
      } catch(error) {
