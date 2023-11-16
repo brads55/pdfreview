@@ -119,6 +119,7 @@ def list_comments(db, reviewId):
                 "status":   status,
                 "secs_UTC": timestamp,
                 "deleted":  deleted,
+                "rects":    [],
                 "owner":    (author == login_name)
             }
             if (pageId is not None):    tmp["pageId"] = pageId
