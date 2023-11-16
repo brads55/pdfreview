@@ -237,7 +237,7 @@ function Server() {
              if(window.console) console.info("Using ServiceWorkers to provide offline access.");
              if(registration) {
                  offlineCacheStatus("ready");
-                 registration.update();
+                 if(window.navigator.onLine) registration.update();
              }
              else offlineCacheStatus("error");
          });
