@@ -165,7 +165,8 @@ def get_ps_comment_reply(comments, replyToId, indent = 1):
             txt += get_ps_comment_reply(comments, comment["id"], indent + 1)
     return txt
 
-def create_ps_from_comments(comments, pageOffset):
+def create_ps_from_comments(comments, pageOffset, highlights):
+    psHighlights = ""
     ps  = '%!PS\n\n'
     ps += '[ /Producer (%s PDF Review)\n' % (config.config["branding"],)
     ps += '  /DOCINFO pdfmark\n\n'
@@ -174,6 +175,7 @@ def create_ps_from_comments(comments, pageOffset):
         if not "replyToId" in comment and not comment.get("deleted"):
             bounding   = {"x1": 10000000, "x2": 0, "y1": 10000000, "y2": 0}
             quadpoints = ""
+            pageNum = comment["pageId"] + 1 - pageOffset
             for rect in comment["rects"]:
                 if comment["type"] in ["highlight", "strike"]:
                     # Annoyingly, acrobat does not follow the PDF spec.
@@ -208,7 +210,7 @@ def create_ps_from_comments(comments, pageOffset):
             else:
                 ps += '  /Subtype /Text\n'
                 ps += '  /Color [1 0.95 0.66]\n'    #fff2a8
-            ps += '  /SrcPg %s\n' % ((comment["pageId"] + 1 - pageOffset),)
+            ps += '  /SrcPg %s\n' % (pageNum,)
             if len(quadpoints) > 0:
                 ps += '  /QuadPoints [%s]\n' % (quadpoints,)
             status = (" \(%s\)" % (comment["status"],)) if not comment["status"] == "None" else ""
@@ -216,6 +218,42 @@ def create_ps_from_comments(comments, pageOffset):
             msg = ps_format_msg(comment["msg"]) + get_ps_comment_reply(comments, comment["id"])
             ps += """  /RC (<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:15.23.0" xfa:spec="2.0.2">%s</body>)\n""" % (msg,)
             ps += '  /ANN pdfmark\n\n'
+
+            psHighlights += "    pageNum %s eq {\n" % (str(pageNum))
+            psHighlights += "        {} {} {} {}  {} highlight\n".format(bounding["x1"], bounding["y1"], bounding["x2"], bounding["y2"],
+                "1 0.95 0.66" if comment["type"] == "highlight" else
+                "1 0.7 0.7"   if comment["type"] == "strike" else "1 0.95 0.66")
+            psHighlights += "    } if\n"
+
+    if highlights:
+        ps += "/roundbox { % needs width, height and corner radius\n"
+        ps += "    /radius exch def /height exch def /width exch def\n"
+        ps += "    0 radius moveto\n"
+        ps += "    0 height width height radius arcto 4 {pop} repeat\n"
+        ps += "    width height width 0 radius arcto 4 {pop} repeat\n"
+        ps += "    width 0 0 0 radius arcto 4 {pop} repeat\n"
+        ps += "    0 0 0 height radius arcto 4 {pop} repeat\n"
+        ps += "    closepath\n"
+        ps += "} def\n\n"
+        ps += "/highlight { % xll yll xur yur  r g b\n"
+        ps += "    /colb exch def /colg exch def /colr exch def\n"
+        ps += "    /yur exch def /xur exch def /yll exch def /xll exch def\n"
+        ps += "    xll yll moveto\n"
+        ps += "    gsave\n"
+        ps += "        currentpoint translate\n"
+        ps += "        xur xll sub yur yll sub 1 roundbox\n"
+        ps += "        colr colg colb setrgbcolor fill\n"
+        ps += "    grestore\n"
+        ps += "} def\n\n"
+        ps += "globaldict /pageNum 1 put\n\n"
+        ps += "<< /BeginPage {\n"
+        ps += "    /showCount exch def\n"
+        ps += psHighlights
+        ps += "    showCount 1 eq {\n"
+        ps += "        globaldict /pageNum pageNum 1 add put\n"
+        ps += "    } if\n"
+        ps += "} bind\n"
+        ps += ">> setpagedevice\n\n"
     return ps
 
 def list_my_reviews(db):
@@ -437,9 +475,11 @@ if(form_api == "delete-review"):
     if result and len(result) == 1:
         pdffile     = result[0]
         psfile      = re.sub(r'\.pdf', r'-archive.ps', pdffile)
+        pngfile     = re.sub(r'\.pdf', r'-archive.png', pdffile)
         archivefile = re.sub(r'\.pdf', r'-archive.pdf', pdffile)
         if os.path.lexists(pdffile):     os.remove(pdffile)
         if os.path.lexists(psfile):      os.remove(psfile)
+        if os.path.lexists(pngfile):     os.remove(pngfile)
         if os.path.lexists(archivefile): os.remove(archivefile)
     cur.execute("DELETE FROM reviews   WHERE reviewid=%s;", (form_review,))
     cur.execute("DELETE FROM comments  WHERE reviewid=%s;", (form_review,))
@@ -478,6 +518,9 @@ if(form_api == "pdf-archive"):
     if not form_review:
         print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
         sys.exit(0)
+    highlights = form.getvalue("highlights")
+    if form.getvalue("format") == "png":
+        highlights = True
 
     db = db_open(config.config)
     cur = db.cursor()
@@ -501,7 +544,7 @@ if(form_api == "pdf-archive"):
             "-dNOPAUSE",
             "-q",
             "-sOutputFile=" + archivefile,
-            "-sDEVICE=pngalpha" if ("format" in form and form.getvalue("format") == "png") else "-sDEVICE=pdfwrite",
+            "-sDEVICE=png16m" if ("format" in form and form.getvalue("format") == "png") else "-sDEVICE=pdfwrite",
             "-dPDFSETTINGS=/prepress"]
     if "password" in form:
         cmd.append("-sPDFPassword=" + cgi.escape(form.getvalue("password")))
@@ -527,7 +570,7 @@ if(form_api == "pdf-archive"):
     cmd.append(psfile)
     cmd.append(pdffile)
 
-    ps = create_ps_from_comments(comments, pageNum)
+    ps = create_ps_from_comments(comments, pageNum, highlights)
     output_file = open(psfile, 'w')
     output_file.write(ps)
     output_file.write("%% %s\n" % (" ".join(cmd)))
