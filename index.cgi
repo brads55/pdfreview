@@ -290,8 +290,7 @@ if(form_api == "add-comment"):
         print('{"errorCode": 2, "errorMsg": "Missing parameters for comment :("}')
         sys.exit(0)
     if not comment.get("id"):
-        print('{"errorCode": 2, "errorMsg": "Missing ID parameter for comment :("}')
-        sys.exit(0)
+        comment["id"] = gen_random_string(64)
 
     db  = db_open(config.config)
     ensure_review_open(db, form_review)
@@ -321,7 +320,8 @@ if(form_api == "add-comment"):
         db.commit()
     cur.close()
     db_close(db)
-    print("""{"errorCode": 0, "errorMsg": "Success"}""")
+    if not result or len(result) == 0: print("""{"errorCode": 0, "errorMsg": "Success"}""")
+    else:                              print("""{"errorCode": 0, "errorMsg": "Ignored", "ignored": "yes"}""")
     sys.exit(0)
 
 if(form_api == "delete-comment"):
