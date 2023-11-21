@@ -342,8 +342,17 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
         parent.appendChild(div);
         $(div).on("mousedown", {commentid: comment.id}, self.onCommentContext)
               .on("click", {comment: comment}, function(e) {
-                    if(e.target && e.target.tagName == "A" && self.flashing == e.data.comment.id) {
-                        return; // Just return and let the hyperlink take care of itself
+                    var commentId   = e.data.comment.id;
+                    var commentCard = $("#review-comment-" + e.data.comment.id);
+                    if(commentCard.length) {
+                        var p = commentCard.get(0);
+                        while(p.replyToId != undefined) {
+                            commentId = p.replyToId;
+                            p         = document.getElementById("review-comment-" + commentId);
+                        }
+                        if(e.target && e.target.tagName == "A" && self.flashing == commentId) {
+                            return; // Just return and let the hyperlink take care of itself
+                        }
                     }
                     var offset = $(this).offset();
                     var cornerSize = parseInt($('#comment-container').css('font-size')) * 1.5;
