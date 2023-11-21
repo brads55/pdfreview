@@ -283,7 +283,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
         return cancel(e);
     }
     function commentUpdate(e) {
-        self.commentDB.comments.get(e.data.commentid).then(function(comment) {
+        self.commentDB.comments.get(e.data.comment.id).then(function(comment) {
             if(!comment.owner) return;
             $('#comment-guidelines').text('Please update your message below:');
             new ModalDialog("dialog-comment", function(dialog, button) {
