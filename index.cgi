@@ -228,6 +228,9 @@ def create_ps_from_comments(comments, pageOffset, highlights):
     if highlights:
         ps += "/roundbox { % needs width, height and corner radius\n"
         ps += "    /radius exch def /height exch def /width exch def\n"
+        ps += "    radius 1 lt { /radius 1  def } if\n"
+        ps += "    width  2 lt { /width  10 def } if\n"
+        ps += "    height 2 lt { /height 10 def } if\n"
         ps += "    0 radius moveto\n"
         ps += "    0 height width height radius arcto 4 {pop} repeat\n"
         ps += "    width height width 0 radius arcto 4 {pop} repeat\n"
