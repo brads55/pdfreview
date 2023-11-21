@@ -201,6 +201,17 @@ CommentManager.prototype.refreshComments = function(hideWhileLoading) {
     return self.commentDB.comments.toArray(populateCommentList);
 }
 
+CommentManager.prototype.prettify = function(text) {
+    var self = this;
+    var output = text.replace(/&/g, "&amp;")
+                     .replace(/</g, "&lt;")
+                     .replace(/>/g, "&gt;")
+                     .replace(/"/g, "&quot;")
+                     .replace(/'/g, "&#039;");
+    output = output.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
+    return output;
+}
+
 CommentManager.prototype.createCommentUI = function(comment, retries) {
     var self = this;
     if(retries > 1000) return;
@@ -326,11 +337,14 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
     else {
         $(div).append($("<B>").addClass("author").text(comment.author || "You").attr('title', "Comment from " + (new Date(comment.secs_UTC * 1000)).toLocaleString()))
               .append($("<SPAN>").addClass("status").text(comment.status == "None" ? "" : comment.status))
-              .append($("<DIV>").addClass("comment-content").text(comment.msg || ""))
+              .append($("<DIV>").addClass("comment-content").html(self.prettify(comment.msg || "")))
               .append(actions);
         parent.appendChild(div);
         $(div).on("mousedown", {commentid: comment.id}, self.onCommentContext)
               .on("click", {comment: comment}, function(e) {
+                    if(e.target && e.target.tagName == "A" && self.flashing == e.data.comment.id) {
+                        return; // Just return and let the hyperlink take care of itself
+                    }
                     var offset = $(this).offset();
                     var cornerSize = parseInt($('#comment-container').css('font-size')) * 1.5;
                     if((e.pageX - offset.left) < cornerSize && (e.pageY - offset.top) < cornerSize && $(this).hasClass("has-child")) {   // Click on the "collapse" icon to collapse
@@ -383,7 +397,7 @@ CommentManager.prototype.addComment = function(comment, action) {
         card.deleted = comment.deleted;
         $('#review-comment-' + comment.id + ' > .author').text(comment.author || "You");
         $('#review-comment-' + comment.id + ' > .status').text(comment.status == "None" ? "" : comment.status);
-        $('#review-comment-' + comment.id + ' > .comment-content').text(comment.msg || "");
+        $('#review-comment-' + comment.id + ' > .comment-content').html(self.prettify(comment.msg || ""));
         card.unread = comment.unread;
         if(!action || action == "add-comment") return;
     }
