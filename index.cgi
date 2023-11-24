@@ -676,6 +676,22 @@ if (form_api == "get-review-list"):
     print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "reviews": review_list or []}))
     sys.exit(0)
 
+if(form_api == "add-review"):
+    print("Content-type: application/json\n")
+    if not form_review:
+        print('{"errorCode": 1, "errorMsg": "Missing parameters: reviewID :("}')
+    db = db_open(config.config)
+    cur = db.cursor()
+    cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (form_review, login_email))
+    result = cur.fetchone()
+    if not result:
+        cur.execute("INSERT INTO myreviews (reviewid, reader) VALUES (%s, %s);", (form_review, login_email))
+        db.commit()
+    cur.close()
+    db_close(db)
+    print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "reviews": review_list or []}))
+
+
 # Catch-all for API queries
 if(form_api):
     print("Content-type: application/json\n")
@@ -883,11 +899,6 @@ elif(form_review):
     print("Content-type: text/html\n")
     db = db_open(config.config)
     cur = db.cursor()
-    cur.execute("SELECT reviewid FROM myreviews WHERE reviewid=%s AND reader=%s;", (form_review, login_email))
-    result = cur.fetchone()
-    if not result:
-        cur.execute("INSERT INTO myreviews (reviewid, reader) VALUES (%s, %s);", (form_review, login_email))
-        db.commit()
     cur.execute("SELECT reviewid, owner, closed, pdffile, title FROM reviews WHERE reviewid=%s;", (form_review,))
     result = cur.fetchone()
     if result and len(result) == 5:

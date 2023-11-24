@@ -185,5 +185,12 @@ $( document ).ready(function() {
             }
             else showPDFdownload();
         });
+
+        // Add review to the active list
+        var formData = {
+            "api":      "add-review",
+            "review":   window.reviewId};
+        server.get_data(window.scriptURL, { nocache: true, formdata: formData });
+
     });
 });

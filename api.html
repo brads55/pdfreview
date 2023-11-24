@@ -290,6 +290,26 @@
         <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
     </UL>
     </P>
+    
+    
+    <BR/><BR/>
+    <P><H2>Add to my review list</H2>
+    Can be used to add this review to current user's list of active reviews.
+    <UL>
+        <LI><SPAN class="code">api = add-review</SPAN> An "api" parameter set to "add-review" selects this API function.</LI>
+        <LI><SPAN class="code">review</SPAN> The ID of the review.</LI>
+    </UL>
+    <B>Responses</B>
+    <UL>
+        <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
+            <OL start=0>
+                <LI>Success.</LI>
+                <LI>Review ID not specified.</LI>
+            </OL>
+        </LI>
+        <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
+    </UL>
+    </P>
 
 
     <BR/><BR/>
