@@ -326,7 +326,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
     var actions = $("<SPAN>").addClass("actions");
     if(!window.reviewClosed) actions.append($("<A>").text("Reply").on("click", {comment: comment}, commentReply)).append(" &nbsp; ")
     if(!window.reviewClosed && comment.owner) {
-        actions.append($("<A>").text("Update").on("click", {commentid: comment.id}, commentUpdate)).append(" &nbsp; ")
+        actions.append($("<A>").text("Update").on("click", {comment: comment}, commentUpdate)).append(" &nbsp; ")
                .append($("<A>").text("Delete").on("click", {commentid: comment.id}, commentDelete).css({"float": "right", "color": "red"}));
     }
     if(comment.replyToId == undefined) actions.append($("<A>").text("Status").on("click", {commentid: comment.id}, commentStatus));
