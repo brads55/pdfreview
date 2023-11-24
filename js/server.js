@@ -97,7 +97,6 @@ function Server() {
                             }
                             if(callbacks.progress) callbacks.progress(100);
                             if(callbacks.complete) callbacks.complete(json);
-                            $('#offline-status-text').hide();
                             resolve(json);
                         }
                         else {
@@ -224,6 +223,10 @@ function Server() {
             $('#offline-status-text').show().html("Offline data uploaded.");
             self.statusTimeout = setTimeout(hideOfflineNotification, notificationDelay);
         }
+        else if(status == "update") {
+            $('#offline-status-text').show().html("Application update detected, please reload the page when convenient.");
+            self.statusTimeout = setTimeout(hideOfflineNotification, notificationDelay);
+        }
         else hideOfflineNotification();
     }
     $('#offline-status-text').hide();
@@ -238,6 +241,11 @@ function Server() {
              if(registration) {
                  offlineCacheStatus("ready");
                  if(window.navigator.onLine) registration.update();
+                 registration.addEventListener('updatefound', () => {
+                     console.log('Service Worker update detected!');
+                     offlineCacheStatus("update");
+                     if(window.navigator.onLine) registration.update();
+                 });
              }
              else offlineCacheStatus("error");
          });
