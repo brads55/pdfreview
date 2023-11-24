@@ -676,6 +676,45 @@ if (form_api == "get-review-list"):
     print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "reviews": review_list or []}))
     sys.exit(0)
 
+
+if (form_api == "get-all-reviews"):
+    print("Content-type: application/json\n")
+    if config.is_admin(login_name, login_email):
+        db = db_open(config.config)
+        list = []
+        cur  = db.cursor()
+        cur.execute("SELECT reviewid, owner, closed, title, pdffile FROM reviews;")
+        reviews = cur.fetchall()
+        if reviews:
+            for (reviewid, owner, closed, title, pdffile) in reviews:
+                list.append({"id": reviewid, "owner": owner, "title": title, "closed": closed, "pdf": pdffile})
+        cur.close()
+        db_close(db)
+        print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "reviews": list or []}))
+    else:
+        print(json.dumps({"errorCode": 1, "errorMsg": "User is not an administrator."}))
+    sys.exit(0)
+
+
+if (form_api == "get-all-activity"):
+    print("Content-type: application/json\n")
+    if config.is_admin(login_name, login_email):
+        db = db_open(config.config)
+        list = []
+        cur  = db.cursor()
+        cur.execute("SELECT msg, owner, reviewid, timestamp FROM activity;")
+        activity = cur.fetchall()
+        if activity:
+            for (msg, owner, reviewid, timestamp) in activity:
+                list.append({"id": reviewid, "owner": owner, "timestamp": timestamp, "msg": msg})
+        cur.close()
+        db_close(db)
+        print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "activity": list or []}))
+    else:
+        print(json.dumps({"errorCode": 1, "errorMsg": "User is not an administrator."}))
+    sys.exit(0)
+
+
 if(form_api == "add-review"):
     print("Content-type: application/json\n")
     if not form_review:

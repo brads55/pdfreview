@@ -47,6 +47,57 @@
     
     
     <BR/><BR/>
+    <P><H2>List all reviews</H2>
+    <SPAN STYLE="color: red">Admin only</STYLE> Returns a list of all the reviews on the system.
+    <UL>
+        <LI><SPAN class="code">api = get-all-reviews</SPAN> An "action" parameter set to "get-all-reviews" selects this API function.</LI>
+    </UL>
+    <B>Responses</B>
+    <UL>
+        <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
+            <OL start=0>
+                <LI>Success.</LI>
+                <LI>User is not an administrator.</LI>
+            </OL>
+        </LI>
+        <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
+        <LI><SPAN class="code">reviews</SPAN> Returns an array of objects for each review. These will contain the following properties:
+            <LI><SPAN class="code">id</SPAN> The ID of the review.</LI>
+            <LI><SPAN class="code">owner</SPAN> Identifier (email) of the owner.</LI>
+            <LI><SPAN class="code">title</SPAN> The title of the review.</LI>
+            <LI><SPAN class="code">closed</SPAN> A boolean indicating whether the review is closed.</LI>
+            <LI><SPAN class="code">pdf</SPAN> The relative url of the review PDF file.</LI>
+        </LI>
+    </UL>
+    </P>
+    
+    
+    <BR/><BR/>
+    <P><H2>List all activity</H2>
+    <SPAN STYLE="color: red">Admin only</STYLE> Returns a list of all activity on the system.
+    <UL>
+        <LI><SPAN class="code">api = get-all-activity</SPAN> An "action" parameter set to "get-all-activity" selects this API function.</LI>
+    </UL>
+    <B>Responses</B>
+    <UL>
+        <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
+            <OL start=0>
+                <LI>Success.</LI>
+                <LI>User is not an administrator.</LI>
+            </OL>
+        </LI>
+        <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
+        <LI><SPAN class="code">activity</SPAN> Returns an array of objects for each review. These will contain the following properties:
+            <LI><SPAN class="code">id</SPAN> The ID of the review.</LI>
+            <LI><SPAN class="code">owner</SPAN> Identifier (email) of the owner.</LI>
+            <LI><SPAN class="code">timestamp</SPAN> Timestamp of the activity</LI>
+            <LI><SPAN class="code">msg</SPAN> Activity description</LI>
+        </LI>
+    </UL>
+    </P>
+    
+    
+    <BR/><BR/>
     <P><H2>Create a review</H2>
     Creates a new review with the specified PDF file.
     <UL>

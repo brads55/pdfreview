@@ -47,9 +47,29 @@
 </NOSCRIPT>
 
 <div id="content" class="columns">
+    <H2>Errors</H2>
     <TABLE id="error-list" style="width: 90%; padding: 40px;">
         <TBODY></TBODY>
     </TABLE>
+    <BR/><BR/>
+
+    <H2><SPAN id="reviews-count"></SPAN> Reviews</H2>
+    <TABLE id="review-list" style="width: 90%; padding: 40px;">
+        <TBODY></TBODY>
+    </TABLE>
+    <BR/><BR/>
+
+    <H2>Reviews by user</H2>
+    <TABLE id="review-by-users" style="width: 90%; padding: 40px;">
+        <TBODY></TBODY>
+    </TABLE>
+    <BR/><BR/>
+
+    <H2>Activity by user</H2>
+    <TABLE id="activity-by-users" style="width: 90%; padding: 40px;">
+        <TBODY></TBODY>
+    </TABLE>
+    <BR/><BR/>
 </div>
 
 <CENTER style="padding-top: 50px;">
@@ -91,9 +111,90 @@
                         })));
                         $("#error-list").find('tbody').append(tr);
                     })
+                    if(p.errors.length == 0) {
+                        $("#error-list").find('tbody').append($('<tr>').append($('<td>').text("No errors, currently")));
+                    }
                 }
             }
         });
+
+        server.get_data(window.scriptURL + "?api=get-all-activity", {nocache: true, onlineOnly: true, complete: function(activity) {
+            if(activity && activity.errorCode == 0) {
+                window.all_activity = activity.activity;
+                server.get_data(window.scriptURL + "?api=get-all-reviews", {nocache: true, onlineOnly: true, complete: function(reviews) {
+                    if(reviews && reviews.errorCode == 0) {
+                        $("#reviews-count").text(reviews.reviews.length)
+                        window.all_reviews = reviews.reviews;
+                        user_reviews = {};
+
+                        odd = false;
+                        reviews.reviews.forEach(function(review) {
+                            user_reviews[review.owner] = user_reviews[review.owner] ? (user_reviews[review.owner] + 1) : 1;
+
+                            var tr = $('<tr>')
+                            if(odd) {
+                                odd = false;
+                                tr.css('background', '#F0F0F0');
+                            } else {
+                                odd = true;
+                            }
+                            tr.append($('<td>').append($('<a>').attr('href', window.scriptURL + "?review=" + review.id).attr('target', '_blank').text(review.id)));
+                            tr.append($('<td>').text(review.owner));
+                            tr.append($('<td>').text(review.title));
+                            tr.append($('<td>').text(review.closed ? "Closed" : "Open"));
+                            var last_activity = null;
+                            var last_activity_time = 0;
+                            activity.activity.forEach(function(e) {
+                                if(e.id == review.id && e.timestamp > last_activity_time) {
+                                    last_activity_time = e.timestamp;
+                                    last_activity = e;
+                                }
+                            });
+                            if(last_activity) tr.append($('<td>').html((new Date(last_activity_time*1000)).toDateString() + "<BR/>" + last_activity.msg));
+                            $("#review-list").find('tbody').append(tr);
+                        });
+
+                        // User reviews
+                        odd = false;
+                        var user_review_array = Object.keys(user_reviews).map((key) => { return [key, user_reviews[key]] });
+                        user_review_array.sort((first, second) => { return second[1] - first[1] });
+                        user_review_array.forEach(function(e) {
+                            var tr = $('<tr>')
+                            if(odd) {
+                                odd = false;
+                                tr.css('background', '#F0F0F0');
+                            } else {
+                                odd = true;
+                            }
+                            tr.append($('<td>').text(e[0]));
+                            tr.append($('<td>').text(e[1]));
+                            $("#review-by-users").find('tbody').append(tr);
+                        });
+                    }
+                }});
+
+                // List most active users
+                odd = false;
+                user_activity = {};
+                activity.activity.forEach(function(e) {
+                    user_activity[e.owner] = user_activity[e.owner] ? (user_activity[e.owner] + 1) : 1;
+                });
+                var user_activity_array = Object.keys(user_activity).map((key) => { return [key, user_activity[key]] });
+                user_activity_array.sort((first, second) => { return second[1] - first[1] });
+                user_activity_array.forEach(function(e) {
+                    var tr = $('<tr>')
+                    if(odd) {
+                        odd = false;
+                        tr.css('background', '#F0F0F0');
+                    } else {
+                        odd = true;
+                    }
+                    tr.append($('<td>').text(e[0]));
+                    tr.append($('<td>').text(e[1]));
+                    $("#activity-by-users").find('tbody').append(tr);
+                });
+            }
+        }});
     });
 </SCRIPT>
 
