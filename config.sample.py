@@ -37,3 +37,7 @@ def do_login():
     # login_name  = adal_result["name"]
 
     return (login_name, login_email)
+
+def is_admin(login_name, login_email):
+    return True
+

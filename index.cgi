@@ -604,35 +604,41 @@ if (form_api == "report-error"):
 
 if (form_api == "list-errors"):
     print("Content-type: application/json\n")
-    errors = []
-    db = db_open(config.config)
-    cur = db.cursor()
-    cur.execute("SELECT id, msg, details, owner, reviewid FROM errors;")
-    result = cur.fetchall()
-    if result:
-        for (id, msg, details, owner, reviewid) in result:
-            errors.append({
-                "id":       id,
-                "msg":      msg,
-                "details":  details,
-                "owner":    owner,
-                "reviewid": reviewid
-            })
-    cur.close()
-    db_close(db)
-    print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "errors": errors}))
+    if config.is_admin(login_name, login_email):
+        errors = []
+        db = db_open(config.config)
+        cur = db.cursor()
+        cur.execute("SELECT id, msg, details, owner, reviewid FROM errors;")
+        result = cur.fetchall()
+        if result:
+            for (id, msg, details, owner, reviewid) in result:
+                errors.append({
+                    "id":       id,
+                    "msg":      msg,
+                    "details":  details,
+                    "owner":    owner,
+                    "reviewid": reviewid
+                })
+        cur.close()
+        db_close(db)
+        print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "errors": errors}))
+    else:
+        print(json.dumps({"errorCode": 1, "errorMsg": "User is not an administrator."}))
     sys.exit(0)
 
 
 if (form_api == "delete-error"):
     print("Content-type: application/json\n")
-    db = db_open(config.config)
-    cur = db.cursor()
-    cur.execute("DELETE FROM errors WHERE id=%s;", (form.getvalue("id"),))
-    db.commit()
-    cur.close()
-    db_close(db)
-    print(json.dumps({"errorCode": 0, "errorMsg": "Success."}))
+    if config.is_admin(login_name, login_email):
+        db = db_open(config.config)
+        cur = db.cursor()
+        cur.execute("DELETE FROM errors WHERE id=%s;", (form.getvalue("id"),))
+        db.commit()
+        cur.close()
+        db_close(db)
+        print(json.dumps({"errorCode": 0, "errorMsg": "Success."}))
+    else:
+        print(json.dumps({"errorCode": 1, "errorMsg": "User is not an administrator."}))
     sys.exit(0)
 
 
@@ -837,9 +843,12 @@ if(form_action == "upload"):
 
 elif(form_action=="admin"):
     print("Content-type: text/html\n")
-    print_file("./admin.html.template", [
-            [r'%SCRIPT_URL%',       config.config["url"]]
-    ], config.config)
+    if config.is_admin(login_name, login_email):
+        print_file("./admin.html.template", [
+                [r'%SCRIPT_URL%',       config.config["url"]]
+        ], config.config)
+    else:
+        print_file("./notfound.html.template", [], config.config)
     sys.exit(0)
 
 
@@ -874,6 +883,7 @@ else:
     print("Content-type: text/html\n")
     print_file("./welcome.html.template", [
         [r'%SCRIPT_URL%',  config.config["url"]],
-        [r'%NO_REVIEW_MSG%', config.config["no_review_msg"]]
+        [r'%NO_REVIEW_MSG%', config.config["no_review_msg"]],
+        [r'%ADMIN_CSS%', "inline-block" if config.is_admin(login_name, login_email) else "none"]
     ], config.config)
     sys.exit(0)

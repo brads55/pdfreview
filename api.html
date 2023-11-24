@@ -301,7 +301,7 @@
     
     <BR/><BR/>
     <P><H2>List errors</H2>
-    Returns all the errors encountered by the application.
+    <SPAN STYLE="color: red">Admin only</STYLE> Returns all the errors encountered by the application.
     <UL>
         <LI><SPAN class="code">api = list-errors</SPAN> An "api" parameter set to "list-errors" selects this API function.</LI>
     </UL>
@@ -310,6 +310,7 @@
         <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
             <OL start=0>
                 <LI>Success. This always succeeds, but the returned errors may be empty.</LI>
+                <LI>Not an administrator.</LI>
             </OL>
         </LI>
         <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
@@ -320,7 +321,7 @@
     
     <BR/><BR/>
     <P><H2>Remove errors</H2>
-    Deletes a specified error report.
+    <SPAN STYLE="color: red">Admin only</STYLE> Deletes a specified error report.
     <UL>
         <LI><SPAN class="code">api = delete-error</SPAN> An "api" parameter set to "delete-error" selects this API function.</LI>
         <LI><SPAN class="code">id</SPAN> The ID of the error to delete.</LI>
@@ -330,6 +331,7 @@
         <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
             <OL start=0>
                 <LI>Success. This always succeeds, but the returned errors may be empty.</LI>
+                <LI>Not an administrator.</LI>
             </OL>
         </LI>
         <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
