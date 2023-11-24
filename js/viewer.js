@@ -20,6 +20,8 @@ function showUILink(url, helperTxt) {
     new ModalDialog("dialog-ui-link");
 }
 
+if(window.Error) Error.stackTraceLimit = Infinity;
+
 function reportError(msg) {
     $('#error-report-details').val(msg || "");
     new ModalDialog("dialog-report-error", function(dialog, button) {
@@ -34,6 +36,14 @@ function reportError(msg) {
             server.get_data(window.scriptURL, { nocache: true, formdata: formData });
         }
     });
+    if(msg) {
+        var formData = {
+            "api":      "report-error",
+            "details":  msg,
+            "msg":      "Auto-generated report at " + (new Date()),
+            "review":   window.reviewId};
+        server.get_data(window.scriptURL, { nocache: true, formdata: formData });
+    }
 }
 
 
