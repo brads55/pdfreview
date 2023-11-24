@@ -77,7 +77,7 @@
                         } else {
                             odd = true;
                         }
-                        tr.append($('<td>').append($('<a>').attr('href', window.scriptURL + "?review=" + error.reviewid).text(error.reviewid)));
+                        tr.append($('<td>').append($('<a>').attr('href', window.scriptURL + "?review=" + error.reviewid).attr('target', '_blank').text(error.reviewid)));
                         tr.append($('<td>').text(error.owner));
                         tr.append($('<td>').text(error.msg).css('white-space', 'pre-wrap').css('font-family', 'monospace'));
                         tr.append($('<td>').text(error.details).css('white-space', 'pre-wrap').css('font-family', 'monospace'));
