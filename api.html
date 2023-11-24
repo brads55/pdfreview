@@ -300,6 +300,44 @@
     
     
     <BR/><BR/>
+    <P><H2>List errors</H2>
+    Returns all the errors encountered by the application.
+    <UL>
+        <LI><SPAN class="code">api = list-errors</SPAN> An "api" parameter set to "list-errors" selects this API function.</LI>
+    </UL>
+    <B>Responses</B>
+    <UL>
+        <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
+            <OL start=0>
+                <LI>Success. This always succeeds, but the returned errors may be empty.</LI>
+            </OL>
+        </LI>
+        <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
+        <LI><SPAN class="code">comments</SPAN> Returns the JSON list of all errors. See <A HREF="#error-format">error format</A>.</LI>
+    </UL>
+    </P>
+    
+    
+    <BR/><BR/>
+    <P><H2>Remove errors</H2>
+    Deletes a specified error report.
+    <UL>
+        <LI><SPAN class="code">api = delete-error</SPAN> An "api" parameter set to "delete-error" selects this API function.</LI>
+        <LI><SPAN class="code">id</SPAN> The ID of the error to delete.</LI>
+    </UL>
+    <B>Responses</B>
+    <UL>
+        <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
+            <OL start=0>
+                <LI>Success. This always succeeds, but the returned errors may be empty.</LI>
+            </OL>
+        </LI>
+        <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
+    </UL>
+    </P>
+    
+    
+    <BR/><BR/>
     <P><H2><A NAME="comment-format">Format of the comment list</A></H2>
     This is a description of the various fields found within the comment list.<BR/>
     All comments will contain the following:
@@ -345,6 +383,19 @@
         <LI><SPAN class="code">replies</SPAN> An array of comments that reply to this one.</LI>
     </UL>
     </P>
-
+    
+    
+    <BR/><BR/>
+    <P><H2><A NAME="error-format">Format of the error list</A></H2>
+    This is a description of the various fields found within the error list.<BR/>
+    All errors will contain the following:
+    <UL>
+        <LI><SPAN class="code">id</SPAN> The ID of the error.</LI>
+        <LI><SPAN class="code">reviewid</SPAN> The ID of the review that caused this.</LI>
+        <LI><SPAN class="code">msg</SPAN> <I class="grey-text">[May be empty]</I> The error text content. This will contain raw formatting and should be processed accordingly.</LI>
+        <LI><SPAN class="code">details</SPAN> <I class="grey-text">[May be empty]</I> The user-specified comments as to how this issue arose.</LI>
+        <LI><SPAN class="code">owner</SPAN> Name of the reporter.</LI>
+    </UL>
+    </P>
 </BODY>
 </HTML>

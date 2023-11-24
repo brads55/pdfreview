@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+    <TITLE>%BRANDING% PDF Review</TITLE>
+    <LINK type="text/css" rel="stylesheet" href="css/common.css"   media="screen,projection" />
+    <LINK type="text/css" rel="stylesheet" href="css/welcome.css"  media="screen,projection" />
+    <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
+    <NOSCRIPT>
+        <STYLE>html{display:none;}</STYLE>
+        <META http-equiv="refresh" content="0.0;url=unsupported.html">
+    </NOSCRIPT>
+    <SCRIPT>
+        if(!('Promise' in window) || (!window.indexedDB)) {
+            window.location = 'unsupported.html';
+        }
+    </SCRIPT>
+
+    <script src="js/ext/jquery.d/jquery.min.js"></script>
+    <script src="js/ext/dexie.d/dexie.min.js"></script>
+    <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
+    <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
+    <SCRIPT language="javascript">scriptURL = '%SCRIPT_URL%';</SCRIPT>
+    <META charset="UTF-8" />
+    <STYLE>
+        tr:hover {
+            background: #E0E0E0 !important;
+        }
+        td {
+            padding: 5px;
+        }
+    </STYLE>
+</HEAD>
+<BODY>
+
+<DIV id="offline-notification" class="notification top offline-only">
+    Currently working offline -- some options may not be available.
+</DIV>
+<DIV id="offline-status-text" class="notification top online-only" style="display: none;"></DIV>
+
+<DIV id="banner">
+    <SPAN id="main-logo" class="logoblue-text">%BRANDING%</SPAN> PDF Review Administration
+</DIV>
+
+<NOSCRIPT>
+    <H1>Please enable Javascript</H1>
+    This tool relies heavily on javascript to operate. Please enable it at your earliest convenience.
+</NOSCRIPT>
+
+<div id="content" class="columns">
+    <TABLE id="error-list" style="width: 90%; padding: 40px;">
+        <TBODY></TBODY>
+    </TABLE>
+</div>
+
+<CENTER style="padding-top: 50px;">
+    <A HREF="faq.html" target="_blank">FAQ</A>
+    &nbsp; &nbsp; &nbsp;
+    <A HREF="api.html" target="_blank">API documentation</A>
+    &nbsp; &nbsp; &nbsp;
+    <A HREF="https://github.com/Franchie/pdfreview" target="_blank">GitHub</A>
+</CENTER>
+
+<SCRIPT language="javascript">
+    $( document ).ready(function() {
+        window.server = new Server();
+        server.get_data(window.scriptURL + "?api=list-errors", {nocache: true,
+                                                                onlineOnly: true,
+                                                                complete: function(p) {
+                if(p && p.errorCode == 0) {
+                    odd = false;
+                    window.errors = p.errors;
+                    p.errors.forEach(function(error) {
+                        var tr = $('<tr>')
+                        if(odd) {
+                            odd = false;
+                            tr.css('background', '#F0F0F0');
+                        } else {
+                            odd = true;
+                        }
+                        tr.append($('<td>').append($('<a>').attr('href', window.scriptURL + "?review=" + error.reviewid).text(error.reviewid)));
+                        tr.append($('<td>').text(error.owner));
+                        tr.append($('<td>').text(error.msg).css('white-space', 'pre-wrap').css('font-family', 'monospace'));
+                        tr.append($('<td>').text(error.details).css('white-space', 'pre-wrap').css('font-family', 'monospace'));
+                        tr.append($('<td>').append($('<a>').text("Delete").attr('href','#').on("click", {tr: tr, id: error.id}, function(e) {
+                            // Delete id
+                            server.get_data(window.scriptURL + "?api=delete-error&id=" + e.data.id, {nocache: true, onlineOnly: true})
+                            e.data.tr.hide();
+                            e.preventDefault();
+                            e.stopPropagation();
+                            return false;
+                        })));
+                        $("#error-list").find('tbody').append(tr);
+                    })
+                }
+            }
+        });
+    });
+</SCRIPT>
+
+</BODY>
+</HTML>

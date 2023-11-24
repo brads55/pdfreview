@@ -602,6 +602,40 @@ if (form_api == "report-error"):
     print("""{"errorCode": 0, "errorMsg": "Thank you for the report."}""")
     sys.exit(0)
 
+if (form_api == "list-errors"):
+    print("Content-type: application/json\n")
+    errors = []
+    db = db_open(config.config)
+    cur = db.cursor()
+    cur.execute("SELECT id, msg, details, owner, reviewid FROM errors;")
+    result = cur.fetchall()
+    if result:
+        for (id, msg, details, owner, reviewid) in result:
+            errors.append({
+                "id":       id,
+                "msg":      msg,
+                "details":  details,
+                "owner":    owner,
+                "reviewid": reviewid
+            })
+    cur.close()
+    db_close(db)
+    print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "errors": errors}))
+    sys.exit(0)
+
+
+if (form_api == "delete-error"):
+    print("Content-type: application/json\n")
+    db = db_open(config.config)
+    cur = db.cursor()
+    cur.execute("DELETE FROM errors WHERE id=%s;", (form.getvalue("id"),))
+    db.commit()
+    cur.close()
+    db_close(db)
+    print(json.dumps({"errorCode": 0, "errorMsg": "Success."}))
+    sys.exit(0)
+
+
 if (form_api == "get-review-list"):
     print("Content-type: application/json\n")
     db = db_open(config.config)
@@ -800,6 +834,14 @@ if(form_action == "upload"):
     # Return Review ID:
     print('{"errorCode": 0, "errorMsg": "Success", "reviewId": "%s"}' % (review_id,))
     sys.exit(0)
+
+elif(form_action=="admin"):
+    print("Content-type: text/html\n")
+    print_file("./admin.html.template", [
+            [r'%SCRIPT_URL%',       config.config["url"]]
+    ], config.config)
+    sys.exit(0)
+
 
 elif(form_review):
     """Show the PDF review UI."""
