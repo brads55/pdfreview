@@ -141,10 +141,14 @@ PDFReviewApplication.prototype._showOutline = function(outlines, parent) {
                 }, function() {console.log("Found invalid link data 2:", outlineItem.dest, destArr)})
             }, function() {});
         }
-        else {
+        else if(typeof outlineItem.dest === 'array') {
             self.pdf.getPageIndex(outlineItem.dest[0]).then(function(pageNum) {
                 div.data('pageId', pageNum)
             }, function() {console.log("Found invalid link data:", outlineItem, outlineItem.dest, outlineItem.dest[0])})
+        }
+        else {
+            console.log("Invalid page data for the outline", outlineItem.dest)
+            div.data('pageId', 0)
         }
     }
 }
