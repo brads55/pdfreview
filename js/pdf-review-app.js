@@ -142,7 +142,6 @@ PDFReviewApplication.prototype._showOutline = function(outlines, parent) {
             }, function() {});
         }
         else if(Array.isArray(outlineItem.dest)) {
-            console.log("Weird page data for the outline", outlineItem.dest)
             self.pdf.getPageIndex(outlineItem.dest[0]).then(function(pageNum) {
                 div.data('pageId', pageNum)
             }, function() {console.log("Found invalid link data:", outlineItem, outlineItem.dest)})
