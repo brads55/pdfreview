@@ -464,6 +464,32 @@ if(form_api in ["close-review", "reopen-review"]):
     print("""{"errorCode": 0, "errorMsg": "Success"}""")
     sys.exit(0)
 
+if(form_api == "remove-review"):
+    print("Content-type: application/json\n")
+    if not form_review:
+        print('{"errorCode": 2, "errorMsg": "Missing parameters: reviewID :("}')
+        sys.exit(0)
+
+    db = db_open(config.config)
+    cur = db.cursor()
+    cur.execute("SELECT id, owner FROM reviews WHERE reviewid=%s;", (form_review,))
+    result = cur.fetchone()
+    if result and len(result) == 2:
+        (id, owner) = result
+        if  owner == login_email:
+            print('{"errorCode": 1, "errorMsg": "As an owner, you must close/delete a review instead of just removing it from your list"}')
+            sys.exit(0)
+    else:
+        print('{"errorCode": 2, "errorMsg": "The specified review could not be located."}')
+        sys.exit(0)
+
+    cur.execute("DELETE FROM myreviews WHERE reviewid=%s AND reader=%s;", (form_review, login_email))
+    db.commit()
+    cur.close()
+    db_close(db)
+    print("""{"errorCode": 0, "errorMsg": "Success"}""")
+    sys.exit(0)
+
 if(form_api == "delete-review"):
     print("Content-type: application/json\n")
     if not form_review:

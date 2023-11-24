@@ -269,6 +269,27 @@
         <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
     </UL>
     </P>
+    
+    
+    <BR/><BR/>
+    <P><H2>Remove a review</H2>
+    Remove a review from current list of reviews. Only possible for non-owners of a review.
+    <UL>
+        <LI><SPAN class="code">api = remove-review</SPAN> An "api" parameter set to "remove-review" selects this API function.</LI>
+        <LI><SPAN class="code">review</SPAN> The ID of the review.</LI>
+    </UL>
+    <B>Responses</B>
+    <UL>
+        <LI><SPAN class="code">errorCode</SPAN> The status of the request. Valid values are:
+            <OL start=0>
+                <LI>Success.</LI>
+                <LI>Review owner, permission denied.</LI>
+                <LI>Review could not be located.</LI>
+            </OL>
+        </LI>
+        <LI><SPAN class="code">errorMsg</SPAN> <I class="grey-text">[optional]</I> Will provide a text description of any error that occurs.</LI>
+    </UL>
+    </P>
 
 
     <BR/><BR/>

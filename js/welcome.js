@@ -123,7 +123,7 @@ $( document ).ready(function() {
                     if(review["owner"]) {
                         html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=close-review\');">Close review</A></TD>';
                     } else {
-                        html += '<TD></TD>';
+                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=remove-review\');">Remove</A></TD>';
                     }
                     html += '</TR>\n';
                 }
@@ -146,7 +146,7 @@ $( document ).ready(function() {
                             html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=reopen-review\');">Reopen</A></TD>';
                             html += '<TD class="has-border online-only"><A HREF="#" onclick="if(confirm(\'Really really sure?\')) api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=delete-review\');">Delete</A></TD>';
                         } else {
-                            html += '<TD></TD><TD></TD>';
+                            html += '<TD></TD><TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=remove-review\');">Remove</A></TD>';
                         }
                         html += '</TR>\n';
                     }
