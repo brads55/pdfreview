@@ -907,9 +907,19 @@ elif(form_review):
 else:
     """The default case -- no action requested, show the welcome screen."""
     print("Content-type: text/html\n")
+    count = 0
+    if config.is_admin(login_name, login_email):
+        db = db_open(config.config)
+        cur = db.cursor()
+        cur.execute("SELECT id FROM errors;")
+        result = cur.fetchall()
+        if result: count = len(result)
+        cur.close()
+        db_close(db)
     print_file("./welcome.html.template", [
         [r'%SCRIPT_URL%',  config.config["url"]],
         [r'%NO_REVIEW_MSG%', config.config["no_review_msg"]],
-        [r'%ADMIN_CSS%', "inline-block" if config.is_admin(login_name, login_email) else "none"]
+        [r'%ADMIN_CSS%', "inline-block" if config.is_admin(login_name, login_email) else "none"],
+        [r'%ADMIN_ERRORS%', ("<B>(" + str(count) + ")</B>") if count > 0 else ""]
     ], config.config)
     sys.exit(0)
