@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="css/pdf_viewer.min.css"/>
     <script src="js/ext/jquery.d/jquery.min.js"></script>
-    <script src="js/ext/dexie.d/dexie.min.js"></script>
+    <script src="js/ext/dexie.d/dexie.min.js">Dexie.debug = true;</script>
     <script src="js/ext/pdf.d/pdf.js"></script>
     <script src="js/ext/material.d/material.js"></script>
     <SCRIPT language="javascript" src="js/common.js"></SCRIPT>

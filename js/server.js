@@ -240,11 +240,11 @@ function Server() {
              if(window.console) console.info("Using ServiceWorkers to provide offline access.");
              if(registration) {
                  offlineCacheStatus("ready");
-                 if(window.navigator.onLine) registration.update();
+                 if(window.navigator.onLine) try { registration.update(); } catch(err) {}
                  registration.addEventListener('updatefound', () => {
                      console.log('Service Worker update detected!');
                      offlineCacheStatus("update");
-                     if(window.navigator.onLine) registration.update();
+                     if(window.navigator.onLine) try { registration.update(); } catch(err) {}
                  });
              }
              else offlineCacheStatus("error");
