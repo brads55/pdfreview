@@ -635,7 +635,7 @@ CommentManager.prototype.applyFilters = function() {
         var txtMatch    = comment.msg.match(regexp);
         var unreadMatch = !self.filters.unreadOnly || comment.unread;
         var statusMatch = !self.filters.status.length || !isTopLevel || self.filters.status.indexOf(comment.status) < 0;
-        var reviewMatch = !self.filters.reviewers.length || !isTopLevel || self.filters.reviewers.indexOf(comment.author) < 0;
+        var reviewMatch = !self.filters.reviewers.length || !isTopLevel || !comment.author || self.filters.reviewers.indexOf(comment.author) < 0;
         if(isTopLevel) count ++;
 
         if(self.flashing == comment.id || (txtMatch && unreadMatch && statusMatch && reviewMatch)) {
