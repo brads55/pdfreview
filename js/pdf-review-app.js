@@ -189,6 +189,7 @@ PDFReviewApplication.prototype.doScale = async function(scale) {
     var currentPage = self.currentPage;
 
     if(scale <= 0.1 || scale >= 10) return;       // Sanity check input
+    var oldScale = self.scale;
     self.scale = scale;
     self.showLoading = false;
     if(self.showLoadingTimeout) clearTimeout(self.showLoadingTimeout);
@@ -198,6 +199,8 @@ PDFReviewApplication.prototype.doScale = async function(scale) {
     await self.getPageObj(0).then(async function(pageObj) {
         var viewport = pageObj.getViewport({scale:self.scale});
         self.pageContainers[0].viewport = viewport;
+        var scrollableElem = $("#pdfview");
+        var position = scrollableElem.scrollTop();
         // Scale existing contents
         for(var page = 0; page < self.pdf.numPages; page++) {
             var container = self.pageContainers[page];
@@ -208,6 +211,7 @@ PDFReviewApplication.prototype.doScale = async function(scale) {
             $(container.reviewLayer).css({width: viewport.width, height: viewport.height});
             self.unrenderPage(container);
         }
+        scrollableElem.scrollTop(position * scale / oldScale);
 
         await self.redraw();
 
