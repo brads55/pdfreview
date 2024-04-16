@@ -728,7 +728,8 @@ if(form_api == "add-review"):
         db.commit()
     cur.close()
     db_close(db)
-    print(json.dumps({"errorCode": 0, "errorMsg": "Success.", "reviews": review_list or []}))
+    print(json.dumps({"errorCode": 0, "errorMsg": "Success."}))
+    sys.exit(0)
 
 
 # Catch-all for API queries
