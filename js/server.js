@@ -263,10 +263,7 @@ function Server() {
         });
         // Maintenance operations on the offline server todo list:
         self.syncInProgress = false;
-        self.db.todo.where("attempts").aboveOrEqual(20).each(function(obj) {
-            obj.attempts = 0;   // reset # attempts
-            self.db.todo.update(obj.id, obj);
-        });
+        self.db.todo.where("attempts").aboveOrEqual(20).modify({'attempts': 0});    // Reset attempt list
         server_sync();
     }
     window.force_server_sync = _force_server_sync;
