@@ -40,4 +40,3 @@ def do_login():
 
 def is_admin(login_name, login_email):
     return True
-

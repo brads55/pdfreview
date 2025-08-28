@@ -20,7 +20,7 @@ sudo ln -s $GITHUB_WORKSPACE /var/www/html/pdfreview
 
 echo "Configure pdfreview and install dependencies..."
 mv config_ci.py config.py
-pip install -r requirements_for_ci.txt
+pip install -r requirements.txt
 npm install
 
 echo "Create DB schema..."

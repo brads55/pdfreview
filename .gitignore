@@ -4,12 +4,14 @@ config.py
 docs/*
 
 # Python venv
-lib/*
-lib64
-bin/*
-share/*
+/lib
+/lib64
+/bin
+/include
+/share
 pyvenv.cfg
 venv
+/.venv
 
 # Cypress test framework
 node_modules/

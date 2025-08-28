@@ -3,8 +3,8 @@
 import os
 import re
 import sys
-import MySQLdb
 
+import MySQLdb
 
 #
 # Database functions ---------------------------------------------------------------------------------
@@ -34,4 +34,3 @@ def print_file(filename, substitutions, config):
             line = re.sub(substitution[0], substitution[1], line)
         sys.stdout.write(line)
     f.close()
-

@@ -1,5 +1,6 @@
-import sys
 import os
+import sys
+
 import config
 from common import db_open
 

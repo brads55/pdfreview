@@ -5,20 +5,19 @@
 #auth_context = AuthenticationContext("https://login.microsoftonline.com/contoso.onmicrosoft.com")
 
 
-
-import os
 import cgi
-import sys
 import cgitb
-import adal
-import uuid
 import json
+import os
+import sys
 import time
-import requests
+import uuid
+
+import adal
 import MySQLdb
+import requests
 
 from common import *
-
 
 TOKEN_NAME = "adal-token"
 REFRESH_TOKEN = "adal-refresh-token"
@@ -205,4 +204,3 @@ def get_token(code, config):
     else:
         return auth_context.acquire_token_with_authorization_code(code, config["url"], config["adal_RESOURCE"],
                 config["adal_client_id"], config["adal_client_secret"])
-

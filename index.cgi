@@ -1,20 +1,20 @@
 #!bin/python
 
-
 # This allows joining existing reviews and
 # creating new ones.
 # PDF Review tool, created by Francois Botman, 2017.
 
-import os
-import re
 import cgi
-import sys
-import json
-import time
 import glob
-import string
+import json
+import os
 import random
-from subprocess import Popen, PIPE
+import re
+import string
+import sys
+import time
+from subprocess import PIPE, Popen
+
 import MySQLdb
 
 import config
@@ -25,6 +25,7 @@ if config.config["debug"]:
     cgitb.enable()
 
 from system_checks import check_encoding, require_db_version
+
 check_encoding()
 require_db_version('c472597eb7ac')
 
@@ -71,7 +72,7 @@ def escape_html(txt):
 def execute_with_return(cmd):
     p = Popen(cmd, stdin=PIPE, stdout=PIPE)#, shell=True)
     out, err = p.communicate()
-    return (p.returncode, out)
+    return (p.returncode, out.decode('utf-8'))
 
 def ensure_review_open(db, reviewId):
     cur = db.cursor()
@@ -213,7 +214,7 @@ def create_ps_from_comments(comments, pageOffset, highlights):
             ps += '  /SrcPg %s\n' % (pageNum,)
             if len(quadpoints) > 0:
                 ps += '  /QuadPoints [%s]\n' % (quadpoints,)
-            status = (" \(%s\)" % (comment["status"],)) if not comment["status"] == "None" else ""
+            status = (' \\(%s\\)' % (comment["status"],)) if not comment["status"] == "None" else ""
             ps += '  /Title (%s%s)\n' % (escape_ps(comment["author"]), status)
             msg = ps_format_msg(comment["msg"]) + get_ps_comment_reply(comments, comment["id"])
             ps += """  /RC (<?xml version="1.0"?><body xmlns="http://www.w3.org/1999/xhtml" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" xfa:APIVersion="Acrobat:15.23.0" xfa:spec="2.0.2">%s</body>)\n""" % (msg,)
@@ -758,7 +759,7 @@ if "rss" in form:
         print('<title>Review updates</title>')
     print('<link>%s?rss=%s</link>' % (config.config["url"], reviewId))
     print('<description>This feed lists the latest changes to the review. This does not include your own changes, it is assumed you know about these.</description>')
-    
+
     cur.execute("SELECT id, msg, url, timestamp FROM activity WHERE reviewid=%s AND NOT(owner=%s);", (reviewId, login_email))
     result = cur.fetchall()
     if result:
@@ -782,7 +783,7 @@ if "rss" in form:
 if "manifest" in form:
     appcache = form.getvalue("manifest") == "appcache"
     svworker = form.getvalue("manifest") == "serviceworker"
-    
+
     db = db_open(config.config)
     review_list = list_my_reviews(db)
     output = ""
@@ -804,7 +805,7 @@ if "manifest" in form:
     files += glob.glob("img/*")
     files += glob.glob("js/**.js", recursive=True)
     files += glob.glob("manifest.json")
-    
+
     for file in files:
         version = "%s last modified: %s\n" % (file, time.ctime(os.path.getmtime(file)))
         if appcache:
