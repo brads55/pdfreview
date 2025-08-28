@@ -3,4 +3,4 @@ alembic==1.16.5
 coverage==7.10.5
 legacy-cgi==2.6.3
 mysqlclient==2.2.7
-sqlalchemy==1.4.54
+sqlalchemy==2.0.43

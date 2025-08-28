@@ -1,34 +1,34 @@
 import MySQLdb
-import sqlalchemy as sa
+from sqlalchemy import Connection, sql
 
 from alembic import op
 
 
-def all_text_cols(conn):
+def all_text_cols(conn: Connection):
     dbname = conn.engine.url.database
     return conn.execute(
-        sa.sql.text(
+        sql.text(
             "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema=:dbname AND column_type='text'"
         ),
-        dbname=dbname,
+        {"dbname": dbname},
     )
 
 
-def esc(s):
+def esc(s: str) -> str:
     # Not sure this actually escapes the table names and column names correctly, but the table names are fixed anyway so it's not a problem
     # sqlalchemy insists on wrapping quotes around bound params, which MySQL does not like at all :'( which is why I need this function
     return MySQLdb._mysql.escape_string(s).decode("utf-8")
 
 
-def switch_to_encoding(tables, enc, colate):
+def switch_to_encoding(tables: list[str], enc: str, colate: str):
     conn = op.get_bind()
     for table in tables:
         conn.execute(
-            sa.sql.text("ALTER TABLE %s CHARACTER SET :enc COLLATE :colate" % (esc(table))), enc=enc, colate=colate
+            sql.text(f"ALTER TABLE {esc(table)} CHARACTER SET :enc COLLATE :colate"),
+            {"enc": enc, "colate": colate},
         )
     for table, column in all_text_cols(conn):
         conn.execute(
-            sa.sql.text("ALTER TABLE %s MODIFY %s TEXT CHARACTER SET :enc COLLATE :colate" % (esc(table), esc(column))),
-            enc=enc,
-            colate=colate,
+            sql.text(f"ALTER TABLE {esc(table)} MODIFY {esc(column)} TEXT CHARACTER SET :enc COLLATE :colate"),
+            {"enc": enc, "colate": colate},
         )

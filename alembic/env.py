@@ -1,7 +1,9 @@
 # PDF review stores its configuration in the parent directory's config.py file
 import os
 import sys
+from io import UnsupportedOperation
 from logging.config import fileConfig
+from urllib.parse import quote_plus
 
 from sqlalchemy import engine_from_config, pool
 
@@ -10,11 +12,10 @@ from alembic import context
 currentdir = os.path.dirname(os.path.abspath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-from urllib.parse import quote_plus
 
 import config as pdfreview_config
 
-if sys.stdout.encoding.upper() != "UTF-8":
+if str(sys.stdout.encoding).upper() != "UTF-8":
     print("Unsupported environment. Locale does not use utf-8. Is LC_ALL set to the right value?", file=sys.stderr)
     print("    Current encoding: " + sys.stdout.encoding, file=sys.stderr)
     sys.exit(1)
@@ -26,7 +27,8 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -48,7 +50,7 @@ def get_connection_url():
     return url
 
 
-def run_migrations_offline():
+def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -60,27 +62,17 @@ def run_migrations_offline():
     script output.
 
     """
-    raise Exception("Offline migrations are not supported by this script")
-    # url = get_connection_url()
-    # context.configure(
-    #    url=url,
-    #    target_metadata=target_metadata,
-    #    literal_binds=True,
-    #    dialect_opts={"paramstyle": "named"},
-    # )
-
-    # with context.begin_transaction():
-    #    context.run_migrations()
+    raise UnsupportedOperation("Offline migrations are not supported by this script")
 
 
-def run_migrations_online():
+def run_migrations_online() -> None:
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine
     and associate a connection with the context.
 
     """
-    ini_section = config.get_section(config.config_ini_section)
+    ini_section = config.get_section(config.config_ini_section, {})
     ini_section["sqlalchemy.url"] = get_connection_url()
     connectable = engine_from_config(
         ini_section,
