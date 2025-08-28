@@ -5,12 +5,15 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
-from alembic import op
-import sqlalchemy as sa
-# Add to import path, so `import migration_support` works
-from os import path
+
 import sys
-sys.path.append(path.dirname(__file__)+'/../')
+from os import path
+
+import sqlalchemy as sa
+
+from alembic import op
+
+sys.path.append(path.dirname(__file__) + "/../")
 ${imports if imports else ""}
 
 # revision identifiers, used by Alembic.

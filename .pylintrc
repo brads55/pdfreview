@@ -1,0 +1,5 @@
+[TYPECHECK]
+ignored-modules=alembic.context,alembic.op
+
+[BASIC]
+const-naming-style=snake_case

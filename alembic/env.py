@@ -1,20 +1,20 @@
-from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
-
 # PDF review stores its configuration in the parent directory's config.py file
 import os
 import sys
+from logging.config import fileConfig
+
+from sqlalchemy import engine_from_config, pool
+
+from alembic import context
+
 currentdir = os.path.dirname(os.path.abspath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-import config as pdfreview_config
 from urllib.parse import quote_plus
 
-if sys.stdout.encoding.upper() != 'UTF-8':
+import config as pdfreview_config
+
+if sys.stdout.encoding.upper() != "UTF-8":
     print("Unsupported environment. Locale does not use utf-8. Is LC_ALL set to the right value?", file=sys.stderr)
     print("    Current encoding: " + sys.stdout.encoding, file=sys.stderr)
     sys.exit(1)
@@ -39,17 +39,14 @@ target_metadata = None
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 def get_connection_url():
     c = pdfreview_config.config
-    url = 'mysql://{}:{}@{}/{}?charset=utf8mb4'.format(
-        *[quote_plus(s) for s in [
-            c['db_user']
-            ,c['db_passwd']
-            ,c['db_host']
-            ,c['db_name']
-        ]]
+    url = "mysql://{}:{}@{}/{}?charset=utf8mb4".format(
+        *[quote_plus(s) for s in [c["db_user"], c["db_passwd"], c["db_host"], c["db_name"]]]
     )
     return url
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
@@ -63,16 +60,16 @@ def run_migrations_offline():
     script output.
 
     """
-    raise Exception('Offline migrations are not supported by this script')
-    #url = get_connection_url()
-    #context.configure(
+    raise Exception("Offline migrations are not supported by this script")
+    # url = get_connection_url()
+    # context.configure(
     #    url=url,
     #    target_metadata=target_metadata,
     #    literal_binds=True,
     #    dialect_opts={"paramstyle": "named"},
-    #)
+    # )
 
-    #with context.begin_transaction():
+    # with context.begin_transaction():
     #    context.run_migrations()
 
 
@@ -84,7 +81,7 @@ def run_migrations_online():
 
     """
     ini_section = config.get_section(config.config_ini_section)
-    ini_section['sqlalchemy.url'] = get_connection_url()
+    ini_section["sqlalchemy.url"] = get_connection_url()
     connectable = engine_from_config(
         ini_section,
         prefix="sqlalchemy.",
@@ -92,9 +89,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
