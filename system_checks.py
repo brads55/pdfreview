@@ -1,8 +1,9 @@
 import os
 import sys
 
+from sqlalchemy import Connection, sql
+
 import config
-from common import db_open
 
 debug = config.config["debug"]
 
@@ -13,7 +14,7 @@ def e500():
 
 
 def check_encoding():
-    if sys.stdout.encoding.upper() != "UTF-8":
+    if str(sys.stdout.encoding).upper() != "UTF-8":
         e500()
         print("<p>Fatal error: Output encoding is not utf-8, it is " + sys.stdout.encoding + "</p>")
         if debug:
@@ -22,20 +23,18 @@ def check_encoding():
             )
             print("<ul>")
             for k in os.environ:
-                print("<li>%s: %s</li>" % (k, os.environ[k]))
+                print(f"<li>{k}: {os.environ[k]}</li>")
             print("</ul>")
         sys.exit(1)
 
 
-def require_db_version(version):
-    db = db_open(config.config)
-    cur = db.cursor()
-    cur.execute("SELECT version_num FROM alembic_version")
-    (actual_version,) = cur.fetchone()
+def require_db_version(conn: Connection, version: str):
+    result = conn.execute(sql.text("SELECT version_num FROM alembic_version")).fetchone()
+    actual_version = result.version_num if result else -1
     if actual_version != version:
         e500()
         print("<p>Fatal error: database version not compatible with this application version</p>")
         if debug:
-            print("<p>Application requested version %s, but database is version %s.</p>" % (version, actual_version))
-            print("<p>You probably just need to run `alembic upgrade %s`</p>" % (version))
+            print(f"<p>Application requested version {version}, but database is version {actual_version}.</p>")
+            print(f"<p>You probably just need to run `alembic upgrade {version}`</p>")
         sys.exit(1)

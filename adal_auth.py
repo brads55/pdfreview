@@ -12,12 +12,13 @@ import os
 import sys
 import time
 import uuid
+from typing import Any, cast
 
 import adal
-import MySQLdb
 import requests
+from sqlalchemy import Connection, sql
 
-from common import *
+from common import print_file
 
 TOKEN_NAME = "adal-token"
 REFRESH_TOKEN = "adal-refresh-token"
@@ -25,13 +26,12 @@ UUID_TOKEN = "adal-auth-session"
 URI_TOKEN = "app-uri-context"
 
 
-def login(config):
+def login(conn: Connection, config: dict[str, Any]):
     try:
         form = cgi.FieldStorage()
-        code = form.getvalue("code")
-        state = form.getvalue("state")
-        err = form.getvalue("error")
-        errmsg = form.getvalue("error_description")
+        code = cast(str, form.getvalue("code"))
+        err = cast(str, form.getvalue("error"))
+        errmsg = cast(str, form.getvalue("error_description"))
 
         config["adal_AUTHORITY_URL"] = config["adal_authority_host"] + "/" + config["adal_tenant"]
         config["adal_RESOURCE"] = "https://graph.microsoft.com"
@@ -47,7 +47,7 @@ def login(config):
             bearer = os.environ["HTTP_AUTHORIZATION"]
             user_key = bearer.split(" ", 1)[1]
             # Either this is already in the database, just look it up
-            result = db_get_user(config, user_key)
+            result = db_get_user(conn, user_key)
             if result and len(result) == 2:
                 (name, email) = result
                 return {"name": name, "email": email.lower()}
@@ -55,12 +55,12 @@ def login(config):
             # ....Or it's not, authenticate with microsoft.
             headers = {"Content-Type": "application/json", "Authorization": bearer}
             endpoint = "https://graph.microsoft.com/v1.0/me/"
-            response = requests.get(endpoint, headers=headers)
+            response = requests.get(endpoint, headers=headers, timeout=60)
             if response.status_code == 200:
                 json_data = json.loads(response.text)
                 username = json_data["displayName"]
                 useremail = json_data["mail"]
-                db_add_user(config, user_key, username, useremail)
+                db_add_user(conn, config, user_key, username, useremail)
                 return {"name": username, "email": useremail.lower()}
             # (or keep going if that failed...)
 
@@ -69,7 +69,7 @@ def login(config):
         #
         cookie = get_cookie(TOKEN_NAME)
         if cookie:
-            result = db_get_user(config, cookie)
+            result = db_get_user(conn, cookie)
             if result and len(result) == 2:
                 (name, email) = result
                 return {"name": name, "email": email.lower()}
@@ -90,7 +90,7 @@ def login(config):
 
             headers = {"Content-Type": "application/json", "Authorization": "Bearer {0}".format(token["accessToken"])}
             endpoint = "https://graph.microsoft.com/v1.0/me/"
-            response = requests.get(endpoint, headers=headers)
+            response = requests.get(endpoint, headers=headers, timeout=60)
 
             if response.status_code == 200:
                 json_data = json.loads(response.text)
@@ -98,14 +98,14 @@ def login(config):
                 useremail = json_data["mail"]
                 user_key = uuid.uuid1()
 
-                db_add_user(config, user_key, username, useremail)
+                db_add_user(conn, config, str(user_key), username, useremail)
                 uri_context = get_cookie(URI_TOKEN)
                 url = config["url"]
                 if uri_context:
                     url += uri_context
                 print("Status: 307 Redirect")
                 print("Location: " + url)
-                set_cookie(TOKEN_NAME, user_key, config["adal_expires_sec"], "Lax")
+                set_cookie(TOKEN_NAME, str(user_key), config["adal_expires_sec"], "Lax")
                 set_cookie(REFRESH_TOKEN, token["refreshToken"], config["adal_session_state_timeout_sec"], "Lax")
                 delete_cookie(URI_TOKEN)
                 delete_cookie(UUID_TOKEN)
@@ -113,7 +113,7 @@ def login(config):
 
             else:
                 auth_error(
-                    "ADAL endpoint request resulted in a {} error ({})".format(response.status_code, response.text),
+                    f"ADAL endpoint request resulted in a {response.status_code} error ({response.text})",
                     config,
                 )
             sys.exit(0)
@@ -121,46 +121,41 @@ def login(config):
         #
         # Otherwise, redirect to authentication interface
         #
-        redirect_to_portal(config, form)
+        redirect_to_portal(config)
         sys.exit(0)
 
     except adal.AdalError as e:
         auth_error("Adal exception error: " + str(e), config)
 
 
-def auth_error(msg, config):
+def auth_error(msg: str, config: dict[str, Any]):
     print("Content-type: text/html\n")
     print_file("./auth_error.html.template", [[r"%ERROR_MESSAGE%", msg]], config)
     sys.exit(0)
 
 
-def db_add_user(config, user_key, username, useremail):
-    db = db_open(config)
-    cur = db.cursor()
-    cur.execute(
-        "INSERT INTO adal_auth (authkey, name, email, expire) VALUES (%s, %s, %s, %s);",
-        (user_key, username, useremail, int(time.time() + config["adal_expires_sec"])),
+def db_add_user(conn: Connection, config: dict[str, Any], user_key: str, username: str, useremail: str):
+    conn.execute(
+        sql.text("INSERT INTO adal_auth (authkey, name, email, expire) VALUES (:key, :name, :email, :expire)"),
+        {
+            "key": user_key,
+            "name": username,
+            "email": useremail,
+            "expire": int(time.time() + config["adal_expires_sec"]),
+        },
     )
-    db.commit()
-    cur.close()
-    db_close(db)
+    conn.commit()
 
 
-def db_get_user(config, user_key):
-    db = db_open(config)
-    cur = db.cursor()
-    cur.execute("DELETE FROM adal_auth WHERE expire<%s;", (int(time.time()),))
-    db.commit()
+def db_get_user(conn: Connection, user_key: str):
+    conn.execute(sql.text("DELETE FROM adal_auth WHERE expire<:time"), {"time": int(time.time())})
+    conn.commit()
 
     # Find user in table
-    cur.execute("SELECT name, email from adal_auth WHERE authkey=%s;", (user_key,))
-    result = cur.fetchone()
-    cur.close()
-    db_close(db)
-    return result  # None, or (name, email)
+    return conn.execute(sql.text("SELECT name, email from adal_auth WHERE authkey=:key"), {"key": user_key}).fetchone()
 
 
-def get_cookie(name):
+def get_cookie(name: str):
     if "HTTP_COOKIE" in os.environ:
         for cookie in map(str.strip, str.split(os.environ["HTTP_COOKIE"], ";")):
             (key, value) = str.split(cookie, "=", 1)
@@ -169,17 +164,17 @@ def get_cookie(name):
     return None
 
 
-def set_cookie(name, value, expires_seconds, policy="Strict"):
+def set_cookie(name: str, value: str, expires_seconds: int, policy: str = "Strict"):
     """This should come after a Content-type response"""
-    print("Set-Cookie: {name}={value}; SameSite={policy}; Max-age={expires_seconds};".format(**locals()))
+    print(f"Set-Cookie: {name}={value}; SameSite={policy}; Max-age={expires_seconds};")
 
 
-def delete_cookie(name):
+def delete_cookie(name: str):
     """This should come after a Content-type response"""
-    print("Set-Cookie: {name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT;".format(**locals()))
+    print(f"Set-Cookie: {name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT;")
 
 
-def redirect_to_portal(config, form):
+def redirect_to_portal(config: dict[str, Any]):
     session_state = uuid.uuid1()
     redirect_url = (
         "https://login.microsoftonline.com/{}/oauth2/authorize?"
@@ -193,21 +188,21 @@ def redirect_to_portal(config, form):
         )
     else:
         set_cookie(URI_TOKEN, "", config["adal_session_state_timeout_sec"], "Lax")
-    set_cookie(UUID_TOKEN, session_state, config["adal_session_state_timeout_sec"], "Lax")
+    set_cookie(UUID_TOKEN, str(session_state), config["adal_session_state_timeout_sec"], "Lax")
     print("Content-type: text/html")
     print("\n")
     print("Redirecting you to the authentication portal: " + redirect_url)
     sys.exit(0)
 
 
-def get_token(code, config):
+def get_token(code: str, config: dict[str, Any]):
     auth_context = adal.AuthenticationContext(config["adal_AUTHORITY_URL"])
     refresh_token = get_cookie(REFRESH_TOKEN)
     if refresh_token:
         return auth_context.acquire_token_with_refresh_token(
             refresh_token, config["adal_client_id"], config["adal_RESOURCE"], config["adal_client_secret"]
         )
-    else:
-        return auth_context.acquire_token_with_authorization_code(
-            code, config["url"], config["adal_RESOURCE"], config["adal_client_id"], config["adal_client_secret"]
-        )
+
+    return auth_context.acquire_token_with_authorization_code(
+        code, config["url"], config["adal_RESOURCE"], config["adal_client_id"], config["adal_client_secret"]
+    )
