@@ -14,13 +14,13 @@ var root = (function() {
 
 
 // Version information (for updating this file):
-%VERSION_DIFF%
+{{ VERSION_DIFF }}
 
 offline_handler.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open('v1').then(function(cache) {
             return cache.addAll([
-                %OFFLINE_FILE_LIST%
+                {{ OFFLINE_FILE_LIST }}
             ]);
         })
     );

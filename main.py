@@ -20,12 +20,12 @@ from fastapi import Depends, FastAPI, Form, Query, Request, Response, UploadFile
 from fastapi.datastructures import URL
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from fastapi_msal import AuthToken, MSALAuthorization, MSALClientConfig, UserInfo
 from sqlalchemy import Connection, create_engine, sql
 from starlette.middleware.sessions import SessionMiddleware
 
 import config
-from common import process_template
 from system_checks import check_encoding, require_db_version
 
 
@@ -49,6 +49,7 @@ app.mount("/font", StaticFiles(directory="font"), name="font")
 app.mount("/img", StaticFiles(directory="img"), name="img")
 app.mount("/js", StaticFiles(directory="js"), name="js")
 app.mount("/pdfs", StaticFiles(directory="pdfs"), name="pdfs")
+templates = Jinja2Templates(directory="templates")
 
 
 db_url = "mysql://{}:{}@{}/{}?charset=utf8mb4".format(
@@ -1098,6 +1099,7 @@ async def rss(request: Request, review_id: str):
     response_model_by_alias=False,
 )
 async def manifest_service_worker(
+    request: Request,
     current_user: UserInfo = Depends(auth.scheme),
 ):
     with engine.connect() as conn:
@@ -1120,7 +1122,7 @@ async def manifest_service_worker(
         output += f"{file}\n"
 
     # Non-viewable files that still contribute to diffs
-    files = glob.glob("*.template")
+    files = glob.glob("templates/*.j2")
     files += glob.glob("*.py")
     files += glob.glob("*.cgi")
     for file in files:
@@ -1133,16 +1135,16 @@ async def manifest_service_worker(
         output += f"{config.config["url"]}?review={review["id"]}\n"
         output += f"{config.config["url"]}?review={review["id"]}&closed=true\n"
 
-    response = process_template(
-        "./service-worker.js.template",
-        [
-            [r"%VERSION_DIFF%", version_list],
-            [r"%OFFLINE_FILE_LIST%", "'" + "',\n                '".join(output.rstrip().split("\n")) + "'"],
-        ],
-        config.config,
+    return templates.TemplateResponse(
+        request=request,
+        name="service-worker.js.j2",
+        context={
+            "BRANDING": config.config["branding"],
+            "VERSION_DIFF": version_list,
+            "OFFLINE_FILE_LIST": "'" + "',\n                '".join(output.rstrip().split("\n")) + "'",
+        },
+        media_type="application/javascript",
     )
-
-    return Response(response, media_type="application/javascript")
 
 
 @app.post(
@@ -1249,11 +1251,17 @@ async def admin(request: Request):
         return JSONResponse({"errorCode": 1, "errorMsg": "Invalid user"})
 
     if config.is_admin(current_user):
-        return HTMLResponse(
-            process_template("./admin.html.template", [[r"%SCRIPT_URL%", config.config["url"]]], config.config)
+        return templates.TemplateResponse(
+            request=request,
+            name="admin.html.j2",
+            context={"BRANDING": config.config["branding"], "SCRIPT_URL": config.config["url"]},
         )
 
-    return HTMLResponse(process_template("./notfound.html.template", [], config.config))
+    return templates.TemplateResponse(
+        request=request,
+        name="notfound.html.j2",
+        context={"BRANDING": config.config["branding"]},
+    )
 
 
 @app.get("/review/{review_id}", response_class=HTMLResponse)
@@ -1272,20 +1280,23 @@ async def show_review(request: Request, review_id: str):
             {"review_id": review_id},
         ).fetchone()
         if result:
-            return HTMLResponse(
-                process_template(
-                    "./viewer.html.template",
-                    [
-                        [r"%REVIEW_PDF_TITLE%", result.title],
-                        [r"%REVIEW_PDF_URL%", "/" + result.pdffile],
-                        [r"%REVIEW_PDF_ID%", review_id],
-                        [r"%SCRIPT_URL%", config.config["url"]],
-                    ],
-                    config.config,
-                )
+            return templates.TemplateResponse(
+                request=request,
+                name="viewer.html.j2",
+                context={
+                    "BRANDING": config.config["branding"],
+                    "REVIEW_PDF_TITLE": result.title,
+                    "REVIEW_PDF_URL": "/" + result.pdffile,
+                    "REVIEW_PDF_ID": review_id,
+                    "SCRIPT_URL": config.config["url"],
+                },
             )
 
-    return HTMLResponse(process_template("./notfound.html.template", [], config.config))
+    return templates.TemplateResponse(
+        request=request,
+        name="notfound.html.j2",
+        context={"BRANDING": config.config["branding"]},
+    )
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -1303,15 +1314,15 @@ async def index(request: Request):
         with engine.connect() as conn:
             result = conn.execute(sql.text("SELECT id FROM errors")).fetchall()
             count = len(result)
-    return HTMLResponse(
-        process_template(
-            "./welcome.html.template",
-            [
-                [r"%SCRIPT_URL%", config.config["url"]],
-                [r"%NO_REVIEW_MSG%", config.config["no_review_msg"]],
-                [r"%ADMIN_CSS%", "inline-block" if config.is_admin(current_user) else "none"],
-                [r"%ADMIN_ERRORS%", ("<B>(" + str(count) + ")</B>") if count > 0 else ""],
-            ],
-            config.config,
-        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="welcome.html.j2",
+        context={
+            "BRANDING": config.config["branding"],
+            "SCRIPT_URL": config.config["url"],
+            "NO_REVIEW_MSG": config.config["no_review_msg"],
+            "ADMIN_CSS": "inline-block" if config.is_admin(current_user) else "none",
+            "ADMIN_ERRORS": ("(" + str(count) + ")") if count > 0 else "",
+        },
     )

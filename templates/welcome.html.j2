@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-    <TITLE>%BRANDING% PDF Review</TITLE>
-    <LINK type="text/css" rel="stylesheet" href="css/common.css"   media="screen,projection" />
-    <LINK type="text/css" rel="stylesheet" href="css/welcome.css"  media="screen,projection" />
-    <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
+    <TITLE>{{ BRANDING }} PDF Review</TITLE>
+    <LINK type="text/css" rel="stylesheet" href="/css/common.css"   media="screen,projection" />
+    <LINK type="text/css" rel="stylesheet" href="/css/welcome.css"  media="screen,projection" />
+    <LINK rel="SHORTCUT ICON" HREF="/favicon.png" />
     <NOSCRIPT>
         <STYLE>html{display:none;}</STYLE>
         <META http-equiv="refresh" content="0.0;url=unsupported.html">
@@ -15,12 +15,12 @@
         }
     </SCRIPT>
 
-    <script src="js/ext/jquery.d/jquery.min.js"></script>
-    <script src="js/ext/dexie.d/dexie.min.js">Dexie.debug = true;</script>
-    <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/welcome.js"></SCRIPT>
-    <SCRIPT language="javascript">scriptURL = '%SCRIPT_URL%';</SCRIPT>
+    <script src="/js/ext/jquery.d/jquery.min.js"></script>
+    <script src="/js/ext/dexie.d/dexie.min.js">Dexie.debug = true;</script>
+    <SCRIPT language="javascript" src="/js/common.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/server.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/welcome.js"></SCRIPT>
+    <SCRIPT language="javascript">scriptURL = '{{ SCRIPT_URL }}';</SCRIPT>
     <META charset="UTF-8" />
 </HEAD>
 <BODY>
@@ -31,7 +31,7 @@
 <DIV id="offline-status-text" class="notification top online-only" style="display: none;"></DIV>
 
 <DIV id="banner">
-    <SPAN id="main-logo" class="logoblue-text">%BRANDING%</SPAN> PDF Review
+    <SPAN id="main-logo" class="logoblue-text">{{ BRANDING }}</SPAN> PDF Review
 </DIV>
 
 <NOSCRIPT>
@@ -41,7 +41,7 @@
 
 <div id="content" class="columns">
     <div id="review-list" style="width: 50%; padding: 40px;">
-        <I id="review-list-none">%NO_REVIEW_MSG%</I>
+        <I id="review-list-none">{{ NO_REVIEW_MSG }}</I>
         <DIV id="review-list-open"></DIV>
         <DIV id="review-list-closed"></DIV>
     </div>
@@ -60,8 +60,8 @@
     &nbsp; &nbsp; &nbsp;
     <A HREF="/docs" target="_blank">API documentation</A>
     &nbsp; &nbsp; &nbsp;
-    <A HREF="/admin" target="_blank" style="display: %ADMIN_CSS%">Administration%ADMIN_ERRORS%</A>
-    <SPAN style="display: %ADMIN_CSS%">&nbsp; &nbsp; &nbsp;</SPAN>
+    <A HREF="/admin" target="_blank" style="display: {{ ADMIN_CSS }}">Administration<B>{{ ADMIN_ERRORS }}</B></A>
+    <SPAN style="display: {{ ADMIN_CSS }}">&nbsp; &nbsp; &nbsp;</SPAN>
     <A HREF="https://github.com/Franchie/pdfreview" target="_blank">GitHub</A>
 </CENTER>
 

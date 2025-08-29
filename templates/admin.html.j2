@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-    <TITLE>%BRANDING% PDF Review</TITLE>
-    <LINK type="text/css" rel="stylesheet" href="css/common.css"   media="screen,projection" />
-    <LINK type="text/css" rel="stylesheet" href="css/welcome.css"  media="screen,projection" />
-    <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
+    <TITLE>{{ BRANDING }} PDF Review</TITLE>
+    <LINK type="text/css" rel="stylesheet" href="/css/common.css"   media="screen,projection" />
+    <LINK type="text/css" rel="stylesheet" href="/css/welcome.css"  media="screen,projection" />
+    <LINK rel="SHORTCUT ICON" HREF="/favicon.png" />
     <NOSCRIPT>
         <STYLE>html{display:none;}</STYLE>
         <META http-equiv="refresh" content="0.0;url=unsupported.html">
@@ -15,11 +15,11 @@
         }
     </SCRIPT>
 
-    <script src="js/ext/jquery.d/jquery.min.js"></script>
-    <script src="js/ext/dexie.d/dexie.min.js"></script>
-    <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
-    <SCRIPT language="javascript">scriptURL = '%SCRIPT_URL%';</SCRIPT>
+    <script src="/js/ext/jquery.d/jquery.min.js"></script>
+    <script src="/js/ext/dexie.d/dexie.min.js"></script>
+    <SCRIPT language="javascript" src="/js/common.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/server.js"></SCRIPT>
+    <SCRIPT language="javascript">scriptURL = '{{ SCRIPT_URL }}';</SCRIPT>
     <META charset="UTF-8" />
     <STYLE>
         tr:hover {
@@ -38,7 +38,7 @@
 <DIV id="offline-status-text" class="notification top online-only" style="display: none;"></DIV>
 
 <DIV id="banner">
-    <SPAN id="main-logo" class="logoblue-text">%BRANDING%</SPAN> PDF Review Administration
+    <SPAN id="main-logo" class="logoblue-text">{{ BRANDING }}</SPAN> PDF Review Administration
 </DIV>
 
 <NOSCRIPT>

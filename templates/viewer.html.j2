@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <HTML>
 <HEAD>
-    <TITLE>Review: %REVIEW_PDF_TITLE%</TITLE>
+    <TITLE>Review: {{ REVIEW_PDF_TITLE }}</TITLE>
     <LINK type="text/css" rel="stylesheet" href="/css/common.css" media="screen,projection" />
     <LINK type="text/css" rel="stylesheet" href="/css/viewer.css" media="screen,projection" />
-    <!-- <link rel="alternate" type="application/rss+xml" title="RSS updates for this review" href="/rss/%REVIEW_PDF_ID%" /> -->
+    <!-- <link rel="alternate" type="application/rss+xml" title="RSS updates for this review" href="/rss/{{ REVIEW_PDF_ID }}" /> -->
     <LINK rel="SHORTCUT ICON" HREF="/favicon.png" />
     <NOSCRIPT>
         <STYLE>html{display:none;}</STYLE>
@@ -34,7 +34,7 @@
     <SCRIPT language="javascript" src="/js/sidebar-resizer.js"></SCRIPT>
     <SCRIPT language="javascript" src="/js/ui-helper.js"></SCRIPT>
     <SCRIPT language="javascript" src="/js/pdf-review-app.js"></SCRIPT>
-    <SCRIPT language="javascript">pdfURL = '%REVIEW_PDF_URL%';reviewId = '%REVIEW_PDF_ID%';scriptURL = '%SCRIPT_URL%';</SCRIPT>
+    <SCRIPT language="javascript">pdfURL = '{{ REVIEW_PDF_URL }}';reviewId = '{{ REVIEW_PDF_ID }}';scriptURL = '{{ SCRIPT_URL }}';</SCRIPT>
     <META charset="UTF-8" />
 </HEAD>
 
@@ -67,7 +67,7 @@
                 <DIV id="button-left-sidebar-toggle" style="float: left;" class="button" data-icon="/img/toolbarButton-sidebarToggle-left.png" title="Toggle left sidebar"></DIV>
                 <DIV id="button-bookmark-sync" style="float: left;" class="button" data-icon="/img/toolbarButton-book-marker.png" title="Synchronise bookmark location"></DIV>
                 <DIV style="padding: 7px;float: left;cursor: pointer;" id="button-link-options" title="Potential actions you can take!">
-                    <SPAN id="main-logo" class="white-text">&#x25bc; %BRANDING%</SPAN> <SPAN class="lightwhite-text">PDF Review</SPAN>
+                    <SPAN id="main-logo" class="white-text">&#x25bc; {{ BRANDING }}</SPAN> <SPAN class="lightwhite-text">PDF Review</SPAN>
                 </DIV>
                 <DIV id="button-search-toggle" style="float: left;" class="button" data-icon="/img/toolbarButton-search.png" title="Search the document (CTRL+F)"></DIV>
 
@@ -216,11 +216,11 @@
                                             </TD></TR>
                     <TR><TD>Unread:</TD>    <TD><INPUT id="comment-filter-unread" type="checkbox"/> <LABEL for="comment-filter-unread">Unread comments only</LABEL></TD></TR>
                     <TR><TD>Status:<BR/>
-                        <A onclick="$('#comment-placeholder-status input[type=checkbox]').prop('checked', true);">All</A> &nbsp; 
+                        <A onclick="$('#comment-placeholder-status input[type=checkbox]').prop('checked', true);">All</A> &nbsp;
                         <A onclick="$('#comment-placeholder-status input[type=checkbox]').prop('checked', false);">None</A>
                         </TD>               <TD><DIV id="comment-placeholder-status"></DIV></TD></TR>
                     <TR><TD>Reviewers:<BR/>
-                        <A onclick="$('#comment-placeholder-reviewers input[type=checkbox]').prop('checked', true);">All</A> &nbsp; 
+                        <A onclick="$('#comment-placeholder-reviewers input[type=checkbox]').prop('checked', true);">All</A> &nbsp;
                         <A onclick="$('#comment-placeholder-reviewers input[type=checkbox]').prop('checked', false);">None</A>
                         </TD>               <TD><DIV id="comment-placeholder-reviewers"></DIV></TD></TR>
                 </TABLE>
