@@ -2,10 +2,10 @@
 <HTML>
 <HEAD>
     <TITLE>Review: %REVIEW_PDF_TITLE%</TITLE>
-    <LINK type="text/css" rel="stylesheet" href="css/common.css" media="screen,projection" />
-	<LINK type="text/css" rel="stylesheet" href="css/viewer.css" media="screen,projection" />
-    <!-- <link rel="alternate" type="application/rss+xml" title="RSS updates for this review" href="/?rss=%REVIEW_PDF_ID%" /> -->
-    <LINK rel="SHORTCUT ICON" HREF="favicon.png" />
+    <LINK type="text/css" rel="stylesheet" href="/css/common.css" media="screen,projection" />
+    <LINK type="text/css" rel="stylesheet" href="/css/viewer.css" media="screen,projection" />
+    <!-- <link rel="alternate" type="application/rss+xml" title="RSS updates for this review" href="/rss/%REVIEW_PDF_ID%" /> -->
+    <LINK rel="SHORTCUT ICON" HREF="/favicon.png" />
     <NOSCRIPT>
         <STYLE>html{display:none;}</STYLE>
         <META http-equiv="refresh" content="0.0;url=unsupported.html">
@@ -16,24 +16,24 @@
         }
     </SCRIPT>
 
-    <link rel="stylesheet" href="css/pdf_viewer.min.css"/>
-    <script src="js/ext/jquery.d/jquery.min.js"></script>
-    <script src="js/ext/dexie.d/dexie.min.js">Dexie.debug = true;</script>
-    <script src="js/ext/pdf.d/pdf.js"></script>
-    <script src="js/ext/material.d/material.js"></script>
-    <SCRIPT language="javascript" src="js/common.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/server.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/comment-manager.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/modal-tool.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/viewer.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/hasher.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/link-service.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/modal-dialog.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/mousetools.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/search-service.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/sidebar-resizer.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/ui-helper.js"></SCRIPT>
-    <SCRIPT language="javascript" src="js/pdf-review-app.js"></SCRIPT>
+    <link rel="stylesheet" href="/css/pdf_viewer.min.css"/>
+    <script src="/js/ext/jquery.d/jquery.min.js"></script>
+    <script src="/js/ext/dexie.d/dexie.min.js">Dexie.debug = true;</script>
+    <script src="/js/ext/pdf.d/pdf.js"></script>
+    <script src="/js/ext/material.d/material.js"></script>
+    <SCRIPT language="javascript" src="/js/common.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/server.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/comment-manager.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/modal-tool.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/viewer.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/hasher.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/link-service.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/modal-dialog.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/mousetools.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/search-service.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/sidebar-resizer.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/ui-helper.js"></SCRIPT>
+    <SCRIPT language="javascript" src="/js/pdf-review-app.js"></SCRIPT>
     <SCRIPT language="javascript">pdfURL = '%REVIEW_PDF_URL%';reviewId = '%REVIEW_PDF_ID%';scriptURL = '%SCRIPT_URL%';</SCRIPT>
     <META charset="UTF-8" />
 </HEAD>
@@ -50,8 +50,8 @@
             <!-- Sidebar-left toolbar -->
             <DIV id="toolbar" class="toolbar columns white-text">
                 <CENTER>
-                          <DIV id="button-search-prev" class="button left"  data-icon="img/toolbarButton-search-prev.png" style="display: none;" title="Previous search result (SHIFT+F3)">
-                    </DIV><DIV id="button-search-next" class="button right" data-icon="img/toolbarButton-search-next.png" style="display: none;" title="Next search result (F3)"></DIV>
+                          <DIV id="button-search-prev" class="button left"  data-icon="/img/toolbarButton-search-prev.png" style="display: none;" title="Previous search result (SHIFT+F3)">
+                    </DIV><DIV id="button-search-next" class="button right" data-icon="/img/toolbarButton-search-next.png" style="display: none;" title="Next search result (F3)"></DIV>
                 </CENTER>
             </DIV>
             <DIV>
@@ -64,15 +64,15 @@
             <!-- Main application toolbar -->
             <DIV id="toolbar" class="toolbar white-text">
                 <!-- Toolbar centre left -->
-                <DIV id="button-left-sidebar-toggle" style="float: left;" class="button" data-icon="img/toolbarButton-sidebarToggle-left.png" title="Toggle left sidebar"></DIV>
-                <DIV id="button-bookmark-sync" style="float: left;" class="button" data-icon="img/toolbarButton-book-marker.png" title="Synchronise bookmark location"></DIV>
+                <DIV id="button-left-sidebar-toggle" style="float: left;" class="button" data-icon="/img/toolbarButton-sidebarToggle-left.png" title="Toggle left sidebar"></DIV>
+                <DIV id="button-bookmark-sync" style="float: left;" class="button" data-icon="/img/toolbarButton-book-marker.png" title="Synchronise bookmark location"></DIV>
                 <DIV style="padding: 7px;float: left;cursor: pointer;" id="button-link-options" title="Potential actions you can take!">
                     <SPAN id="main-logo" class="white-text">&#x25bc; %BRANDING%</SPAN> <SPAN class="lightwhite-text">PDF Review</SPAN>
                 </DIV>
-                <DIV id="button-search-toggle" style="float: left;" class="button" data-icon="img/toolbarButton-search.png" title="Search the document (CTRL+F)"></DIV>
+                <DIV id="button-search-toggle" style="float: left;" class="button" data-icon="/img/toolbarButton-search.png" title="Search the document (CTRL+F)"></DIV>
 
                 <!-- Toolbar centre right -->
-                <DIV id="button-right-sidebar-toggle" class="button active" data-icon="img/toolbarButton-sidebarToggle-right.png" title="Toggle right sidebar" style="float: right;"></DIV>
+                <DIV id="button-right-sidebar-toggle" class="button active" data-icon="/img/toolbarButton-sidebarToggle-right.png" title="Toggle right sidebar" style="float: right;"></DIV>
                 <SELECT id="button-zoom-select" class="button white-text" style="float: right;">
                     <OPTION value="page-fit">Page Fit</OPTION>
                     <OPTION value="page-width">Page Width</OPTION>
@@ -92,12 +92,12 @@
 
                 <!-- Toolbar centre middle -->
                 <CENTER>
-                        <DIV id="button-mode-pointer"   class="button"        data-icon="img/toolbarButton-mouse.png"     title="Cancel annotation tools (CTRL+1)"></DIV>
-                        <DIV id="button-mode-highlight" class="button left"   data-icon="img/toolbarButton-highlight.png" title="Highlight text as review comment (CTRL+2)">
-                  </DIV><DIV id="button-mode-rectangle" class="button middle" data-icon="img/toolbarButton-rectangle.png" title="Highlight a region as a review comment (CTRL+3)">
-                  </DIV><DIV id="button-mode-comment"   class="button middle" data-icon="img/toolbarButton-comment.png"   title="Add a review comment (CTRL+4)">
-                  </DIV><DIV id="button-mode-strike"    class="button right"  data-icon="img/toolbarButton-strike.png"    title="Strikethrough some text as a review comment (CTRL+5)"></DIV>
-                        <DIV id="button-mode-grab"      class="button"        data-icon="img/toolbarButton-grab.png"      title="Grab and move pdf (CTRL+6)"></DIV>
+                        <DIV id="button-mode-pointer"   class="button"        data-icon="/img/toolbarButton-mouse.png"     title="Cancel annotation tools (CTRL+1)"></DIV>
+                        <DIV id="button-mode-highlight" class="button left"   data-icon="/img/toolbarButton-highlight.png" title="Highlight text as review comment (CTRL+2)">
+                  </DIV><DIV id="button-mode-rectangle" class="button middle" data-icon="/img/toolbarButton-rectangle.png" title="Highlight a region as a review comment (CTRL+3)">
+                  </DIV><DIV id="button-mode-comment"   class="button middle" data-icon="/img/toolbarButton-comment.png"   title="Add a review comment (CTRL+4)">
+                  </DIV><DIV id="button-mode-strike"    class="button right"  data-icon="/img/toolbarButton-strike.png"    title="Strikethrough some text as a review comment (CTRL+5)"></DIV>
+                        <DIV id="button-mode-grab"      class="button"        data-icon="/img/toolbarButton-grab.png"      title="Grab and move pdf (CTRL+6)"></DIV>
                 </CENTER>
             </DIV>
 
@@ -111,8 +111,8 @@
             <!-- Sidebar-right toolbar -->
             <DIV id="toolbar" class="toolbar columns white-text">
                 <DIV id="button-comment-filter" class="button" style="padding: 3px 10px;" title="Filter comments based on configurable criteria (CTRL+H)">Filter</DIV>
-                      <DIV id="button-comment-text-smaller" class="button left"  data-icon="img/toolbarButton-text-smaller.png" title="Make comment text smaller">
-                </DIV><DIV id="button-comment-text-larger"  class="button right" data-icon="img/toolbarButton-text-larger.png"  title="Make comment text larger"></DIV>
+                      <DIV id="button-comment-text-smaller" class="button left"  data-icon="/img/toolbarButton-text-smaller.png" title="Make comment text smaller">
+                </DIV><DIV id="button-comment-text-larger"  class="button right" data-icon="/img/toolbarButton-text-larger.png"  title="Make comment text larger"></DIV>
             </DIV>
             <DIV id="sidebar-right-container">
                 <DIV id="comment-status-msg" class="lightwhite-text"></DIV>
@@ -131,7 +131,7 @@
                     Please share the following link to potential reviewers:
                 </DIV><BR/><BR/><BR/>
                 <PRE></PRE>
-                <DIV id="button-copy-to-clip-link" class="button" data-icon="img/copyClipboard.png" title="Copy URL to clipboard" style="display:block;"></DIV>
+                <DIV id="button-copy-to-clip-link" class="button" data-icon="/img/copyClipboard.png" title="Copy URL to clipboard" style="display:block;"></DIV>
                 <BR/><BR/>
                 <DIV class="button modal-close">Close</DIV>
             </DIV>
@@ -267,8 +267,8 @@
             </DIV>
             <DIV class="link tool-close-action online-only" onclick="reportError();">Report an error with this application</DIV>
             <DIV id="ui-logo-download" class="link tool-close-action online-only">Export archived PDF</DIV>
-            <DIV class="link tool-close-action online-only" onclick="window.open(scriptURL + '?api=export-comments&as=json&review=' + window.reviewId);">Export comments as JSON</DIV>
-            <DIV class="link tool-close-action online-only" onclick="showUILink(scriptURL + '?rss=' + reviewId, 'The XML activity for this review can be found at:');">RSS feed of updates for this review</DIV>
+            <DIV class="link tool-close-action online-only" onclick="window.open(scriptURL + '/api/export-comments?as=json&review=' + window.reviewId);">Export comments as JSON</DIV>
+            <DIV class="link tool-close-action online-only" onclick="showUILink(scriptURL + '/rss/' + reviewId, 'The XML activity for this review can be found at:');">RSS feed of updates for this review</DIV>
             <DIV class="link tool-close-action" onclick="showUILink(scriptURL + '?review=' + reviewId, 'Please share the following link with potential reviewers:');">Invite reviewers to join this review</DIV>
         </DIV>
     </DIV>

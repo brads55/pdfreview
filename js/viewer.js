@@ -29,20 +29,18 @@ function reportError(msg) {
         var msg     = $('#error-report-msg').val();
         if($(button).data("button") == "submit") {
             var formData = {
-                "api":      "report-error",
                 "details":  details,
                 "msg":      msg,
                 "review":   window.reviewId};
-            server.get_data(window.scriptURL, { nocache: true, formdata: formData });
+            server.get_data(window.scriptURL + '/api/report-error', { nocache: true, formdata: formData });
         }
     });
     if(msg) {
         var formData = {
-            "api":      "report-error",
             "details":  msg,
             "msg":      "Auto-generated report at " + (new Date()),
             "review":   window.reviewId};
-        server.get_data(window.scriptURL, { nocache: true, formdata: formData });
+        server.get_data(window.scriptURL + '/api/report-error', { nocache: true, formdata: formData });
     }
 }
 
@@ -95,7 +93,7 @@ $( document ).ready(function() {
             $('#button-mode-strike').hide();
             $('#button-mode-comment').hide();
         }
-        if($.urlParam("new")) showUILink(window.scriptURL + "?review=" + reviewId, "The PDF is now ready to be reviewed.<BR/><BR/>Please share the following link to potential reviewers:");
+        if($.urlParam("new")) showUILink(window.scriptURL + "/review/" + reviewId, "The PDF is now ready to be reviewed.<BR/><BR/>Please share the following link to potential reviewers:");
         $("#page-number").on("keydown.page-select", function(e) {
             if (e.which == 13) {        // ENTER
                 window.PDFReviewApp.linkService.navigateTo("page=" + $(e.target).val());
@@ -162,9 +160,9 @@ $( document ).ready(function() {
         function showPDFdownload(password) {
             $('#archive-pdf-download').text("Exporting...").addClass("loading-animation");
             new ModalDialog("dialog-download");
-            var formData = {"api": 'pdf-archive', "review": window.reviewId};
+            var formData = {"review": window.reviewId};
             if(password != undefined) formData.append("password", password);
-            server.get_data(window.scriptURL, { nocache: true, formdata: formData, onlineOnly: true, complete: function(p) {
+            server.get_data(window.scriptURL + '/api/pdf-archive', { nocache: true, formdata: formData, onlineOnly: true, complete: function(p) {
                 if(p && p.errorCode == 0) {
                     $('#archive-pdf-download').text("Ready.").addClass("ready").removeClass("loading-animation").on("click", function(e) {
                         window.open(p.url);
@@ -188,9 +186,8 @@ $( document ).ready(function() {
 
         // Add review to the active list
         var formData = {
-            "api":      "add-review",
             "review":   window.reviewId};
-        server.get_data(window.scriptURL, { nocache: true, formdata: formData });
+        server.get_data(window.scriptURL + '/api/add-review', { nocache: true, formdata: formData });
 
     });
 });

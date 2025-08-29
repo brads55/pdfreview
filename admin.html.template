@@ -75,7 +75,7 @@
 <CENTER style="padding-top: 50px;">
     <A HREF="faq.html" target="_blank">FAQ</A>
     &nbsp; &nbsp; &nbsp;
-    <A HREF="api.html" target="_blank">API documentation</A>
+    <A HREF="/docs" target="_blank">API documentation</A>
     &nbsp; &nbsp; &nbsp;
     <A HREF="https://github.com/Franchie/pdfreview" target="_blank">GitHub</A>
 </CENTER>
@@ -83,7 +83,7 @@
 <SCRIPT language="javascript">
     $( document ).ready(function() {
         window.server = new Server();
-        server.get_data(window.scriptURL + "?api=list-errors", {nocache: true,
+        server.get_data(window.scriptURL + "/api/list-errors", {nocache: true,
                                                                 onlineOnly: true,
                                                                 complete: function(p) {
                 if(p && p.errorCode == 0) {
@@ -103,7 +103,7 @@
                         tr.append($('<td>').text(error.details).css('white-space', 'pre-wrap').css('font-family', 'monospace'));
                         tr.append($('<td>').append($('<a>').text("Delete").attr('href','#').on("click", {tr: tr, id: error.id}, function(e) {
                             // Delete id
-                            server.get_data(window.scriptURL + "?api=delete-error&id=" + e.data.id, {nocache: true, onlineOnly: true})
+                            server.get_data(window.scriptURL + "/api/delete-error?id=" + e.data.id, {nocache: true, onlineOnly: true})
                             e.data.tr.hide();
                             e.preventDefault();
                             e.stopPropagation();
@@ -118,10 +118,10 @@
             }
         });
 
-        server.get_data(window.scriptURL + "?api=get-all-activity", {nocache: true, onlineOnly: true, complete: function(activity) {
+        server.get_data(window.scriptURL + "/api/get-all-activity", {nocache: true, onlineOnly: true, complete: function(activity) {
             if(activity && activity.errorCode == 0) {
                 window.all_activity = activity.activity;
-                server.get_data(window.scriptURL + "?api=get-all-reviews", {nocache: true, onlineOnly: true, complete: function(reviews) {
+                server.get_data(window.scriptURL + "/api/get-all-reviews", {nocache: true, onlineOnly: true, complete: function(reviews) {
                     if(reviews && reviews.errorCode == 0) {
                         $("#reviews-count").text(reviews.reviews.length)
                         window.all_reviews = reviews.reviews;

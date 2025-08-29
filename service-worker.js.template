@@ -40,7 +40,7 @@ offline_handler.addEventListener('fetch', function(event) {
 
                 // If the request prohibited items in it, then avoid caching
                 if(event.request.url.match("anticaching")) return response;
-                if(event.request.url.match("action=admin")) return response;
+                if(event.request.url.match("/admin")) return response;
                 if(!event.request.url.startsWith("http")) return response;
 
                 // Also add to the cache if we have fetched something new :)

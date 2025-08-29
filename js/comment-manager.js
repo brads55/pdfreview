@@ -148,10 +148,10 @@ function CommentManager(pdfApp, commentContainer) {
 
 CommentManager.prototype.fetchAllComments = function() {
     var self = this;
-    var formData = {"api": 'list-comments', "review": window.reviewId};
+    var formData = {"review": window.reviewId};
 
     // Fetch new list from server and store for offline use.
-    server.get_data(window.scriptURL, { nocache: true, formdata: formData, onlineOnly: true, complete: function(p) {
+    server.get_data(window.scriptURL + '/api/list-comments', { nocache: true, formdata: formData, onlineOnly: true, complete: function(p) {
         if(p && p.errorCode == 0) {
             self.commentDB.comments.bulkPut(p.comments).then(function() {
                 self.refreshComments(false);
@@ -414,7 +414,7 @@ CommentManager.prototype.addComment = function(comment, action) {
     if(!action) return;
     self.commentDB.comments.put(comment);
 
-    var formData = {"api": action, "review": window.reviewId};
+    var formData = {"review": window.reviewId};
     var failure_msg;
     if(action == "add-comment") {
         formData.comment = comment;
@@ -440,7 +440,7 @@ CommentManager.prototype.addComment = function(comment, action) {
     else throw new Error("Unhandled add-comment action: " + action);
     self.applyFilters();
 
-    server.get_data(window.scriptURL, { nocache: true,
+    server.get_data(window.scriptURL + '/api/' + action, { nocache: true,
                                         formdata: formData,
                                         complete: function(p) {
         if(!p || p.errorCode > 0) {
@@ -566,11 +566,10 @@ CommentManager.prototype.selectComment = function(commentId, scrollComments, dbl
         commentCard.unread = false;
         self.commentDB.comments.update(commentId, {unread: false});
         var formData = {
-            "api":      'user-mark-comment',
             "review":   window.reviewId,
             "id":       commentId,
             "as":       "read"};
-        server.get_data(window.scriptURL, { nocache: true, formdata: formData });    // Fire-and-forget
+        server.get_data(window.scriptURL + '/api/user-mark-comment', { nocache: true, formdata: formData });    // Fire-and-forget
     }
 
     // Now actually select the parent comment

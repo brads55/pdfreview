@@ -19,10 +19,9 @@ function fileUpload(file, targetElem, targetMsg)
     targetMsg.html("Uploading " + file.name + "...");
 
     var formData = new FormData();
-    formData.append("action", 'upload');
     formData.append("filename", file.name);
     formData.append("file", file);
-    server.get_data(window.scriptURL, { nocache: true,
+    server.get_data(window.scriptURL + '/upload', { nocache: true,
                                         postdata: formData,
                                         progress: function(percent) {
                                             if(percent > 0) targetMsg.html("Uploading " + file.name + " (" + percent + "% complete)");
@@ -31,7 +30,7 @@ function fileUpload(file, targetElem, targetMsg)
         targetElem.removeClass("loading-animation");
         if(p && p.errorCode == 0) {
             // Successfully uploaded. Now let's do something about it.
-            window.location.href = '?review=' + p.reviewId + '&new=true';
+            window.location.href = '/review/' + p.reviewId + '?new=true';
         }
         else {
             alert("Failed to upload the document." + (p ? "\n"+p.errorMsg : ""));
@@ -119,11 +118,11 @@ $( document ).ready(function() {
                     var review = reviews[i];
                     escaped = document.createElement('p');
                     escaped.appendChild(document.createTextNode(review["title"]));
-                    html += '\t<TR><TD><A HREF="' + window.scriptURL + '?review=' + review["id"] + '">' + escaped.innerHTML + '</A></TD>';
+                    html += '\t<TR><TD><A HREF="' + window.scriptURL + '/review/' + review["id"] + '">' + escaped.innerHTML + '</A></TD>';
                     if(review["owner"]) {
-                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=close-review\');">Close review</A></TD>';
+                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '/api/close-review?review=' + review["id"] + '\');">Close review</A></TD>';
                     } else {
-                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=remove-review\');">Remove</A></TD>';
+                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '/api/remove-review?review=' + review["id"] + '\');">Remove</A></TD>';
                     }
                     html += '</TR>\n';
                 }
@@ -140,13 +139,13 @@ $( document ).ready(function() {
                     reviews = reviews.sort(sortAlphaNum);
                     for(var i = 0; i < reviews.length; i++) {
                         var review = reviews[i];
-                        html += '\t<TR><TD><A HREF="' + window.scriptURL + '?review=' + review["id"] + '&closed=true">' + review["title"] + '</A></TD>';
-                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'?review=' + review["id"] + '&api=pdf-archive\');">Archived PDF</A></TD>';
+                        html += '\t<TR><TD><A HREF="' + window.scriptURL + '/review/' + review["id"] + '?closed=true">' + review["title"] + '</A></TD>';
+                        html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'/api/pdf-archive?review=' + review["id"] + '\');">Archived PDF</A></TD>';
                         if(review["owner"]) {
-                            html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=reopen-review\');">Reopen</A></TD>';
-                            html += '<TD class="has-border online-only"><A HREF="#" onclick="if(confirm(\'Really really sure?\')) api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=delete-review\');">Delete</A></TD>';
+                            html += '<TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '/api/reopen-review?review=' + review["id"] + '\');">Reopen</A></TD>';
+                            html += '<TD class="has-border online-only"><A HREF="#" onclick="if(confirm(\'Really really sure?\')) api(\'' + window.scriptURL + '/api/delete-review?review=' + review["id"] + '\');">Delete</A></TD>';
                         } else {
-                            html += '<TD></TD><TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '?review=' + review["id"] + '&api=remove-review\');">Remove</A></TD>';
+                            html += '<TD></TD><TD class="has-border online-only"><A HREF="#" onclick="api(\'' + window.scriptURL + '/api/remove-review?review=' + review["id"] + '\');">Remove</A></TD>';
                         }
                         html += '</TR>\n';
                     }
@@ -158,7 +157,7 @@ $( document ).ready(function() {
     }
 
     // Fetch new list from server and store for offline use.
-    server.get_data(window.scriptURL + "?api=get-review-list", {nocache: true,
+    server.get_data(window.scriptURL + "/api/get-review-list", {nocache: true,
                                                                 onlineOnly: true,
                                                                 complete: function(p) {
         if(p && p.errorCode == 0) {

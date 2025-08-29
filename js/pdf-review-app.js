@@ -31,7 +31,7 @@ PDFReviewApplication.prototype.loadPDF = function() {
         //  - url: what is the url for the pdf file
         //  - cMapUrl / cMapPacked: where the cMaps are located
         //  - disableAutoFetch / disableStream / disableRange: this avoids making use of Ranged requests, which is not supported by ServiceWorkers used in offline mode
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/ext/pdf.d/pdf.worker.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/ext/pdf.d/pdf.worker.js';
         var load = pdfjsLib.getDocument({url: self.pdfUrl, cMapUrl: 'cmaps/', cMapPacked: true, disableAutoFetch: true, disableStream: true, disableRange: true});
 
         // Incorrect password, ask for a new one.

@@ -58,9 +58,9 @@
 <CENTER style="padding-top: 50px;">
     <A HREF="faq.html" target="_blank">FAQ</A>
     &nbsp; &nbsp; &nbsp;
-    <A HREF="api.html" target="_blank">API documentation</A>
+    <A HREF="/docs" target="_blank">API documentation</A>
     &nbsp; &nbsp; &nbsp;
-    <A HREF="?action=admin" target="_blank" style="display: %ADMIN_CSS%">Administration%ADMIN_ERRORS%</A>
+    <A HREF="/admin" target="_blank" style="display: %ADMIN_CSS%">Administration%ADMIN_ERRORS%</A>
     <SPAN style="display: %ADMIN_CSS%">&nbsp; &nbsp; &nbsp;</SPAN>
     <A HREF="https://github.com/Franchie/pdfreview" target="_blank">GitHub</A>
 </CENTER>
