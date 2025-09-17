@@ -13,10 +13,10 @@ import re
 import string
 import time
 from subprocess import PIPE, Popen
-from typing import Annotated, Any, ClassVar
+from typing import Annotated, Any, ClassVar, cast
 from urllib.parse import quote_plus
 
-from fastapi import Depends, FastAPI, Form, Query, Request, Response, UploadFile
+from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Response, UploadFile
 from fastapi.datastructures import URL
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -44,6 +44,7 @@ app.add_middleware(SessionMiddleware, secret_key=config.config["msal_secret"])
 auth = MSALAuthorization(client_config=msal_config)
 app.include_router(auth.router)
 
+app.mount("/cmaps", StaticFiles(directory="cmaps"), name="cmaps")
 app.mount("/css", StaticFiles(directory="css"), name="css")
 app.mount("/font", StaticFiles(directory="font"), name="font")
 app.mount("/img", StaticFiles(directory="img"), name="img")
@@ -216,9 +217,9 @@ def get_ps_comment_reply(comments: list[dict[str, Any]], reply_to_id: int, inden
     indent_spaces = "\n" + ("  " * indent)
     for comment in comments:
         if "replyToId" in comment and comment["replyToId"] == reply_to_id:
-            txt += f"\n{indent_spaces}<p><b>" + comment["author"] + "</b></p>"
+            txt += f"\n{indent_spaces}<p><b>" + cast(str, comment["author"]) + "</b></p>"
             txt += indent_spaces + indent_spaces.join(ps_format_msg(comment["msg"]).split("\n"))
-            txt += get_ps_comment_reply(comments, comment["id"], indent + 1)
+            txt += cast(str, get_ps_comment_reply(comments, comment["id"], indent + 1))
     return txt
 
 
@@ -386,11 +387,7 @@ async def redirect_to_new_api(request: Request):
 
     manifest_val = form.get("manifest") or request.query_params.get("manifest")
     if manifest_val:
-        return RedirectResponse(
-            url=URL(f"/manifest/{manifest_val}").include_query_params(
-                **{k: v for k, v in request.query_params.items() if k != "manifest"}
-            )
-        )
+        raise HTTPException(status_code=404)
 
     return RedirectResponse(URL(url="/").include_query_params(**request.query_params))
 
@@ -408,6 +405,31 @@ async def index_post_legacy(request: Request):
 @app.get("/favicon.png", include_in_schema=False)
 async def favicon():
     return FileResponse("favicon.png")
+
+
+@app.get("/favicon256.png", include_in_schema=False)
+async def favicon256():
+    return FileResponse("favicon256.png")
+
+
+@app.get("/favicon512.png", include_in_schema=False)
+async def favicon512():
+    return FileResponse("favicon512.png")
+
+
+@app.get("/faq.html", include_in_schema=False)
+async def faq():
+    return FileResponse("faq.html")
+
+
+@app.get("/unsupported.html", include_in_schema=False)
+async def unsupported():
+    return FileResponse("unsupported.html")
+
+
+@app.get("/manifest.json", include_in_schema=False)
+async def manifest_json():
+    return FileResponse("manifest.json")
 
 
 @app.post(
@@ -1092,7 +1114,7 @@ async def rss(request: Request, review_id: str):
 
 
 @app.get(
-    "/manifest/service-worker",
+    "/serviceworker",
     response_class=Response,
     response_model=UserInfo,
     response_model_exclude_none=True,
@@ -1129,7 +1151,7 @@ async def manifest_service_worker(
         version = f"{file} last modified: {time.ctime(os.path.getmtime(file))}\n"
         version_list += f"// {version}"
 
-    output += f"{config.config["url"],}\n"
+    output += f"{config.config["url"]}\n"
     for review in reviews:
         output += f"{review["pdf"]}\n"
         output += f"{config.config["url"]}?review={review["id"]}\n"
