@@ -77,6 +77,13 @@ with engine.connect() as _conn:
 #
 
 
+def user_id(current_user: UserInfo):
+    if isinstance(current_user.email, str):
+        return current_user.email.lower()
+
+    raise ValueError("Invalid email returned for user")
+
+
 def gen_random_string(size: int = 128):
     chars = "".join([string.ascii_uppercase, string.ascii_lowercase, string.digits])
     return "".join(random.choice(chars) for _ in range(size))
@@ -133,7 +140,7 @@ def change_review_status(conn: Connection, current_user: UserInfo, review_id: st
         sql.text("SELECT id, owner FROM reviews WHERE reviewid=:review_id"), {"review_id": review_id}
     ).fetchone()
     if result:
-        if not result.owner == current_user.email:
+        if not result.owner == user_id(current_user):
             return JSONResponse(
                 {
                     "errorCode": 1,
@@ -158,7 +165,7 @@ def list_comments(conn: Connection, current_user: UserInfo, review_id: str):
         sql.text(
             "SELECT comments.id, comments.hash, comments.author, comments.pageId, comments.type, comments.msg, comments.status, comments.rects, comments.replyToId, comments.timestamp, comments.deleted, myread.myread FROM comments LEFT JOIN myread ON comments.hash=myread.commenthash AND comments.reviewid=myread.reviewid AND myread.reader=:email WHERE comments.reviewid=:review_id ORDER BY comments.id ASC"
         ),
-        {"email": current_user.email, "review_id": review_id},
+        {"email": user_id(current_user), "review_id": review_id},
     ).fetchall()
     for row in results:
         tmp: dict[str, Any] = {
@@ -335,7 +342,7 @@ def list_my_reviews(conn: Connection, current_user: UserInfo):
     reviews: list[dict[str, Any]] = []
     result = conn.execute(
         sql.text("SELECT reviewid FROM myreviews WHERE reader=:email GROUP BY reviewid ORDER BY reviewid DESC"),
-        {"email": current_user.email},
+        {"email": user_id(current_user)},
     ).fetchall()
     for row in result:
         reviewdetails = conn.execute(
@@ -346,7 +353,7 @@ def list_my_reviews(conn: Connection, current_user: UserInfo):
             reviews.append(
                 {
                     "id": reviewdetails.reviewid,
-                    "owner": reviewdetails.owner == current_user.email,
+                    "owner": reviewdetails.owner == user_id(current_user),
                     "title": reviewdetails.title,
                     "closed": reviewdetails.closed,
                     "pdf": reviewdetails.pdffile,
@@ -366,7 +373,8 @@ async def redirect_to_new_api(request: Request):
         return RedirectResponse(
             url=URL(f"/api/{api_val}").include_query_params(
                 **{k: v for k, v in request.query_params.items() if k != "api"}
-            )
+            ),
+            status_code=302,
         )
 
     review_val = form.get("review") or request.query_params.get("review")
@@ -374,7 +382,8 @@ async def redirect_to_new_api(request: Request):
         return RedirectResponse(
             url=URL(f"/review/{review_val}").include_query_params(
                 **{k: v for k, v in request.query_params.items() if k != "review"}
-            )
+            ),
+            status_code=302,
         )
 
     rss_val = form.get("rss") or request.query_params.get("rss")
@@ -382,14 +391,15 @@ async def redirect_to_new_api(request: Request):
         return RedirectResponse(
             url=URL(f"/rss/{rss_val}").include_query_params(
                 **{k: v for k, v in request.query_params.items() if k != "rss"}
-            )
+            ),
+            status_code=302,
         )
 
     manifest_val = form.get("manifest") or request.query_params.get("manifest")
     if manifest_val:
         raise HTTPException(status_code=404)
 
-    return RedirectResponse(URL(url="/").include_query_params(**request.query_params))
+    return RedirectResponse(url=URL(url="/").include_query_params(**request.query_params), status_code=302)
 
 
 @app.get("/index.cgi")
@@ -464,7 +474,7 @@ async def api_add_comment(
                 + "</B> "
                 + ("added a comment: " if not comment_json.get("replyToId") else "replied to a comment: ")
                 + escape_html(comment_json.get("msg", "")),
-                "owner": current_user.email,
+                "owner": user_id(current_user),
                 "url": config.config["url"] + "?review=" + review,
                 "review_id": review,
                 "timestamp": time.time(),
@@ -524,7 +534,7 @@ async def api_delete_comment(
             ),
             {
                 "msg": "<B>" + str(current_user.display_name) + "</B> deleted a comment.",
-                "owner": current_user.email,
+                "owner": user_id(current_user),
                 "url": config.config["url"] + "?review=" + review,
                 "review_id": review,
                 "timestamp": time.time(),
@@ -594,7 +604,7 @@ async def api_update_comment_message(
                 + str(current_user.display_name)
                 + "</B> updated a comment's message. New message: "
                 + escape_html(message),
-                "owner": current_user.email,
+                "owner": user_id(current_user),
                 "url": config.config["url"] + "?review=" + review,
                 "review_id": review,
                 "timestamp": time.time(),
@@ -653,14 +663,14 @@ async def api_user_mark_comment(
     with engine.connect() as conn:
         conn.execute(
             sql.text("DELETE FROM myread WHERE commenthash=:hash AND reviewid=:review_id AND reader=:reader"),
-            {"hash": commentid, "review_id": review, "reader": current_user.email},
+            {"hash": commentid, "review_id": review, "reader": user_id(current_user)},
         )
         if commentas == "read":
             conn.execute(
                 sql.text(
                     "INSERT INTO myread (commenthash, reviewid, reader, myread) VALUES (:hash, :review_id, :reader, :my_read)"
                 ),
-                {"hash": commentid, "review_id": review, "reader": current_user.email, "my_read": True},
+                {"hash": commentid, "review_id": review, "reader": user_id(current_user), "my_read": True},
             )
         conn.commit()
 
@@ -718,7 +728,7 @@ async def api_remove_review(
             sql.text("SELECT owner FROM reviews WHERE reviewid=:review_id"), {"review_id": review}
         ).fetchone()
         if result:
-            if result.owner == current_user.email:
+            if result.owner == user_id(current_user):
                 return JSONResponse(
                     {
                         "errorCode": 1,
@@ -730,7 +740,7 @@ async def api_remove_review(
 
         conn.execute(
             sql.text("DELETE FROM myreviews WHERE reviewid=:review_id AND reader=:reader"),
-            {"review_id": review, "reader": current_user.email},
+            {"review_id": review, "reader": user_id(current_user)},
         )
         conn.commit()
 
@@ -754,7 +764,7 @@ async def api_delete_review(
 
         result = conn.execute(
             sql.text("SELECT pdffile FROM reviews WHERE reviewid=:review_id AND owner=:owner"),
-            {"review_id": review, "owner": current_user.email},
+            {"review_id": review, "owner": user_id(current_user)},
         ).fetchone()
         if result:
             pdffile = result.pdffile
@@ -1060,12 +1070,12 @@ async def api_add_review(
     with engine.connect() as conn:
         result = conn.execute(
             sql.text("SELECT reviewid FROM myreviews WHERE reviewid=:review_id AND reader=:reader"),
-            {"review_id": review, "reader": current_user.email},
+            {"review_id": review, "reader": user_id(current_user)},
         ).fetchone()
         if not result:
             conn.execute(
                 sql.text("INSERT INTO myreviews (reviewid, reader) VALUES (:review_id, :reader)"),
-                {"review_id": review, "reader": current_user.email},
+                {"review_id": review, "reader": user_id(current_user)},
             )
             conn.commit()
 
@@ -1098,7 +1108,7 @@ async def rss(request: Request, review_id: str):
 
         result = conn.execute(
             sql.text("SELECT id, msg, url, timestamp FROM activity WHERE reviewid=:review_id AND NOT(owner=:owner)"),
-            {"review_id": review_id, "owner": current_user.email},
+            {"review_id": review_id, "owner": user_id(current_user)},
         ).fetchall()
         for row in result:
             response += "<item>"
@@ -1154,8 +1164,10 @@ async def manifest_service_worker(
     output += f"{config.config["url"]}\n"
     for review in reviews:
         output += f"{review["pdf"]}\n"
-        output += f"{config.config["url"]}?review={review["id"]}\n"
-        output += f"{config.config["url"]}?review={review["id"]}&closed=true\n"
+        output += f"{config.config["url"]}/index.cgi?review={review["id"]}\n"
+        output += f"{config.config["url"]}/index.cgi?review={review["id"]}&closed=true\n"
+        output += f"{config.config["url"]}/review/{review["id"]}\n"
+        output += f"{config.config["url"]}/review/{review["id"]}&closed=true\n"
 
     return templates.TemplateResponse(
         request=request,
@@ -1239,7 +1251,7 @@ async def upload(
             ),
             {
                 "review_id": review_id,
-                "owner": current_user.email,
+                "owner": user_id(current_user),
                 "closed": False,
                 "pdffile": filename,
                 "title": pdf_title,
@@ -1249,12 +1261,12 @@ async def upload(
 
         result = conn.execute(
             sql.text("SELECT reviewid FROM myreviews WHERE reviewid=:review_id AND reader=:reader"),
-            {"review_id": review_id, "reader": current_user.email},
+            {"review_id": review_id, "reader": user_id(current_user)},
         ).fetchone()
         if not result:
             conn.execute(
                 sql.text("INSERT INTO myreviews (reviewid, reader) VALUES (:review_id, :reader)"),
-                {"review_id": review_id, "reader": current_user.email},
+                {"review_id": review_id, "reader": user_id(current_user)},
             )
             conn.commit()
 

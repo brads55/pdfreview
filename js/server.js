@@ -236,7 +236,7 @@ function Server() {
     if('serviceWorker' in navigator && location.protocol.match("https") ) {
      try {
          offlineCacheStatus("downloading");
-         navigator.serviceWorker.register(window.scriptURL + '/serviceworker', {scope: './'}).then(function(registration) {
+         navigator.serviceWorker.register(window.scriptURL + '/serviceworker', {scope: '/'}).then(function(registration) {
              if(window.console) console.info("Using ServiceWorkers to provide offline access.");
              if(registration) {
                  offlineCacheStatus("ready");
