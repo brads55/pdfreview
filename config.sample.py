@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi_msal import UserInfo
+from auth import UserInfo
 
 config: dict[str, Any] = {
     "branding": "<company name>",
