@@ -260,7 +260,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
                 select = $("<SELECT>").addClass("select-status");
                 for(var i = 0; i < self.statusList.length; i++) select.append($("<OPTION>").prop({value: self.statusList[i], selected: comment.status == self.statusList[i]}).text(self.statusList[i]));
                 select.append($("<OPTION>").prop("value", "Custom").text("Custom"));
-                link.parent().append(select);
+                link.after(select);
             }
             link.hide();
             select.focus();
@@ -312,7 +312,7 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
     var div = document.createElement("div");
     div.className = "review-comment";
     if(comment.replyToId != undefined) $(parent).addClass("has-child");
-    
+
     div.commentId   = comment.id;
     div.replyToId   = comment.replyToId;
     div.pageId      = comment.pageId;
@@ -324,12 +324,10 @@ CommentManager.prototype.createCommentUI = function(comment, retries) {
     if(comment.unread) $(div).addClass("new");
     if(comment.unsync) $(div).addClass("unsynchronised");
     var actions = $("<SPAN>").addClass("actions");
-    if(!window.reviewClosed) actions.append($("<A>").text("Reply").on("click", {comment: comment}, commentReply)).append(" &nbsp; ")
-    if(!window.reviewClosed && comment.owner) {
-        actions.append($("<A>").text("Update").on("click", {comment: comment}, commentUpdate)).append(" &nbsp; ")
-               .append($("<A>").text("Delete").on("click", {commentid: comment.id}, commentDelete).css({"float": "right", "color": "red"}));
-    }
+    if(!window.reviewClosed) actions.append($("<A>").text("Reply").on("click", {comment: comment}, commentReply))
+    if(!window.reviewClosed && comment.owner) actions.append($("<A>").text("Update").on("click", {comment: comment}, commentUpdate))
     if(comment.replyToId == undefined) actions.append($("<A>").text("Status").on("click", {commentid: comment.id}, commentStatus));
+    if(!window.reviewClosed && comment.owner) actions.append($("<A>").text("Delete").on("click", {commentid: comment.id}, commentDelete).css({"margin-left": "auto", "color": "red"}));
     if(comment.deleted) {
         parent.appendChild(div);
         $(div).hide();

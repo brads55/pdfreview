@@ -524,7 +524,8 @@ select.button * {
     display:                none;
 }
 .review-comment.selected > span.actions {
-    display:                inline;
+    display:                flex;
+    gap:                    0.5em;
 }
 .review-comment > b {
     font-size:              12px;
