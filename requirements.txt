@@ -1,6 +1,6 @@
 alembic==1.16.5
 coverage==7.10.5
 fastapi[standard]==0.116.1
-fastapi-msal[full]==2.1.7
 mysqlclient==2.2.7
+PyJWT==2.10.1
 sqlalchemy==2.0.43

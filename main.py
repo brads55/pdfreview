@@ -13,7 +13,7 @@ import re
 import string
 import time
 from subprocess import PIPE, Popen
-from typing import Annotated, Any, ClassVar, cast
+from typing import Annotated, Any, cast
 from urllib.parse import quote_plus
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Response, UploadFile
@@ -21,27 +21,22 @@ from fastapi.datastructures import URL
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi_msal import AuthToken, MSALAuthorization, MSALClientConfig, UserInfo
 from sqlalchemy import Connection, create_engine, sql
 from starlette.middleware.sessions import SessionMiddleware
 
 import config
+from auth import MSALAuth, UserInfo
 from system_checks import check_encoding, require_db_version
-
-
-class MSALConfig(MSALClientConfig):
-    client_id: str | None = config.config["msal_client_id"]
-    client_credential: str | None = config.config["msal_client_credential"]
-    tenant: str | None = config.config["msal_tenant"]
-    scopes: ClassVar[list[str]] = ["User.Read", "email"]
-
-
-msal_config = MSALConfig()
 
 app = FastAPI()
 
 app.add_middleware(SessionMiddleware, secret_key=config.config["msal_secret"])
-auth = MSALAuthorization(client_config=msal_config)
+auth = MSALAuth(
+    config.config["msal_client_id"],
+    config.config["msal_client_credential"],
+    config.config["msal_tenant"],
+    ["User.Read", "email"],
+)
 app.include_router(auth.router)
 
 app.mount("/cmaps", StaticFiles(directory="cmaps"), name="cmaps")
@@ -1084,11 +1079,10 @@ async def api_add_review(
 
 @app.get("/rss/{review_id}", response_class=Response)
 async def rss(request: Request, review_id: str):
-    token: AuthToken | None = await auth.get_session_token(request=request)
-    if not token or not token.id_token_claims:
-        return RedirectResponse(url=msal_config.login_path)
+    current_user = auth.get_current_user(request)
+    if not current_user:
+        return RedirectResponse(request.url_for("_login_route"))
 
-    current_user = token.id_token_claims
     if not current_user.display_name:
         return JSONResponse({"errorCode": 1, "errorMsg": "Invalid user"})
 
@@ -1276,11 +1270,10 @@ async def upload(
 
 @app.get("/admin", response_class=HTMLResponse)
 async def admin(request: Request):
-    token: AuthToken | None = await auth.get_session_token(request=request)
-    if not token or not token.id_token_claims:
-        return RedirectResponse(url=msal_config.login_path)
+    current_user = auth.get_current_user(request)
+    if not current_user:
+        return RedirectResponse(request.url_for("_login_route"))
 
-    current_user = token.id_token_claims
     if not current_user.display_name:
         return JSONResponse({"errorCode": 1, "errorMsg": "Invalid user"})
 
@@ -1300,11 +1293,10 @@ async def admin(request: Request):
 
 @app.get("/review/{review_id}", response_class=HTMLResponse)
 async def show_review(request: Request, review_id: str):
-    token: AuthToken | None = await auth.get_session_token(request=request)
-    if not token or not token.id_token_claims:
-        return RedirectResponse(url=msal_config.login_path)
+    current_user = auth.get_current_user(request)
+    if not current_user:
+        return RedirectResponse(request.url_for("_login_route"))
 
-    current_user = token.id_token_claims
     if not current_user.display_name:
         return JSONResponse({"errorCode": 1, "errorMsg": "Invalid user"})
 
@@ -1335,11 +1327,10 @@ async def show_review(request: Request, review_id: str):
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    token: AuthToken | None = await auth.get_session_token(request=request)
-    if not token or not token.id_token_claims:
-        return RedirectResponse(url=msal_config.login_path)
+    current_user = auth.get_current_user(request)
+    if not current_user:
+        return RedirectResponse(request.url_for("_login_route"))
 
-    current_user = token.id_token_claims
     if not current_user.display_name:
         return JSONResponse({"errorCode": 1, "errorMsg": "Invalid user"})
 
